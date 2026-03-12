@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import math
 from dataclasses import dataclass
 from pathlib import Path
@@ -42,6 +43,9 @@ TIME_BUCKETS = {
 PEOPLE_PER_BUILDING = 7
 MAX_PROPOSED = 300
 SPACING_FACTOR = 0.6
+SCHEMA_VERSION = "1.1.0"
+
+logger = logging.getLogger("meguniot_backend")
 
 
 @dataclass
@@ -54,6 +58,110 @@ class BucketResult:
     initial_uncovered: set[int]
     final_uncovered: set[int]
     uncovered_clusters: list[dict[str, Any]]
+
+
+def _configure_logging() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(message)s",
+    )
+
+
+def _assert_input_files_exist(paths: Iterable[Path]) -> None:
+    missing = [str(path) for path in paths if not path.exists()]
+    if missing:
+        raise FileNotFoundError(f"Missing required input files: {missing}")
+
+
+def _ensure_non_empty_points(gdf: gpd.GeoDataFrame, name: str) -> gpd.GeoDataFrame:
+    if gdf.empty:
+        raise ValueError(f"{name} dataset is empty.")
+    gdf = gdf[gdf.geometry.notna()].copy()
+    gdf = gdf[gdf.geometry.is_valid].copy()
+    if gdf.empty:
+        raise ValueError(f"{name} has no valid geometries.")
+    if not gdf.geometry.geom_type.isin(["Point"]).all():
+        gdf["geometry"] = gdf.geometry.centroid
+    return gdf
+
+
+def _write_json(path: Path, payload: dict[str, Any]) -> None:
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+
+
+def _build_output_schema_doc() -> dict[str, Any]:
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "time_buckets": list(TIME_BUCKETS.keys()),
+        "files": {
+            "building_coverage_network.json": {
+                "required_top_level_fields": [
+                    "schema_version",
+                    "time_buckets",
+                    "walk_speed_mps",
+                    "total_target_buildings",
+                    "buildings",
+                ]
+            },
+            "optimal_meguniot_<bucket>.json": {
+                "required_top_level_fields": [
+                    "schema_version",
+                    "time_bucket",
+                    "time_seconds",
+                    "radius_meters",
+                    "walk_speed_mps",
+                    "statistics",
+                    "top_uncovered_clusters",
+                    "proposed_meguniot",
+                ]
+            },
+            "recommended_meguniot_<bucket>.csv": {
+                "required_columns": [
+                    "rank",
+                    "time_bucket",
+                    "time_seconds",
+                    "coordinates",
+                    "lat",
+                    "lon",
+                    "newly_covered_buildings",
+                    "newly_covered_people_est",
+                ]
+            },
+            "recommended_meguniot_<bucket>.geojson": {
+                "required_top_level_fields": ["type", "features"],
+                "expected_type": "FeatureCollection",
+            },
+            "optimization_summary.json": {
+                "required_top_level_fields": [
+                    "schema_version",
+                    "walk_speed_mps",
+                    "time_buckets",
+                    "total_target_buildings",
+                    "results",
+                ]
+            },
+        },
+    }
+
+
+def _validate_outputs() -> None:
+    expected_files = [
+        OUTPUT_DIR / "building_coverage_network.json",
+        OUTPUT_DIR / "optimization_summary.json",
+        OUTPUT_DIR / "output_schema.json",
+    ]
+    expected_files.extend(OUTPUT_DIR / f"optimal_meguniot_{bucket}.json" for bucket in TIME_BUCKETS)
+    expected_files.extend(
+        OUTPUT_DIR / f"recommended_meguniot_{bucket}.csv" for bucket in TIME_BUCKETS
+    )
+    expected_files.extend(
+        OUTPUT_DIR / f"recommended_meguniot_{bucket}.geojson" for bucket in TIME_BUCKETS
+    )
+
+    missing = [str(path) for path in expected_files if not path.exists()]
+    if missing:
+        raise RuntimeError(f"Pipeline completed but missing expected outputs: {missing}")
 
 
 def _load_geojson_with_real_crs(path: Path) -> gpd.GeoDataFrame:
@@ -113,9 +221,7 @@ def _to_int_safe(val: Any, default: int = 0) -> int:
 
 def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
     gdf = _load_geojson_with_real_crs(path).to_crs("EPSG:2039")
-
-    if not gdf.geometry.geom_type.isin(["Point"]).all():
-        gdf["geometry"] = gdf.geometry.centroid
+    gdf = _ensure_non_empty_points(gdf, "buildings")
 
     year_col = _first_present(
         gdf,
@@ -178,6 +284,8 @@ def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
         & residential_mask
     )
     target = gdf[target_mask].copy().reset_index(drop=True)
+    if target.empty:
+        raise ValueError("No target buildings found after filtering criteria.")
     target["building_idx"] = target.index.astype(int)
     id_col = _first_present(target, ["OBJECTID", "objectid", "id"])
     if id_col:
@@ -196,15 +304,18 @@ def load_existing_shelters(mig_path: Path, mik_path: Path) -> gpd.GeoDataFrame:
     mik = _load_geojson_with_real_crs(mik_path).to_crs("EPSG:2039").copy()
     mig["shelter_type"] = "megunit"
     mik["shelter_type"] = "miklat"
-    for df in (mig, mik):
-        if not df.geometry.geom_type.isin(["Point"]).all():
-            df["geometry"] = df.geometry.centroid
+    mig = _ensure_non_empty_points(mig, "Miguniot")
+    mik = _ensure_non_empty_points(mik, "Miklatim")
     merged = pd.concat([mig, mik], ignore_index=True)
+    if merged.empty:
+        raise ValueError("No existing shelters loaded from Miguniot/Miklatim.")
     merged["shelter_id"] = np.arange(len(merged)).astype(int)
     return gpd.GeoDataFrame(merged, geometry="geometry", crs="EPSG:2039")
 
 
 def build_walking_graph(buildings_2039: gpd.GeoDataFrame) -> nx.MultiDiGraph:
+    if len(buildings_2039) < 3:
+        raise ValueError("Need at least 3 buildings to build walking graph hull.")
     points_wgs = buildings_2039.to_crs("EPSG:4326").geometry
     hull = MultiPoint(list(points_wgs.values)).convex_hull.buffer(0.01)
 
@@ -346,21 +457,37 @@ def _greedy_select(
 
 
 def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
+    if walk_speed_mps <= 0:
+        raise ValueError("walk_speed_mps must be positive.")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    _assert_input_files_exist(
+        [
+            DATA_DIR / "buildings.geojson",
+            DATA_DIR / "Miguniot.geojson",
+            DATA_DIR / "Miklatim.geojson",
+        ]
+    )
+    logger.info("Loading inputs and filtering target buildings")
 
     buildings = load_target_buildings(DATA_DIR / "buildings.geojson")
     shelters = load_existing_shelters(DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson")
+    logger.info("Loaded %d target buildings and %d existing shelters", len(buildings), len(shelters))
 
     graph_path = OUTPUT_DIR / "walk_graph_2039.graphml"
     if graph_path.exists() and not force_rebuild_graph:
+        logger.info("Loading cached walk graph from %s", graph_path)
         graph = ox.load_graphml(graph_path)
     else:
+        logger.info("Building walking graph with OSMnx")
         graph = build_walking_graph(buildings)
         ox.save_graphml(graph, graph_path)
+        logger.info("Saved walk graph to %s", graph_path)
 
     buildings["node_id"] = _nearest_nodes_for_points(graph, buildings.geometry)
     shelters["node_id"] = _nearest_nodes_for_points(graph, shelters.geometry)
     shelter_nodes = [int(n) for n in shelters["node_id"].tolist()]
+    if not shelter_nodes:
+        raise ValueError("No shelter nodes were mapped to walking graph.")
     building_nodes = {int(r.building_idx): int(r.node_id) for r in buildings.itertuples()}
 
     bucket_distances = {k: v * walk_speed_mps for k, v in TIME_BUCKETS.items()}
@@ -370,14 +497,15 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
         graph, shelter_nodes, cutoff=max_radius, weight="length"
     )
 
+    buildings_wgs = buildings.to_crs("EPSG:4326")
     coverage_records: list[dict[str, Any]] = []
-    for row in buildings.itertuples():
+    for row, row_wgs in zip(buildings.itertuples(), buildings_wgs.itertuples()):
         d = float(dist_to_any.get(int(row.node_id), math.inf))
         record = {
             "id": int(row.id),
             "building_idx": int(row.building_idx),
-            "lon": float(gpd.GeoSeries([row.geometry], crs="EPSG:2039").to_crs("EPSG:4326").iloc[0].x),
-            "lat": float(gpd.GeoSeries([row.geometry], crs="EPSG:2039").to_crs("EPSG:4326").iloc[0].y),
+            "lon": float(row_wgs.geometry.x),
+            "lat": float(row_wgs.geometry.y),
             "build_year": int(row.build_year_norm),
             "floors": int(row.floors_norm),
             "apartments": int(row.apartments_norm),
@@ -388,21 +516,20 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             record[f"covered_{bucket}"] = bool(d <= radius)
         coverage_records.append(record)
 
-    with (OUTPUT_DIR / "building_coverage_network.json").open("w", encoding="utf-8") as f:
-        json.dump(
-            {
-                "time_buckets": TIME_BUCKETS,
-                "walk_speed_mps": walk_speed_mps,
-                "total_target_buildings": len(coverage_records),
-                "buildings": coverage_records,
-            },
-            f,
-            ensure_ascii=False,
-            indent=2,
-        )
+    _write_json(
+        OUTPUT_DIR / "building_coverage_network.json",
+        {
+            "schema_version": SCHEMA_VERSION,
+            "time_buckets": TIME_BUCKETS,
+            "walk_speed_mps": walk_speed_mps,
+            "total_target_buildings": len(coverage_records),
+            "buildings": coverage_records,
+        },
+    )
 
     results: list[BucketResult] = []
     for bucket, seconds in TIME_BUCKETS.items():
+        logger.info("Optimizing recommendations for %s bucket", bucket)
         radius_m = bucket_distances[bucket]
         initially_uncovered = {
             int(r["building_idx"])
@@ -432,7 +559,6 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             )
         )
 
-    buildings_wgs = buildings.to_crs("EPSG:4326")
     for res in results:
         proposed = []
         for rank, (idx, covered_set) in enumerate(
@@ -467,21 +593,19 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
         }
 
         out_json = OUTPUT_DIR / f"optimal_meguniot_{res.bucket}.json"
-        with out_json.open("w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "time_bucket": res.bucket,
-                    "time_seconds": res.seconds,
-                    "radius_meters": round(res.radius_m, 2),
-                    "walk_speed_mps": walk_speed_mps,
-                    "statistics": stats,
-                    "top_uncovered_clusters": res.uncovered_clusters,
-                    "proposed_meguniot": proposed,
-                },
-                f,
-                ensure_ascii=False,
-                indent=2,
-            )
+        _write_json(
+            out_json,
+            {
+                "schema_version": SCHEMA_VERSION,
+                "time_bucket": res.bucket,
+                "time_seconds": res.seconds,
+                "radius_meters": round(res.radius_m, 2),
+                "walk_speed_mps": walk_speed_mps,
+                "statistics": stats,
+                "top_uncovered_clusters": res.uncovered_clusters,
+                "proposed_meguniot": proposed,
+            },
+        )
 
         csv_df = pd.DataFrame(
             [
@@ -517,17 +641,13 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
                     },
                 }
             )
-        with (OUTPUT_DIR / f"recommended_meguniot_{res.bucket}.geojson").open(
-            "w", encoding="utf-8"
-        ) as f:
-            json.dump(
-                {"type": "FeatureCollection", "features": geojson_features},
-                f,
-                ensure_ascii=False,
-                indent=2,
-            )
+        _write_json(
+            OUTPUT_DIR / f"recommended_meguniot_{res.bucket}.geojson",
+            {"type": "FeatureCollection", "features": geojson_features},
+        )
 
     summary = {
+        "schema_version": SCHEMA_VERSION,
         "walk_speed_mps": walk_speed_mps,
         "time_buckets": TIME_BUCKETS,
         "total_target_buildings": int(len(buildings)),
@@ -546,11 +666,14 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             for r in results
         ],
     }
-    with (OUTPUT_DIR / "optimization_summary.json").open("w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
+    _write_json(OUTPUT_DIR / "optimization_summary.json", summary)
+    _write_json(OUTPUT_DIR / "output_schema.json", _build_output_schema_doc())
+    _validate_outputs()
+    logger.info("Pipeline completed successfully. Outputs written to %s", OUTPUT_DIR)
 
 
 def main() -> None:
+    _configure_logging()
     parser = argparse.ArgumentParser(description="Run Bet Shemesh meguniot backend pipeline.")
     parser.add_argument("--walk-speed-mps", type=float, default=1.3)
     parser.add_argument("--force-rebuild-graph", action="store_true")
