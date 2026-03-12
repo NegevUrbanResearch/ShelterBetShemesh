@@ -1,0 +1,18 @@
+---
+description: Frontend design philosophy and data contract for Beit Shemesh shelter app
+globs: meguniot_access/**/*
+alwaysApply: false
+---
+
+# Access to Shelter - Beit Shemesh Frontend Philosophy
+
+- Build a clear, human-first UI: practical controls, readable narrative stats, and minimal clutter.
+- Keep frontend lightweight: read precomputed files from `data/meguniot_network/` instead of heavy client-side spatial computation.
+- Treat backend outputs as a contract. Prefer extending precomputed outputs in `scripts/run_meguniot_backend.py` over adding complex map logic in the browser.
+- Default map behavior should surface actionable context quickly (uncovered areas visible, clear shelter interactions, fast toggles).
+- Keep bilingual UX polished (`EN`/`עברית`) with consistent hierarchy and plain-language copy.
+
+## Reference Project Note
+
+- `shelter_access/` (south/Negev project) is an untracked local reference that can be used for design and interaction patterns.
+- Do not include `shelter_access/` in commits unless explicitly requested by the user.

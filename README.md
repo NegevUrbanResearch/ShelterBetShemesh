@@ -25,8 +25,11 @@ The backend currently:
   - `data/Miklatim.geojson`
 - Builds/loads an OSMnx walk graph in EPSG:2039.
 - Computes existing network coverage for buckets:
-  - `30s`, `1min`, `2min`, `3min`, `5min`
-- Greedily selects up to 300 recommended meguniot per bucket.
+  - `1min`, `2min`, `3min`
+- Solves shelter placement as a maximum-coverage problem with lazy-greedy selection.
+- Stops recommendations when:
+  - full uncovered-building coverage is reached, or
+  - shelter budget is reached (optional `--max-new-shelters`; default is no cap).
 - Exports JSON, CSV, and GeoJSON outputs under `data/meguniot_network/`.
 
 ## Frontend scope
@@ -37,9 +40,9 @@ The frontend currently supports:
   - Existing meguniot
   - Existing miklatim
   - Recommended meguniot
-  - Optional uncovered/high-need points
+  - Selected shelter coverage + covered buildings
 - Controls:
-  - Time bucket selector (`30s`, `1m`, `2m`, `3m`, `5m`)
+  - Time bucket selector (`1m`, `2m`, `3m`)
   - Recommendation count slider (`0..300`)
 - Downloads:
   - CSV (`lat`, `lon`, combined `coordinates`, coverage metrics)

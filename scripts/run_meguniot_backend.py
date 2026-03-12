@@ -26,7 +26,6 @@ import numpy as np
 import osmnx as ox
 import pandas as pd
 from shapely.geometry import MultiPoint, Point, mapping
-from sklearn.cluster import DBSCAN
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
@@ -34,16 +33,12 @@ OUTPUT_DIR = DATA_DIR / "meguniot_network"
 CACHE_DIR = ROOT / "cache"
 
 TIME_BUCKETS = {
-    "30s": 30,
     "1min": 60,
     "2min": 120,
     "3min": 180,
-    "5min": 300,
 }
 PEOPLE_PER_BUILDING = 7
-MAX_PROPOSED = 300
-SPACING_FACTOR = 0.6
-SCHEMA_VERSION = "1.1.0"
+SCHEMA_VERSION = "2.0.0"
 
 logger = logging.getLogger("meguniot_backend")
 
@@ -57,7 +52,7 @@ class BucketResult:
     selected_covered_sets: list[set[int]]
     initial_uncovered: set[int]
     final_uncovered: set[int]
-    uncovered_clusters: list[dict[str, Any]]
+    stop_reason: str
 
 
 def _configure_logging() -> None:
@@ -111,8 +106,8 @@ def _build_output_schema_doc() -> dict[str, Any]:
                     "time_seconds",
                     "radius_meters",
                     "walk_speed_mps",
+                    "optimization_method",
                     "statistics",
-                    "top_uncovered_clusters",
                     "proposed_meguniot",
                 ]
             },
@@ -129,6 +124,10 @@ def _build_output_schema_doc() -> dict[str, Any]:
                 ]
             },
             "recommended_meguniot_<bucket>.geojson": {
+                "required_top_level_fields": ["type", "features"],
+                "expected_type": "FeatureCollection",
+            },
+            "shelter_isochrones_<bucket>.geojson": {
                 "required_top_level_fields": ["type", "features"],
                 "expected_type": "FeatureCollection",
             },
@@ -158,10 +157,36 @@ def _validate_outputs() -> None:
     expected_files.extend(
         OUTPUT_DIR / f"recommended_meguniot_{bucket}.geojson" for bucket in TIME_BUCKETS
     )
+    expected_files.extend(OUTPUT_DIR / f"shelter_isochrones_{bucket}.geojson" for bucket in TIME_BUCKETS)
 
     missing = [str(path) for path in expected_files if not path.exists()]
     if missing:
         raise RuntimeError(f"Pipeline completed but missing expected outputs: {missing}")
+
+
+def _cleanup_stale_bucket_outputs() -> None:
+    """Delete stale per-bucket files from previously supported time buckets."""
+    valid_suffixes = set(TIME_BUCKETS.keys())
+    prefixes = (
+        "optimal_meguniot_",
+        "recommended_meguniot_",
+        "shelter_isochrones_",
+        "uncovered_buildings_",
+    )
+    extensions = (".json", ".csv", ".geojson")
+    for path in OUTPUT_DIR.glob("*"):
+        if not path.is_file():
+            continue
+        name = path.name
+        for prefix in prefixes:
+            if not name.startswith(prefix):
+                continue
+            if not name.endswith(extensions):
+                continue
+            bucket = name[len(prefix) :].split(".")[0]
+            if bucket not in valid_suffixes:
+                path.unlink(missing_ok=True)
+            break
 
 
 def _load_geojson_with_real_crs(path: Path) -> gpd.GeoDataFrame:
@@ -337,38 +362,6 @@ def _nearest_nodes_for_points(
     return [int(n) for n in np.asarray(nodes)]
 
 
-def _cluster_uncovered(
-    buildings: gpd.GeoDataFrame, uncovered: set[int], radius_m: float
-) -> list[dict[str, Any]]:
-    if len(uncovered) < 5:
-        return []
-    coords = np.array(
-        [[buildings.geometry.iloc[i].x, buildings.geometry.iloc[i].y] for i in uncovered]
-    )
-    db = DBSCAN(eps=max(radius_m, 40.0), min_samples=5).fit(coords)
-    labels = db.labels_
-    clusters: list[dict[str, Any]] = []
-    for label in sorted(set(labels)):
-        if label < 0:
-            continue
-        idxs = np.where(labels == label)[0]
-        if len(idxs) == 0:
-            continue
-        pts = coords[idxs]
-        center_x = float(np.mean(pts[:, 0]))
-        center_y = float(np.mean(pts[:, 1]))
-        clusters.append(
-            {
-                "cluster_id": int(label),
-                "building_count": int(len(idxs)),
-                "centroid_x_2039": center_x,
-                "centroid_y_2039": center_y,
-            }
-        )
-    clusters.sort(key=lambda c: c["building_count"], reverse=True)
-    return clusters[:20]
-
-
 def _candidate_coverages_for_bucket(
     graph: nx.MultiDiGraph,
     building_nodes: dict[int, int],
@@ -394,72 +387,128 @@ def _candidate_coverages_for_bucket(
     return coverages
 
 
-def _greedy_select(
+def _shelter_coverages_for_bucket(
+    graph: nx.MultiDiGraph,
+    building_nodes: dict[int, int],
+    shelter_node_ids: list[int],
+    radius_m: float,
+) -> dict[int, set[int]]:
+    coverages: dict[int, set[int]] = {}
+    node_to_building_indices: dict[int, list[int]] = {}
+    for idx, node in building_nodes.items():
+        node_to_building_indices.setdefault(node, []).append(idx)
+
+    for shelter_id, src in enumerate(shelter_node_ids):
+        lengths = nx.single_source_dijkstra_path_length(
+            graph, int(src), cutoff=radius_m, weight="length"
+        )
+        covered: set[int] = set()
+        for node in lengths:
+            matched = node_to_building_indices.get(int(node))
+            if matched:
+                covered.update(matched)
+        coverages[shelter_id] = covered
+    return coverages
+
+
+def _coverage_hull_polygon(
     buildings: gpd.GeoDataFrame,
+    covered_indices: set[int],
+    shelter_point: Point | None = None,
+    padding_m: float = 8.0,
+) -> Any | None:
+    raw_points = [buildings.geometry.iloc[int(idx)] for idx in sorted(covered_indices)]
+    if shelter_point is not None:
+        raw_points.append(shelter_point)
+    points = []
+    for geom in raw_points:
+        if geom is None or geom.is_empty or not geom.is_valid:
+            continue
+        if not math.isfinite(float(geom.x)) or not math.isfinite(float(geom.y)):
+            continue
+        points.append(Point(float(geom.x), float(geom.y)))
+    if not points:
+        return None
+
+    if len(points) >= 3:
+        hull = MultiPoint(points).convex_hull
+    else:
+        # For sparse coverage sets, keep a visible area around available points.
+        hull = MultiPoint(points).buffer(max(padding_m, 12.0))
+    if hull.geom_type in {"Point", "LineString"}:
+        hull = hull.buffer(max(padding_m, 12.0))
+    if not hull.is_valid:
+        hull = hull.buffer(0)
+    polygon = hull.simplify(3, preserve_topology=True)
+    if polygon.is_empty:
+        return None
+    return polygon
+
+
+def _greedy_select(
     initial_uncovered: set[int],
     candidate_coverages: dict[int, set[int]],
-    radius_m: float,
-) -> tuple[list[int], list[set[int]], set[int]]:
+    max_new_shelters: int | None,
+) -> tuple[list[int], list[set[int]], set[int], str]:
+    """Lazy-greedy maximum coverage (CELF-style) for uncovered buildings."""
     uncovered = set(initial_uncovered)
     selected: list[int] = []
     selected_sets: list[set[int]] = []
-    candidates = list(candidate_coverages.keys())
-    blocked: set[int] = set()
-    min_sep = SPACING_FACTOR * radius_m
+    if not uncovered:
+        return selected, selected_sets, uncovered, "all_covered_by_existing"
+    if max_new_shelters is not None and max_new_shelters <= 0:
+        return selected, selected_sets, uncovered, "budget_limit"
 
-    coords = {
-        idx: np.array([buildings.geometry.iloc[idx].x, buildings.geometry.iloc[idx].y])
-        for idx in candidates
-    }
-    density_bonus = {}
-    for idx in candidates:
-        p = coords[idx]
-        density = 0
-        for j in candidates:
-            if idx == j:
-                continue
-            if np.linalg.norm(p - coords[j]) <= radius_m:
-                density += 1
-        density_bonus[idx] = density
+    # Max-heap via negative gain; third value tracks stale evaluations by round.
+    import heapq
 
-    while uncovered and len(selected) < MAX_PROPOSED:
-        best_idx = None
-        best_gain = 0
-        best_density = -1
+    heap: list[tuple[int, int, int]] = []
+    for idx, covered in candidate_coverages.items():
+        gain = len(covered & uncovered)
+        if gain > 0:
+            heapq.heappush(heap, (-gain, int(idx), -1))
 
-        for idx in candidates:
-            if idx in blocked or idx in selected:
-                continue
-            gain = len(candidate_coverages[idx] & uncovered)
-            if gain > best_gain or (
-                gain == best_gain and gain > 0 and density_bonus[idx] > best_density
-            ):
-                best_idx = idx
-                best_gain = gain
-                best_density = density_bonus[idx]
+    current_round = 0
+    while uncovered and (max_new_shelters is None or len(selected) < max_new_shelters) and heap:
+        neg_gain, idx, eval_round = heapq.heappop(heap)
+        if eval_round != current_round:
+            refreshed_gain = len(candidate_coverages[idx] & uncovered)
+            if refreshed_gain > 0:
+                heapq.heappush(heap, (-refreshed_gain, idx, current_round))
+            continue
 
-        if best_idx is None or best_gain <= 0:
+        gain = -neg_gain
+        if gain <= 0:
             break
 
-        selected.append(best_idx)
-        covered_now = candidate_coverages[best_idx] & uncovered
+        covered_now = candidate_coverages[idx] & uncovered
+        if not covered_now:
+            continue
+
+        selected.append(idx)
         selected_sets.append(set(covered_now))
         uncovered -= covered_now
+        current_round += 1
 
-        best_point = coords[best_idx]
-        for idx in candidates:
-            if idx in blocked or idx in selected:
-                continue
-            if np.linalg.norm(coords[idx] - best_point) <= min_sep:
-                blocked.add(idx)
+    if not uncovered:
+        stop_reason = "full_coverage_achieved"
+    elif max_new_shelters is not None and len(selected) >= max_new_shelters:
+        stop_reason = "budget_limit"
+    else:
+        stop_reason = "no_marginal_gain"
 
-    return selected, selected_sets, uncovered
+    return selected, selected_sets, uncovered, stop_reason
 
 
-def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
+def run_pipeline(
+    walk_speed_mps: float, force_rebuild_graph: bool, max_new_shelters: int | None
+) -> None:
     if walk_speed_mps <= 0:
         raise ValueError("walk_speed_mps must be positive.")
+    if max_new_shelters is not None and max_new_shelters < 0:
+        raise ValueError("max_new_shelters must be non-negative.")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    _cleanup_stale_bucket_outputs()
     _assert_input_files_exist(
         [
             DATA_DIR / "buildings.geojson",
@@ -528,6 +577,10 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
     )
 
     results: list[BucketResult] = []
+    candidate_coverages_by_bucket: dict[str, dict[int, set[int]]] = {}
+    shelter_isochrones_by_bucket: dict[str, list[dict[str, Any]]] = {}
+    shelters_wgs = shelters.to_crs("EPSG:4326")
+
     for bucket, seconds in TIME_BUCKETS.items():
         logger.info("Optimizing recommendations for %s bucket", bucket)
         radius_m = bucket_distances[bucket]
@@ -536,16 +589,83 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             for r in coverage_records
             if not r.get(f"covered_{bucket}", False)
         }
-        clusters = _cluster_uncovered(buildings, initially_uncovered, radius_m)
-
-        candidate_indices = sorted(initially_uncovered)
+        candidate_indices = sorted(int(i) for i in buildings["building_idx"].tolist())
         candidate_coverages = _candidate_coverages_for_bucket(
             graph, building_nodes, candidate_indices, radius_m
         )
-
-        selected, selected_sets, final_uncovered = _greedy_select(
-            buildings, initially_uncovered, candidate_coverages, radius_m
+        candidate_coverages_by_bucket[bucket] = candidate_coverages
+        existing_coverages = _shelter_coverages_for_bucket(
+            graph, building_nodes, shelter_nodes, radius_m
         )
+
+        selected, selected_sets, final_uncovered, stop_reason = _greedy_select(
+            initially_uncovered, candidate_coverages, max_new_shelters
+        )
+
+        bucket_isochrones: list[dict[str, Any]] = []
+        for shelter_row in shelters.itertuples():
+            shelter_id = int(shelter_row.shelter_id)
+            covered_set = existing_coverages.get(shelter_id, set())
+            covered_indices = sorted(int(x) for x in covered_set)
+            coverage_hull_2039 = _coverage_hull_polygon(
+                buildings, covered_set, shelter_point=shelter_row.geometry
+            )
+            if coverage_hull_2039 is None:
+                continue
+            coverage_hull_wgs = (
+                gpd.GeoSeries([coverage_hull_2039], crs="EPSG:2039").to_crs("EPSG:4326").iloc[0]
+            )
+            shelter_wgs_geom = shelters_wgs.geometry.iloc[shelter_id]
+            bucket_isochrones.append(
+                {
+                    "type": "Feature",
+                    "geometry": mapping(coverage_hull_wgs),
+                    "properties": {
+                        "shelter_kind": "existing",
+                        "shelter_id": shelter_id,
+                        "shelter_type": str(shelter_row.shelter_type),
+                        "lat": float(shelter_wgs_geom.y),
+                        "lon": float(shelter_wgs_geom.x),
+                        "time_bucket": bucket,
+                        "time_seconds": seconds,
+                        "covered_building_indices": covered_indices,
+                        "covered_buildings_count": len(covered_indices),
+                    },
+                }
+            )
+
+        for rank, idx in enumerate(selected, start=1):
+            covered_set = candidate_coverages.get(idx, set())
+            full_covered_indices = sorted(int(x) for x in covered_set)
+            coverage_hull_2039 = _coverage_hull_polygon(
+                buildings, covered_set, shelter_point=buildings.geometry.iloc[idx]
+            )
+            if coverage_hull_2039 is None:
+                continue
+            coverage_hull_wgs = (
+                gpd.GeoSeries([coverage_hull_2039], crs="EPSG:2039").to_crs("EPSG:4326").iloc[0]
+            )
+            geom = buildings_wgs.geometry.iloc[idx]
+            bucket_isochrones.append(
+                {
+                    "type": "Feature",
+                    "geometry": mapping(coverage_hull_wgs),
+                    "properties": {
+                        "shelter_kind": "recommended",
+                        "shelter_id": int(idx),
+                        "rank": int(rank),
+                        "lat": float(geom.y),
+                        "lon": float(geom.x),
+                        "time_bucket": bucket,
+                        "time_seconds": seconds,
+                        "covered_building_indices": full_covered_indices,
+                        "covered_buildings_count": len(full_covered_indices),
+                    },
+                }
+            )
+
+        shelter_isochrones_by_bucket[bucket] = bucket_isochrones
+
         results.append(
             BucketResult(
                 bucket=bucket,
@@ -555,7 +675,7 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
                 selected_covered_sets=selected_sets,
                 initial_uncovered=initially_uncovered,
                 final_uncovered=final_uncovered,
-                uncovered_clusters=clusters,
+                stop_reason=stop_reason,
             )
         )
 
@@ -565,6 +685,7 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             zip(res.selected_indices, res.selected_covered_sets), start=1
         ):
             geom = buildings_wgs.geometry.iloc[idx]
+            full_covered_set = candidate_coverages_by_bucket[res.bucket].get(idx, set())
             proposed.append(
                 {
                     "rank": rank,
@@ -574,7 +695,8 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
                     "lon": float(geom.x),
                     "newly_covered_buildings": int(len(covered_set)),
                     "newly_covered_people_est": int(len(covered_set) * PEOPLE_PER_BUILDING),
-                    "covered_building_indices": sorted(int(x) for x in covered_set),
+                    "covered_building_indices": sorted(int(x) for x in full_covered_set),
+                    "marginal_covered_building_indices": sorted(int(x) for x in covered_set),
                 }
             )
 
@@ -589,7 +711,8 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             "additional_covered_by_proposed": int(len(res.initial_uncovered) - len(res.final_uncovered)),
             "final_uncovered": int(len(res.final_uncovered)),
             "num_proposed_meguniot": int(len(res.selected_indices)),
-            "max_proposed_limit": MAX_PROPOSED,
+            "max_proposed_limit": max_new_shelters,
+            "stop_reason": res.stop_reason,
         }
 
         out_json = OUTPUT_DIR / f"optimal_meguniot_{res.bucket}.json"
@@ -601,8 +724,8 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
                 "time_seconds": res.seconds,
                 "radius_meters": round(res.radius_m, 2),
                 "walk_speed_mps": walk_speed_mps,
+                "optimization_method": "lazy_greedy_maximum_coverage",
                 "statistics": stats,
-                "top_uncovered_clusters": res.uncovered_clusters,
                 "proposed_meguniot": proposed,
             },
         )
@@ -645,6 +768,10 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
             OUTPUT_DIR / f"recommended_meguniot_{res.bucket}.geojson",
             {"type": "FeatureCollection", "features": geojson_features},
         )
+        _write_json(
+            OUTPUT_DIR / f"shelter_isochrones_{res.bucket}.geojson",
+            {"type": "FeatureCollection", "features": shelter_isochrones_by_bucket[res.bucket]},
+        )
 
     summary = {
         "schema_version": SCHEMA_VERSION,
@@ -662,6 +789,7 @@ def run_pipeline(walk_speed_mps: float, force_rebuild_graph: bool) -> None:
                 ),
                 "num_proposed_meguniot": int(len(r.selected_indices)),
                 "final_uncovered": int(len(r.final_uncovered)),
+                "stop_reason": r.stop_reason,
             }
             for r in results
         ],
@@ -677,8 +805,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run Bet Shemesh meguniot backend pipeline.")
     parser.add_argument("--walk-speed-mps", type=float, default=1.3)
     parser.add_argument("--force-rebuild-graph", action="store_true")
+    parser.add_argument(
+        "--max-new-shelters",
+        type=int,
+        default=None,
+        help="Optional budget cap for new shelters. Defaults to unlimited.",
+    )
     args = parser.parse_args()
-    run_pipeline(walk_speed_mps=args.walk_speed_mps, force_rebuild_graph=args.force_rebuild_graph)
+    run_pipeline(
+        walk_speed_mps=args.walk_speed_mps,
+        force_rebuild_graph=args.force_rebuild_graph,
+        max_new_shelters=args.max_new_shelters,
+    )
 
 
 if __name__ == "__main__":

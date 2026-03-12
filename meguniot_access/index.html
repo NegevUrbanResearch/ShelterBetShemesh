@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bet Shemesh Meguniot Access</title>
+    <title>shelter-bet-shemesh</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/nur-favicon.svg" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -14,59 +15,102 @@
   </head>
   <body>
     <div id="app">
-      <aside class="sidebar">
-        <h1>Bet Shemesh Meguniot</h1>
-        <p class="subtitle">Existing shelters, recommendations, and uncovered need by time bucket.</p>
+      <div id="map"></div>
 
-        <section class="panel">
-          <h2>Controls</h2>
-          <div class="control-group">
-          <label for="bucketSelect">Time bucket</label>
-          <select id="bucketSelect"></select>
+      <header class="topbar">
+        <div class="brand">
+          <img src="./assets/nur-favicon.svg" alt="NUR" class="nur-logo" />
+          <div>
+            <h1>Access to Shelter - Beit Shemesh</h1>
+            <p>עיר מקלט - בית שמש</p>
           </div>
-          <div class="control-group">
-            <label for="countRange">Recommendations count</label>
-            <input id="countRange" type="range" min="0" max="300" value="100" />
-            <div id="countValue">100</div>
-          </div>
-          <div class="control-group toggles">
-            <label><input type="checkbox" id="toggleMeguniot" checked /> Existing meguniot</label>
-            <label><input type="checkbox" id="toggleMiklatim" checked /> Existing miklatim</label>
-            <label><input type="checkbox" id="toggleRecommended" checked /> Recommended meguniot</label>
-            <label><input type="checkbox" id="toggleUncovered" /> Uncovered / high-need</label>
-          </div>
-        </section>
+        </div>
+        <div class="topbar-actions">
+          <button id="openGuideBtn" class="btn btn-ghost btn-icon-circle" aria-label="Info">i</button>
+        </div>
+      </header>
 
-        <section class="panel">
-          <h2>Core stats</h2>
-          <div id="stats" class="stats"></div>
-        </section>
+      <aside class="control-card glass">
+        <label for="bucketSelect">Time bucket</label>
+        <select id="bucketSelect"></select>
 
-        <section class="panel">
-          <h2>Downloads</h2>
-          <div class="downloads">
-          <button id="downloadCsv">Download CSV</button>
-          <button id="downloadGeojson">Download GeoJSON</button>
-          </div>
-        </section>
+        <label for="countRange">Recommended shelters</label>
+        <input id="countRange" type="range" min="0" max="0" value="0" />
+        <div id="countValue" class="count-badge">0</div>
 
-        <section class="panel">
-          <h2>Legend</h2>
-          <div class="legend">
-            <div><span class="dot dot-megunit"></span> Existing meguniot</div>
-            <div><span class="dot dot-miklat"></span> Existing miklatim</div>
-            <div><span class="dot dot-recommended"></span> Recommended meguniot</div>
-            <div><span class="dot dot-uncovered"></span> Uncovered/high-need</div>
-          </div>
-        </section>
+        <div class="downloads">
+          <button id="downloadCsv" class="btn">Download CSV</button>
+          <button id="downloadGeojson" class="btn">Download GeoJSON</button>
+        </div>
 
-        <section class="panel panel-foot">
-          <small>Data source: <code>data/meguniot_network</code></small>
-        </section>
+        <section id="stats" class="stats"></section>
       </aside>
-      <main>
-        <div id="map"></div>
-      </main>
+
+      <aside id="mapLegend" class="legend-card glass">
+        <h2 class="legend-title">Map legend</h2>
+        <div class="legend-items">
+          <div class="legend-row">
+            <img src="./assets/existing.svg" alt="" class="legend-marker" />
+            <span>Existing shelters (meguniot + miklatim)</span>
+          </div>
+          <div class="legend-row">
+            <img src="./assets/proposed.svg" alt="" class="legend-marker legend-marker-small" />
+            <span>Recommended shelters</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-swatch legend-swatch-uncovered"></span>
+            <span>Uncovered buildings (existing conditions)</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-swatch legend-swatch-covered-base"></span>
+            <span>Covered buildings (existing conditions)</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-swatch legend-swatch-iso"></span>
+            <span>Selected shelter coverage hull</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-dot legend-dot-covered"></span>
+            <span>Covered by selected shelter</span>
+          </div>
+        </div>
+        <details class="legend-layers" open>
+          <summary>Layers</summary>
+          <label><input type="checkbox" id="layerMeguniot" checked /> Existing meguniot</label>
+          <label><input type="checkbox" id="layerMiklatim" checked /> Existing miklatim</label>
+          <label><input type="checkbox" id="layerRecommended" checked /> Recommended meguniot</label>
+          <label><input type="checkbox" id="layerUncoveredBuildings" checked /> Uncovered buildings</label>
+          <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> Covered buildings</label>
+          <label><input type="checkbox" id="layerIsochrones" checked /> Selected shelter coverage</label>
+          <label><input type="checkbox" id="layerCovered" checked /> Covered by selected shelter</label>
+        </details>
+      </aside>
+
+      <div id="guideModal" class="modal hidden">
+        <div class="modal-card guide-card glass">
+          <div class="modal-head guide-head">
+            <div class="guide-head-row">
+              <h2 id="guideTitle">Access to Shelter - Beit Shemesh</h2>
+              <button id="closeGuideBtn" class="btn btn-close" aria-label="Close help">✕</button>
+            </div>
+            <div class="guide-toolbar">
+              <div class="guide-tabs" role="tablist" aria-label="Guide sections">
+                <button id="guideTabUsage" class="btn btn-ghost active-tab" role="tab">Usage</button>
+                <button id="guideTabMethods" class="btn btn-ghost" role="tab">Methods</button>
+              </div>
+              <div id="langSwitchWrap" class="lang-switch-wrap">
+                <span id="langLabelEn">EN</span>
+                <label class="lang-toggle">
+                  <input id="languageToggle" type="checkbox" />
+                  <span class="lang-toggle-slider"></span>
+                </label>
+                <span id="langLabelHe">עברית</span>
+              </div>
+            </div>
+          </div>
+          <div id="guideContent" class="modal-body"></div>
+        </div>
+      </div>
     </div>
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"

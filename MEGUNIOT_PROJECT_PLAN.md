@@ -2,7 +2,7 @@
 
 ## Objective
 
-Build a Bet Shemesh meguniot placement tool, modeled after `shelter_access`, that proposes up to 300 new meguniot based on walking-distance coverage and clustering of relevant residential buildings.
+Build a Bet Shemesh meguniot placement tool, modeled after `shelter_access`, that proposes new meguniot based on walking-distance coverage with a budget-aware maximum-coverage optimizer.
 
 ## Agreed priorities
 
@@ -36,22 +36,19 @@ Build a Bet Shemesh meguniot placement tool, modeled after `shelter_access`, tha
 
 - Build Bet Shemesh pedestrian graph with `osmnx` (`network_type="walk"`).
 - Snap filtered buildings and existing shelter points to nearest network nodes.
-- Use walking-time buckets requested by the user:
-  - 30 seconds
+- Use walking-time buckets:
   - 1 minute
   - 2 minutes
   - 3 minutes
-  - 5 minutes
 - Convert time buckets to distance cutoffs using configurable walking speed.
 - Compute existing coverage using network distances (multi-source Dijkstra).
 
-## 3) Clustering and optimization for up to 300 meguniot
+## 3) Optimization for up to 300 meguniot
 
 - Focus on uncovered buildings per time bucket.
-- Identify dense uncovered areas.
 - Score candidate points by marginal uncovered coverage gain (network-based).
-- Greedy selection with spacing controls to reduce overlap.
-- Stop at 300 points or when additional gain becomes negligible.
+- Use lazy-greedy maximum coverage (CELF-style) for efficient near-optimal selection.
+- Stop when full coverage is achieved or shelter budget is exhausted.
 
 ## 4) Backend outputs
 
@@ -67,11 +64,9 @@ Produce stable machine-readable outputs for each time bucket:
 Suggested output files:
 
 - `data/meguniot_coverage_network.json`
-- `data/optimal_meguniot_network_30s.json`
 - `data/optimal_meguniot_network_1min.json`
 - `data/optimal_meguniot_network_2min.json`
 - `data/optimal_meguniot_network_3min.json`
-- `data/optimal_meguniot_network_5min.json`
 
 ## 5) Backend implementation sequence
 
@@ -79,7 +74,7 @@ Suggested output files:
 2. Data filtering + normalization script.
 3. OSMnx graph build/snap utilities.
 4. Existing coverage computation for all time buckets.
-5. Uncovered-density analysis and candidate generation.
+5. Candidate generation for maximum-coverage optimization.
 6. Greedy optimizer for top 300 recommendations.
 7. Output writer + validation checks.
 
@@ -91,7 +86,7 @@ Keep frontend simple and functional:
   - Existing meguniot.
   - Existing miklatim.
   - Recommended meguniot.
-  - Uncovered/high-need layer.
+  - Selected-shelter coverage layers.
 - Controls:
   - Time bucket selector.
   - Number-of-recommendations slider (0-300).

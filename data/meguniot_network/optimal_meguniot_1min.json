@@ -1,9 +1,10 @@
 {
-  "schema_version": "1.1.0",
+  "schema_version": "2.0.0",
   "time_bucket": "1min",
   "time_seconds": 60,
   "radius_meters": 78.0,
   "walk_speed_mps": 1.3,
+  "optimization_method": "lazy_greedy_maximum_coverage",
   "statistics": {
     "time_bucket": "1min",
     "time_seconds": 60,
@@ -12,143 +13,55 @@
     "total_target_buildings": 1347,
     "covered_by_existing": 203,
     "currently_uncovered": 1144,
-    "additional_covered_by_proposed": 1127,
-    "final_uncovered": 17,
-    "num_proposed_meguniot": 294,
-    "max_proposed_limit": 300
+    "additional_covered_by_proposed": 1144,
+    "final_uncovered": 0,
+    "num_proposed_meguniot": 309,
+    "max_proposed_limit": null,
+    "stop_reason": "full_coverage_achieved"
   },
-  "top_uncovered_clusters": [
-    {
-      "cluster_id": 5,
-      "building_count": 277,
-      "centroid_x_2039": 198019.4964177651,
-      "centroid_y_2039": 627752.0998681169
-    },
-    {
-      "cluster_id": 1,
-      "building_count": 149,
-      "centroid_x_2039": 198992.35115360143,
-      "centroid_y_2039": 628514.307273721
-    },
-    {
-      "cluster_id": 4,
-      "building_count": 115,
-      "centroid_x_2039": 199601.4258050361,
-      "centroid_y_2039": 628762.6415675975
-    },
-    {
-      "cluster_id": 9,
-      "building_count": 62,
-      "centroid_x_2039": 198536.5405624253,
-      "centroid_y_2039": 627223.7423450755
-    },
-    {
-      "cluster_id": 12,
-      "building_count": 34,
-      "centroid_x_2039": 199382.27895924577,
-      "centroid_y_2039": 627612.883190258
-    },
-    {
-      "cluster_id": 0,
-      "building_count": 23,
-      "centroid_x_2039": 199447.65838564766,
-      "centroid_y_2039": 628108.1374594831
-    },
-    {
-      "cluster_id": 3,
-      "building_count": 22,
-      "centroid_x_2039": 198370.936777776,
-      "centroid_y_2039": 628858.2039553479
-    },
-    {
-      "cluster_id": 16,
-      "building_count": 20,
-      "centroid_x_2039": 199453.1513121117,
-      "centroid_y_2039": 627360.3046974551
-    },
-    {
-      "cluster_id": 25,
-      "building_count": 18,
-      "centroid_x_2039": 199059.22984194904,
-      "centroid_y_2039": 627719.7841013386
-    },
-    {
-      "cluster_id": 6,
-      "building_count": 15,
-      "centroid_x_2039": 198152.73689512984,
-      "centroid_y_2039": 628376.7183706429
-    },
-    {
-      "cluster_id": 21,
-      "building_count": 15,
-      "centroid_x_2039": 199210.3511444036,
-      "centroid_y_2039": 629065.7693810418
-    },
-    {
-      "cluster_id": 7,
-      "building_count": 14,
-      "centroid_x_2039": 200165.71203419653,
-      "centroid_y_2039": 624387.6970670797
-    },
-    {
-      "cluster_id": 26,
-      "building_count": 13,
-      "centroid_x_2039": 199718.03148283286,
-      "centroid_y_2039": 627531.133309318
-    },
-    {
-      "cluster_id": 19,
-      "building_count": 12,
-      "centroid_x_2039": 199924.48034024818,
-      "centroid_y_2039": 627121.8479294315
-    },
-    {
-      "cluster_id": 29,
-      "building_count": 12,
-      "centroid_x_2039": 199859.12883910362,
-      "centroid_y_2039": 624213.8229969713
-    },
-    {
-      "cluster_id": 15,
-      "building_count": 11,
-      "centroid_x_2039": 199101.47356436716,
-      "centroid_y_2039": 624655.776275364
-    },
-    {
-      "cluster_id": 23,
-      "building_count": 10,
-      "centroid_x_2039": 200233.63846035313,
-      "centroid_y_2039": 624108.2967685454
-    },
-    {
-      "cluster_id": 24,
-      "building_count": 10,
-      "centroid_x_2039": 199092.62326062305,
-      "centroid_y_2039": 628102.2825122618
-    },
-    {
-      "cluster_id": 33,
-      "building_count": 8,
-      "centroid_x_2039": 199552.85160629853,
-      "centroid_y_2039": 624154.9776225368
-    },
-    {
-      "cluster_id": 2,
-      "building_count": 7,
-      "centroid_x_2039": 199998.4069613135,
-      "centroid_y_2039": 624949.4620454045
-    }
-  ],
   "proposed_meguniot": [
     {
       "rank": 1,
-      "building_idx": 903,
-      "coordinates": "31.748011,34.989370",
-      "lat": 31.74801113505639,
-      "lon": 34.989370375299906,
+      "building_idx": 73,
+      "coordinates": "31.747711,34.989535",
+      "lat": 31.74771141342427,
+      "lon": 34.989535147860025,
       "newly_covered_buildings": 31,
       "newly_covered_people_est": 217,
       "covered_building_indices": [
+        11,
+        73,
+        94,
+        95,
+        125,
+        310,
+        316,
+        334,
+        344,
+        370,
+        387,
+        480,
+        489,
+        516,
+        575,
+        822,
+        876,
+        885,
+        903,
+        909,
+        944,
+        945,
+        965,
+        969,
+        972,
+        1012,
+        1026,
+        1204,
+        1206,
+        1310,
+        1313
+      ],
+      "marginal_covered_building_indices": [
         11,
         73,
         94,
@@ -184,13 +97,39 @@
     },
     {
       "rank": 2,
-      "building_idx": 1135,
-      "coordinates": "31.751270,34.995009",
-      "lat": 31.751270054048646,
-      "lon": 34.995009210834155,
+      "building_idx": 249,
+      "coordinates": "31.752326,34.995164",
+      "lat": 31.752325705305505,
+      "lon": 34.99516351582357,
       "newly_covered_buildings": 24,
       "newly_covered_people_est": 168,
       "covered_building_indices": [
+        54,
+        55,
+        143,
+        146,
+        249,
+        259,
+        323,
+        335,
+        416,
+        529,
+        533,
+        605,
+        693,
+        700,
+        766,
+        856,
+        889,
+        910,
+        921,
+        1018,
+        1033,
+        1135,
+        1161,
+        1187
+      ],
+      "marginal_covered_building_indices": [
         54,
         55,
         143,
@@ -219,13 +158,36 @@
     },
     {
       "rank": 3,
-      "building_idx": 896,
-      "coordinates": "31.753224,34.993722",
-      "lat": 31.753224152533193,
-      "lon": 34.99372159687807,
+      "building_idx": 302,
+      "coordinates": "31.753679,34.993262",
+      "lat": 31.75367860561212,
+      "lon": 34.993262384979516,
       "newly_covered_buildings": 21,
       "newly_covered_people_est": 147,
       "covered_building_indices": [
+        302,
+        371,
+        420,
+        511,
+        554,
+        583,
+        608,
+        611,
+        628,
+        684,
+        707,
+        720,
+        761,
+        808,
+        839,
+        868,
+        896,
+        1075,
+        1150,
+        1159,
+        1176
+      ],
+      "marginal_covered_building_indices": [
         302,
         371,
         420,
@@ -278,6 +240,28 @@
         1276,
         1297,
         1344
+      ],
+      "marginal_covered_building_indices": [
+        427,
+        446,
+        525,
+        590,
+        603,
+        642,
+        658,
+        697,
+        753,
+        832,
+        951,
+        955,
+        979,
+        1037,
+        1111,
+        1141,
+        1144,
+        1276,
+        1297,
+        1344
       ]
     },
     {
@@ -307,42 +291,34 @@
         1278,
         1300,
         1335
+      ],
+      "marginal_covered_building_indices": [
+        199,
+        224,
+        384,
+        414,
+        482,
+        659,
+        784,
+        877,
+        980,
+        987,
+        1172,
+        1196,
+        1253,
+        1268,
+        1270,
+        1278,
+        1300,
+        1335
       ]
     },
     {
       "rank": 6,
-      "building_idx": 1145,
-      "coordinates": "31.744025,34.977410",
-      "lat": 31.74402541553272,
-      "lon": 34.977409859312374,
-      "newly_covered_buildings": 17,
-      "newly_covered_people_est": 119,
-      "covered_building_indices": [
-        142,
-        193,
-        220,
-        356,
-        405,
-        439,
-        458,
-        569,
-        601,
-        663,
-        670,
-        844,
-        1078,
-        1145,
-        1148,
-        1212,
-        1291
-      ]
-    },
-    {
-      "rank": 7,
-      "building_idx": 1198,
-      "coordinates": "31.748024,34.986695",
-      "lat": 31.748023580904068,
-      "lon": 34.98669494489799,
+      "building_idx": 24,
+      "coordinates": "31.748305,34.988716",
+      "lat": 31.748304811383615,
+      "lon": 34.9887159329762,
       "newly_covered_buildings": 17,
       "newly_covered_people_est": 119,
       "covered_building_indices": [
@@ -363,6 +339,72 @@
         1067,
         1155,
         1198
+      ],
+      "marginal_covered_building_indices": [
+        24,
+        113,
+        225,
+        343,
+        459,
+        461,
+        471,
+        712,
+        811,
+        846,
+        849,
+        925,
+        1002,
+        1015,
+        1067,
+        1155,
+        1198
+      ]
+    },
+    {
+      "rank": 7,
+      "building_idx": 142,
+      "coordinates": "31.743653,34.977381",
+      "lat": 31.743653487611383,
+      "lon": 34.97738106776822,
+      "newly_covered_buildings": 17,
+      "newly_covered_people_est": 119,
+      "covered_building_indices": [
+        142,
+        193,
+        220,
+        356,
+        405,
+        439,
+        458,
+        569,
+        601,
+        663,
+        670,
+        844,
+        1078,
+        1145,
+        1148,
+        1212,
+        1291
+      ],
+      "marginal_covered_building_indices": [
+        142,
+        193,
+        220,
+        356,
+        405,
+        439,
+        458,
+        569,
+        601,
+        663,
+        670,
+        844,
+        1078,
+        1145,
+        1148,
+        1212,
+        1291
       ]
     },
     {
@@ -391,82 +433,29 @@
         1320,
         1336,
         1341
+      ],
+      "marginal_covered_building_indices": [
+        27,
+        75,
+        158,
+        269,
+        376,
+        421,
+        477,
+        553,
+        662,
+        738,
+        932,
+        1016,
+        1186,
+        1266,
+        1320,
+        1336,
+        1341
       ]
     },
     {
       "rank": 9,
-      "building_idx": 361,
-      "coordinates": "31.742238,34.978512",
-      "lat": 31.742237896948456,
-      "lon": 34.97851162572426,
-      "newly_covered_buildings": 13,
-      "newly_covered_people_est": 91,
-      "covered_building_indices": [
-        152,
-        361,
-        466,
-        736,
-        814,
-        815,
-        1023,
-        1095,
-        1119,
-        1121,
-        1146,
-        1238,
-        1282
-      ]
-    },
-    {
-      "rank": 10,
-      "building_idx": 444,
-      "coordinates": "31.742559,34.977152",
-      "lat": 31.742559019589006,
-      "lon": 34.97715161267928,
-      "newly_covered_buildings": 13,
-      "newly_covered_people_est": 91,
-      "covered_building_indices": [
-        201,
-        204,
-        444,
-        462,
-        518,
-        549,
-        669,
-        813,
-        863,
-        1028,
-        1036,
-        1114,
-        1192
-      ]
-    },
-    {
-      "rank": 11,
-      "building_idx": 1079,
-      "coordinates": "31.736531,34.982107",
-      "lat": 31.736530887548618,
-      "lon": 34.98210652784328,
-      "newly_covered_buildings": 13,
-      "newly_covered_people_est": 91,
-      "covered_building_indices": [
-        160,
-        671,
-        746,
-        781,
-        801,
-        923,
-        981,
-        983,
-        1046,
-        1058,
-        1079,
-        1096,
-        1178
-      ]
-    },
-    {
-      "rank": 12,
       "building_idx": 70,
       "coordinates": "31.738267,34.978342",
       "lat": 31.73826707377488,
@@ -487,6 +476,138 @@
         1209,
         1301,
         1329
+      ],
+      "marginal_covered_building_indices": [
+        70,
+        258,
+        673,
+        683,
+        768,
+        902,
+        967,
+        1092,
+        1127,
+        1184,
+        1209,
+        1301,
+        1329
+      ]
+    },
+    {
+      "rank": 10,
+      "building_idx": 152,
+      "coordinates": "31.741509,34.978523",
+      "lat": 31.741508954972524,
+      "lon": 34.97852322591367,
+      "newly_covered_buildings": 13,
+      "newly_covered_people_est": 91,
+      "covered_building_indices": [
+        152,
+        361,
+        466,
+        736,
+        814,
+        815,
+        1023,
+        1095,
+        1119,
+        1121,
+        1146,
+        1238,
+        1282
+      ],
+      "marginal_covered_building_indices": [
+        152,
+        361,
+        466,
+        736,
+        814,
+        815,
+        1023,
+        1095,
+        1119,
+        1121,
+        1146,
+        1238,
+        1282
+      ]
+    },
+    {
+      "rank": 11,
+      "building_idx": 160,
+      "coordinates": "31.736231,34.982716",
+      "lat": 31.736231128234277,
+      "lon": 34.982716188876424,
+      "newly_covered_buildings": 13,
+      "newly_covered_people_est": 91,
+      "covered_building_indices": [
+        160,
+        671,
+        746,
+        781,
+        801,
+        923,
+        981,
+        983,
+        1046,
+        1058,
+        1079,
+        1096,
+        1178
+      ],
+      "marginal_covered_building_indices": [
+        160,
+        671,
+        746,
+        781,
+        801,
+        923,
+        981,
+        983,
+        1046,
+        1058,
+        1079,
+        1096,
+        1178
+      ]
+    },
+    {
+      "rank": 12,
+      "building_idx": 201,
+      "coordinates": "31.742924,34.978065",
+      "lat": 31.742924432010366,
+      "lon": 34.9780648391205,
+      "newly_covered_buildings": 13,
+      "newly_covered_people_est": 91,
+      "covered_building_indices": [
+        201,
+        204,
+        444,
+        462,
+        518,
+        549,
+        669,
+        813,
+        863,
+        1028,
+        1036,
+        1114,
+        1192
+      ],
+      "marginal_covered_building_indices": [
+        201,
+        204,
+        444,
+        462,
+        518,
+        549,
+        669,
+        813,
+        863,
+        1028,
+        1036,
+        1114,
+        1192
       ]
     },
     {
@@ -511,17 +632,46 @@
         953,
         990,
         1256
+      ],
+      "marginal_covered_building_indices": [
+        107,
+        188,
+        311,
+        453,
+        487,
+        509,
+        555,
+        602,
+        635,
+        866,
+        953,
+        990,
+        1256
       ]
     },
     {
       "rank": 14,
-      "building_idx": 743,
-      "coordinates": "31.752118,34.989080",
-      "lat": 31.752118450196424,
-      "lon": 34.989080456752,
+      "building_idx": 16,
+      "coordinates": "31.752263,34.988568",
+      "lat": 31.752263255457713,
+      "lon": 34.9885683368347,
       "newly_covered_buildings": 12,
       "newly_covered_people_est": 84,
       "covered_building_indices": [
+        16,
+        336,
+        500,
+        716,
+        743,
+        825,
+        928,
+        958,
+        1005,
+        1017,
+        1242,
+        1257
+      ],
+      "marginal_covered_building_indices": [
         16,
         336,
         500,
@@ -538,13 +688,27 @@
     },
     {
       "rank": 15,
-      "building_idx": 886,
-      "coordinates": "31.751820,34.981974",
-      "lat": 31.751819557410197,
-      "lon": 34.981973854240564,
+      "building_idx": 131,
+      "coordinates": "31.752041,34.981909",
+      "lat": 31.752040916196208,
+      "lon": 34.98190877213388,
       "newly_covered_buildings": 12,
       "newly_covered_people_est": 84,
       "covered_building_indices": [
+        88,
+        131,
+        153,
+        327,
+        375,
+        423,
+        568,
+        742,
+        886,
+        913,
+        936,
+        1202
+      ],
+      "marginal_covered_building_indices": [
         88,
         131,
         153,
@@ -561,13 +725,27 @@
     },
     {
       "rank": 16,
-      "building_idx": 650,
-      "coordinates": "31.754010,34.991519",
-      "lat": 31.754009617266814,
-      "lon": 34.991519269032615,
+      "building_idx": 205,
+      "coordinates": "31.753370,34.990895",
+      "lat": 31.75337021295637,
+      "lon": 34.9908951582448,
       "newly_covered_buildings": 12,
       "newly_covered_people_est": 84,
       "covered_building_indices": [
+        205,
+        235,
+        237,
+        244,
+        246,
+        271,
+        650,
+        1125,
+        1236,
+        1296,
+        1299,
+        1327
+      ],
+      "marginal_covered_building_indices": [
         205,
         235,
         237,
@@ -603,58 +781,28 @@
         1098,
         1179,
         1229
+      ],
+      "marginal_covered_building_indices": [
+        64,
+        69,
+        168,
+        170,
+        190,
+        272,
+        524,
+        633,
+        648,
+        1098,
+        1179,
+        1229
       ]
     },
     {
       "rank": 18,
-      "building_idx": 488,
-      "coordinates": "31.743249,34.978191",
-      "lat": 31.74324880218635,
-      "lon": 34.97819124423702,
-      "newly_covered_buildings": 11,
-      "newly_covered_people_est": 77,
-      "covered_building_indices": [
-        33,
-        173,
-        394,
-        488,
-        661,
-        821,
-        865,
-        993,
-        1086,
-        1110,
-        1280
-      ]
-    },
-    {
-      "rank": 19,
-      "building_idx": 41,
-      "coordinates": "31.743583,34.974990",
-      "lat": 31.743582930047648,
-      "lon": 34.97498961177864,
-      "newly_covered_buildings": 11,
-      "newly_covered_people_est": 77,
-      "covered_building_indices": [
-        41,
-        195,
-        435,
-        479,
-        582,
-        666,
-        760,
-        797,
-        1100,
-        1143,
-        1285
-      ]
-    },
-    {
-      "rank": 20,
-      "building_idx": 721,
-      "coordinates": "31.751335,34.993941",
-      "lat": 31.75133485126252,
-      "lon": 34.99394076283245,
+      "building_idx": 18,
+      "coordinates": "31.751580,34.992444",
+      "lat": 31.751579661699715,
+      "lon": 34.99244422163854,
       "newly_covered_buildings": 11,
       "newly_covered_people_est": 77,
       "covered_building_indices": [
@@ -669,54 +817,23 @@
         978,
         1054,
         1345
+      ],
+      "marginal_covered_building_indices": [
+        18,
+        167,
+        197,
+        330,
+        350,
+        721,
+        937,
+        973,
+        978,
+        1054,
+        1345
       ]
     },
     {
-      "rank": 21,
-      "building_idx": 331,
-      "coordinates": "31.749534,34.996210",
-      "lat": 31.749534219362584,
-      "lon": 34.996209555958984,
-      "newly_covered_buildings": 11,
-      "newly_covered_people_est": 77,
-      "covered_building_indices": [
-        314,
-        331,
-        429,
-        718,
-        722,
-        1052,
-        1126,
-        1167,
-        1191,
-        1219,
-        1231
-      ]
-    },
-    {
-      "rank": 22,
-      "building_idx": 548,
-      "coordinates": "31.744888,34.977533",
-      "lat": 31.744888271959173,
-      "lon": 34.97753277219854,
-      "newly_covered_buildings": 11,
-      "newly_covered_people_est": 77,
-      "covered_building_indices": [
-        106,
-        166,
-        407,
-        447,
-        470,
-        481,
-        548,
-        1168,
-        1194,
-        1217,
-        1261
-      ]
-    },
-    {
-      "rank": 23,
+      "rank": 19,
       "building_idx": 19,
       "coordinates": "31.750990,34.989012",
       "lat": 31.75098955617061,
@@ -735,56 +852,167 @@
         918,
         922,
         1222
+      ],
+      "marginal_covered_building_indices": [
+        19,
+        172,
+        637,
+        696,
+        699,
+        764,
+        780,
+        901,
+        918,
+        922,
+        1222
+      ]
+    },
+    {
+      "rank": 20,
+      "building_idx": 33,
+      "coordinates": "31.743035,34.978880",
+      "lat": 31.743034556943968,
+      "lon": 34.97887951850639,
+      "newly_covered_buildings": 11,
+      "newly_covered_people_est": 77,
+      "covered_building_indices": [
+        33,
+        173,
+        394,
+        488,
+        661,
+        821,
+        865,
+        993,
+        1086,
+        1110,
+        1280
+      ],
+      "marginal_covered_building_indices": [
+        33,
+        173,
+        394,
+        488,
+        661,
+        821,
+        865,
+        993,
+        1086,
+        1110,
+        1280
+      ]
+    },
+    {
+      "rank": 21,
+      "building_idx": 41,
+      "coordinates": "31.743583,34.974990",
+      "lat": 31.743582930047648,
+      "lon": 34.97498961177864,
+      "newly_covered_buildings": 11,
+      "newly_covered_people_est": 77,
+      "covered_building_indices": [
+        41,
+        195,
+        435,
+        479,
+        582,
+        666,
+        760,
+        797,
+        1100,
+        1143,
+        1285
+      ],
+      "marginal_covered_building_indices": [
+        41,
+        195,
+        435,
+        479,
+        582,
+        666,
+        760,
+        797,
+        1100,
+        1143,
+        1285
+      ]
+    },
+    {
+      "rank": 22,
+      "building_idx": 314,
+      "coordinates": "31.749035,34.996585",
+      "lat": 31.749035274821736,
+      "lon": 34.99658463464539,
+      "newly_covered_buildings": 11,
+      "newly_covered_people_est": 77,
+      "covered_building_indices": [
+        314,
+        331,
+        429,
+        718,
+        722,
+        1052,
+        1126,
+        1167,
+        1191,
+        1219,
+        1231
+      ],
+      "marginal_covered_building_indices": [
+        314,
+        331,
+        429,
+        718,
+        722,
+        1052,
+        1126,
+        1167,
+        1191,
+        1219,
+        1231
+      ]
+    },
+    {
+      "rank": 23,
+      "building_idx": 447,
+      "coordinates": "31.745203,34.977485",
+      "lat": 31.74520342333011,
+      "lon": 34.977484632471295,
+      "newly_covered_buildings": 11,
+      "newly_covered_people_est": 77,
+      "covered_building_indices": [
+        106,
+        166,
+        407,
+        447,
+        470,
+        481,
+        548,
+        1168,
+        1194,
+        1217,
+        1261
+      ],
+      "marginal_covered_building_indices": [
+        106,
+        166,
+        407,
+        447,
+        470,
+        481,
+        548,
+        1168,
+        1194,
+        1217,
+        1261
       ]
     },
     {
       "rank": 24,
-      "building_idx": 1090,
-      "coordinates": "31.743235,34.975425",
-      "lat": 31.74323464222589,
-      "lon": 34.975424779588096,
-      "newly_covered_buildings": 10,
-      "newly_covered_people_est": 70,
-      "covered_building_indices": [
-        185,
-        349,
-        785,
-        853,
-        1065,
-        1082,
-        1090,
-        1104,
-        1115,
-        1273
-      ]
-    },
-    {
-      "rank": 25,
-      "building_idx": 1195,
-      "coordinates": "31.739084,34.977058",
-      "lat": 31.739083570219638,
-      "lon": 34.977058345199985,
-      "newly_covered_buildings": 10,
-      "newly_covered_people_est": 70,
-      "covered_building_indices": [
-        77,
-        216,
-        417,
-        501,
-        573,
-        991,
-        992,
-        999,
-        1195,
-        1317
-      ]
-    },
-    {
-      "rank": 26,
-      "building_idx": 292,
-      "coordinates": "31.747934,34.985935",
-      "lat": 31.747934245800565,
-      "lon": 34.98593514876094,
+      "building_idx": 3,
+      "coordinates": "31.747692,34.985350",
+      "lat": 31.747692308666796,
+      "lon": 34.9853500997152,
       "newly_covered_buildings": 10,
       "newly_covered_people_est": 70,
       "covered_building_indices": [
@@ -798,14 +1026,26 @@
         855,
         1174,
         1233
+      ],
+      "marginal_covered_building_indices": [
+        3,
+        47,
+        85,
+        133,
+        262,
+        292,
+        475,
+        855,
+        1174,
+        1233
       ]
     },
     {
-      "rank": 27,
-      "building_idx": 882,
-      "coordinates": "31.750098,34.996621",
-      "lat": 31.75009756064187,
-      "lon": 34.9966210461864,
+      "rank": 25,
+      "building_idx": 51,
+      "coordinates": "31.750906,34.996178",
+      "lat": 31.750906157791,
+      "lon": 34.99617780489853,
       "newly_covered_buildings": 10,
       "newly_covered_people_est": 70,
       "covered_building_indices": [
@@ -819,14 +1059,59 @@
         917,
         920,
         950
+      ],
+      "marginal_covered_building_indices": [
+        51,
+        177,
+        186,
+        399,
+        758,
+        882,
+        916,
+        917,
+        920,
+        950
       ]
     },
     {
-      "rank": 28,
-      "building_idx": 1009,
-      "coordinates": "31.750205,34.992021",
-      "lat": 31.750204736500688,
-      "lon": 34.99202062028913,
+      "rank": 26,
+      "building_idx": 77,
+      "coordinates": "31.738876,34.975741",
+      "lat": 31.73887628451647,
+      "lon": 34.97574055866777,
+      "newly_covered_buildings": 10,
+      "newly_covered_people_est": 70,
+      "covered_building_indices": [
+        77,
+        216,
+        417,
+        501,
+        573,
+        991,
+        992,
+        999,
+        1195,
+        1317
+      ],
+      "marginal_covered_building_indices": [
+        77,
+        216,
+        417,
+        501,
+        573,
+        991,
+        992,
+        999,
+        1195,
+        1317
+      ]
+    },
+    {
+      "rank": 27,
+      "building_idx": 105,
+      "coordinates": "31.749971,34.992513",
+      "lat": 31.74997114126904,
+      "lon": 34.99251347056792,
       "newly_covered_buildings": 10,
       "newly_covered_people_est": 70,
       "covered_building_indices": [
@@ -840,6 +1125,51 @@
         823,
         831,
         1009
+      ],
+      "marginal_covered_building_indices": [
+        105,
+        198,
+        241,
+        390,
+        521,
+        644,
+        723,
+        823,
+        831,
+        1009
+      ]
+    },
+    {
+      "rank": 28,
+      "building_idx": 185,
+      "coordinates": "31.743262,34.975101",
+      "lat": 31.743262395938604,
+      "lon": 34.975101288182884,
+      "newly_covered_buildings": 10,
+      "newly_covered_people_est": 70,
+      "covered_building_indices": [
+        185,
+        349,
+        785,
+        853,
+        1065,
+        1082,
+        1090,
+        1104,
+        1115,
+        1273
+      ],
+      "marginal_covered_building_indices": [
+        185,
+        349,
+        785,
+        853,
+        1065,
+        1082,
+        1090,
+        1104,
+        1115,
+        1273
       ]
     },
     {
@@ -861,70 +1191,22 @@
         717,
         837,
         997
+      ],
+      "marginal_covered_building_indices": [
+        111,
+        209,
+        286,
+        296,
+        329,
+        443,
+        579,
+        717,
+        837,
+        997
       ]
     },
     {
       "rank": 30,
-      "building_idx": 751,
-      "coordinates": "31.743320,34.975924",
-      "lat": 31.743320203709104,
-      "lon": 34.97592425905356,
-      "newly_covered_buildings": 9,
-      "newly_covered_people_est": 63,
-      "covered_building_indices": [
-        483,
-        486,
-        527,
-        751,
-        767,
-        1051,
-        1142,
-        1181,
-        1338
-      ]
-    },
-    {
-      "rank": 31,
-      "building_idx": 806,
-      "coordinates": "31.743278,34.976782",
-      "lat": 31.7432778730025,
-      "lon": 34.9767823589998,
-      "newly_covered_buildings": 9,
-      "newly_covered_people_est": 63,
-      "covered_building_indices": [
-        169,
-        363,
-        442,
-        607,
-        741,
-        795,
-        806,
-        1087,
-        1094
-      ]
-    },
-    {
-      "rank": 32,
-      "building_idx": 947,
-      "coordinates": "31.751807,34.993031",
-      "lat": 31.751806570596173,
-      "lon": 34.99303127287491,
-      "newly_covered_buildings": 9,
-      "newly_covered_people_est": 63,
-      "covered_building_indices": [
-        44,
-        45,
-        71,
-        165,
-        232,
-        584,
-        689,
-        931,
-        947
-      ]
-    },
-    {
-      "rank": 33,
       "building_idx": 39,
       "coordinates": "31.751520,34.989388",
       "lat": 31.751519528622303,
@@ -941,36 +1223,160 @@
         655,
         706,
         790
+      ],
+      "marginal_covered_building_indices": [
+        39,
+        135,
+        366,
+        539,
+        587,
+        646,
+        655,
+        706,
+        790
+      ]
+    },
+    {
+      "rank": 31,
+      "building_idx": 44,
+      "coordinates": "31.751977,34.993410",
+      "lat": 31.751977047414687,
+      "lon": 34.993410102888554,
+      "newly_covered_buildings": 9,
+      "newly_covered_people_est": 63,
+      "covered_building_indices": [
+        44,
+        45,
+        71,
+        165,
+        232,
+        584,
+        689,
+        931,
+        947
+      ],
+      "marginal_covered_building_indices": [
+        44,
+        45,
+        71,
+        165,
+        232,
+        584,
+        689,
+        931,
+        947
+      ]
+    },
+    {
+      "rank": 32,
+      "building_idx": 169,
+      "coordinates": "31.743003,34.976429",
+      "lat": 31.743002532923036,
+      "lon": 34.97642870676015,
+      "newly_covered_buildings": 9,
+      "newly_covered_people_est": 63,
+      "covered_building_indices": [
+        169,
+        363,
+        442,
+        607,
+        741,
+        795,
+        806,
+        1087,
+        1094
+      ],
+      "marginal_covered_building_indices": [
+        169,
+        363,
+        442,
+        607,
+        741,
+        795,
+        806,
+        1087,
+        1094
+      ]
+    },
+    {
+      "rank": 33,
+      "building_idx": 483,
+      "coordinates": "31.743609,34.975437",
+      "lat": 31.743608803722616,
+      "lon": 34.975437358730595,
+      "newly_covered_buildings": 9,
+      "newly_covered_people_est": 63,
+      "covered_building_indices": [
+        483,
+        486,
+        527,
+        751,
+        767,
+        1051,
+        1142,
+        1181,
+        1338
+      ],
+      "marginal_covered_building_indices": [
+        483,
+        486,
+        527,
+        751,
+        767,
+        1051,
+        1142,
+        1181,
+        1338
       ]
     },
     {
       "rank": 34,
-      "building_idx": 747,
-      "coordinates": "31.749708,34.995735",
-      "lat": 31.74970775509454,
-      "lon": 34.99573545008364,
+      "building_idx": 2,
+      "coordinates": "31.746351,34.993657",
+      "lat": 31.746350659740603,
+      "lon": 34.993657138629644,
       "newly_covered_buildings": 8,
       "newly_covered_people_est": 56,
       "covered_building_indices": [
-        264,
-        266,
-        454,
-        540,
-        747,
-        824,
-        1120,
-        1215
+        2,
+        76,
+        304,
+        315,
+        512,
+        878,
+        1059,
+        1346
+      ],
+      "marginal_covered_building_indices": [
+        2,
+        76,
+        304,
+        315,
+        512,
+        878,
+        1059,
+        1346
       ]
     },
     {
       "rank": 35,
-      "building_idx": 1258,
-      "coordinates": "31.747682,34.979608",
-      "lat": 31.747682010358965,
-      "lon": 34.97960764950664,
+      "building_idx": 28,
+      "coordinates": "31.747800,34.980390",
+      "lat": 31.747800295442897,
+      "lon": 34.980390222506095,
       "newly_covered_buildings": 8,
       "newly_covered_people_est": 56,
       "covered_building_indices": [
+        28,
+        227,
+        319,
+        374,
+        422,
+        484,
+        915,
+        1258
+      ],
+      "marginal_covered_building_indices": [
         28,
         227,
         319,
@@ -983,13 +1389,23 @@
     },
     {
       "rank": 36,
-      "building_idx": 888,
-      "coordinates": "31.748403,34.990439",
-      "lat": 31.748402666649447,
-      "lon": 34.99043858051109,
+      "building_idx": 126,
+      "coordinates": "31.748791,34.990275",
+      "lat": 31.748791329104627,
+      "lon": 34.9902748821509,
       "newly_covered_buildings": 8,
       "newly_covered_people_est": 56,
       "covered_building_indices": [
+        126,
+        309,
+        681,
+        864,
+        888,
+        1053,
+        1165,
+        1259
+      ],
+      "marginal_covered_building_indices": [
         126,
         309,
         681,
@@ -1002,13 +1418,23 @@
     },
     {
       "rank": 37,
-      "building_idx": 906,
-      "coordinates": "31.747938,34.979133",
-      "lat": 31.747937753371875,
-      "lon": 34.97913255767099,
+      "building_idx": 147,
+      "coordinates": "31.748049,34.979813",
+      "lat": 31.74804898329626,
+      "lon": 34.97981274478904,
       "newly_covered_buildings": 8,
       "newly_covered_people_est": 56,
       "covered_building_indices": [
+        147,
+        202,
+        284,
+        450,
+        735,
+        809,
+        906,
+        1188
+      ],
+      "marginal_covered_building_indices": [
         147,
         202,
         284,
@@ -1021,44 +1447,6 @@
     },
     {
       "rank": 38,
-      "building_idx": 1059,
-      "coordinates": "31.745786,34.993832",
-      "lat": 31.745785552059676,
-      "lon": 34.99383242764485,
-      "newly_covered_buildings": 8,
-      "newly_covered_people_est": 56,
-      "covered_building_indices": [
-        2,
-        76,
-        304,
-        315,
-        512,
-        878,
-        1059,
-        1346
-      ]
-    },
-    {
-      "rank": 39,
-      "building_idx": 441,
-      "coordinates": "31.744341,34.993254",
-      "lat": 31.744341251375012,
-      "lon": 34.99325424545292,
-      "newly_covered_buildings": 8,
-      "newly_covered_people_est": 56,
-      "covered_building_indices": [
-        341,
-        441,
-        614,
-        789,
-        1039,
-        1045,
-        1071,
-        1265
-      ]
-    },
-    {
-      "rank": 40,
       "building_idx": 242,
       "coordinates": "31.753846,34.987452",
       "lat": 31.75384561520431,
@@ -1074,53 +1462,95 @@
         799,
         1208,
         1221
+      ],
+      "marginal_covered_building_indices": [
+        242,
+        395,
+        415,
+        433,
+        774,
+        799,
+        1208,
+        1221
+      ]
+    },
+    {
+      "rank": 39,
+      "building_idx": 264,
+      "coordinates": "31.750011,34.995103",
+      "lat": 31.75001131950823,
+      "lon": 34.99510261118033,
+      "newly_covered_buildings": 8,
+      "newly_covered_people_est": 56,
+      "covered_building_indices": [
+        264,
+        266,
+        454,
+        540,
+        747,
+        824,
+        1120,
+        1215
+      ],
+      "marginal_covered_building_indices": [
+        264,
+        266,
+        454,
+        540,
+        747,
+        824,
+        1120,
+        1215
+      ]
+    },
+    {
+      "rank": 40,
+      "building_idx": 441,
+      "coordinates": "31.744341,34.993254",
+      "lat": 31.744341251375012,
+      "lon": 34.99325424545292,
+      "newly_covered_buildings": 8,
+      "newly_covered_people_est": 56,
+      "covered_building_indices": [
+        341,
+        441,
+        614,
+        789,
+        1039,
+        1045,
+        1071,
+        1265
+      ],
+      "marginal_covered_building_indices": [
+        341,
+        441,
+        614,
+        789,
+        1039,
+        1045,
+        1071,
+        1265
       ]
     },
     {
       "rank": 41,
-      "building_idx": 464,
-      "coordinates": "31.742471,34.976377",
-      "lat": 31.742471103830297,
-      "lon": 34.97637674564556,
+      "building_idx": 46,
+      "coordinates": "31.751095,34.988429",
+      "lat": 31.751094852758218,
+      "lon": 34.988429093709236,
       "newly_covered_buildings": 7,
       "newly_covered_people_est": 49,
       "covered_building_indices": [
-        352,
-        464,
-        630,
-        656,
-        739,
-        798,
-        914
-      ]
-    },
-    {
-      "rank": 42,
-      "building_idx": 772,
-      "coordinates": "31.736323,34.981589",
-      "lat": 31.73632273857674,
-      "lon": 34.98158867503566,
-      "newly_covered_buildings": 7,
-      "newly_covered_people_est": 49,
-      "covered_building_indices": [
-        217,
-        219,
-        392,
-        772,
-        1057,
-        1074,
-        1260
-      ]
-    },
-    {
-      "rank": 43,
-      "building_idx": 842,
-      "coordinates": "31.752123,34.988374",
-      "lat": 31.75212263648449,
-      "lon": 34.98837439716495,
-      "newly_covered_buildings": 7,
-      "newly_covered_people_est": 49,
-      "covered_building_indices": [
+        46,
+        325,
+        508,
+        687,
+        829,
+        842,
+        959,
+        1149
+      ],
+      "marginal_covered_building_indices": [
         46,
         325,
         687,
@@ -1131,83 +1561,38 @@
       ]
     },
     {
-      "rank": 44,
-      "building_idx": 1030,
-      "coordinates": "31.744535,34.976278",
-      "lat": 31.74453511616225,
-      "lon": 34.97627766285754,
+      "rank": 42,
+      "building_idx": 68,
+      "coordinates": "31.736007,34.977513",
+      "lat": 31.73600724278252,
+      "lon": 34.97751263413962,
       "newly_covered_buildings": 7,
       "newly_covered_people_est": 49,
       "covered_building_indices": [
-        136,
-        222,
-        977,
-        1030,
-        1106,
-        1107,
-        1132
+        68,
+        215,
+        251,
+        1048,
+        1097,
+        1170,
+        1262
+      ],
+      "marginal_covered_building_indices": [
+        68,
+        215,
+        251,
+        1048,
+        1097,
+        1170,
+        1262
       ]
     },
     {
-      "rank": 45,
-      "building_idx": 281,
-      "coordinates": "31.709496,35.001672",
-      "lat": 31.709496125968727,
-      "lon": 35.00167247054951,
-      "newly_covered_buildings": 7,
-      "newly_covered_people_est": 49,
-      "covered_building_indices": [
-        281,
-        898,
-        948,
-        1008,
-        1105,
-        1255,
-        1295
-      ]
-    },
-    {
-      "rank": 46,
-      "building_idx": 879,
-      "coordinates": "31.745410,34.989530",
-      "lat": 31.745410260410615,
-      "lon": 34.98953033133223,
-      "newly_covered_buildings": 7,
-      "newly_covered_people_est": 49,
-      "covered_building_indices": [
-        300,
-        364,
-        702,
-        757,
-        879,
-        961,
-        1182
-      ]
-    },
-    {
-      "rank": 47,
-      "building_idx": 184,
-      "coordinates": "31.738540,34.985250",
-      "lat": 31.738539550614405,
-      "lon": 34.98525045542428,
-      "newly_covered_buildings": 7,
-      "newly_covered_people_est": 49,
-      "covered_building_indices": [
-        184,
-        369,
-        411,
-        526,
-        938,
-        1085,
-        1158
-      ]
-    },
-    {
-      "rank": 48,
-      "building_idx": 196,
-      "coordinates": "31.740776,34.993620",
-      "lat": 31.74077645301145,
-      "lon": 34.9936201702652,
+      "rank": 43,
+      "building_idx": 80,
+      "coordinates": "31.742126,34.994256",
+      "lat": 31.742126221033335,
+      "lon": 34.994255932745496,
       "newly_covered_buildings": 7,
       "newly_covered_people_est": 49,
       "covered_building_indices": [
@@ -1218,10 +1603,19 @@
         895,
         1139,
         1189
+      ],
+      "marginal_covered_building_indices": [
+        80,
+        196,
+        452,
+        474,
+        895,
+        1139,
+        1189
       ]
     },
     {
-      "rank": 49,
+      "rank": 44,
       "building_idx": 157,
       "coordinates": "31.742345,34.987279",
       "lat": 31.742345202526998,
@@ -1236,49 +1630,185 @@
         651,
         1069,
         1103
+      ],
+      "marginal_covered_building_indices": [
+        157,
+        320,
+        449,
+        577,
+        651,
+        1069,
+        1103
+      ]
+    },
+    {
+      "rank": 45,
+      "building_idx": 184,
+      "coordinates": "31.738540,34.985250",
+      "lat": 31.738539550614405,
+      "lon": 34.98525045542428,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
+      "covered_building_indices": [
+        184,
+        369,
+        411,
+        526,
+        938,
+        1085,
+        1158
+      ],
+      "marginal_covered_building_indices": [
+        184,
+        369,
+        411,
+        526,
+        938,
+        1085,
+        1158
+      ]
+    },
+    {
+      "rank": 46,
+      "building_idx": 217,
+      "coordinates": "31.736568,34.981599",
+      "lat": 31.736568329312465,
+      "lon": 34.98159897218732,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
+      "covered_building_indices": [
+        217,
+        219,
+        392,
+        772,
+        1057,
+        1074,
+        1260
+      ],
+      "marginal_covered_building_indices": [
+        217,
+        219,
+        392,
+        772,
+        1057,
+        1074,
+        1260
+      ]
+    },
+    {
+      "rank": 47,
+      "building_idx": 281,
+      "coordinates": "31.709496,35.001672",
+      "lat": 31.709496125968727,
+      "lon": 35.00167247054951,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
+      "covered_building_indices": [
+        281,
+        898,
+        948,
+        1008,
+        1105,
+        1255,
+        1295
+      ],
+      "marginal_covered_building_indices": [
+        281,
+        898,
+        948,
+        1008,
+        1105,
+        1255,
+        1295
+      ]
+    },
+    {
+      "rank": 48,
+      "building_idx": 300,
+      "coordinates": "31.745617,34.989138",
+      "lat": 31.74561666011507,
+      "lon": 34.989138413669714,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
+      "covered_building_indices": [
+        300,
+        364,
+        702,
+        757,
+        879,
+        961,
+        1182
+      ],
+      "marginal_covered_building_indices": [
+        300,
+        364,
+        702,
+        757,
+        879,
+        961,
+        1182
+      ]
+    },
+    {
+      "rank": 49,
+      "building_idx": 352,
+      "coordinates": "31.742274,34.976863",
+      "lat": 31.74227447497284,
+      "lon": 34.976862606135334,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
+      "covered_building_indices": [
+        352,
+        464,
+        630,
+        656,
+        739,
+        798,
+        914
+      ],
+      "marginal_covered_building_indices": [
+        352,
+        464,
+        630,
+        656,
+        739,
+        798,
+        914
       ]
     },
     {
       "rank": 50,
-      "building_idx": 215,
-      "coordinates": "31.736508,34.977298",
-      "lat": 31.73650833880605,
-      "lon": 34.97729775112047,
+      "building_idx": 1030,
+      "coordinates": "31.744535,34.976278",
+      "lat": 31.74453511616225,
+      "lon": 34.97627766285754,
       "newly_covered_buildings": 7,
       "newly_covered_people_est": 49,
       "covered_building_indices": [
-        68,
-        215,
-        251,
-        1048,
-        1097,
-        1170,
-        1262
+        136,
+        222,
+        977,
+        1030,
+        1106,
+        1107,
+        1132
+      ],
+      "marginal_covered_building_indices": [
+        136,
+        222,
+        977,
+        1030,
+        1106,
+        1107,
+        1132
       ]
     },
     {
       "rank": 51,
-      "building_idx": 505,
-      "coordinates": "31.744273,34.977913",
-      "lat": 31.744273287917885,
-      "lon": 34.97791260832049,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        62,
-        505,
-        759,
-        803,
-        957,
-        1091
-      ]
-    },
-    {
-      "rank": 52,
-      "building_idx": 228,
-      "coordinates": "31.747522,34.988413",
-      "lat": 31.747522098688002,
-      "lon": 34.98841311199221,
+      "building_idx": 13,
+      "coordinates": "31.747195,34.987663",
+      "lat": 31.74719540646275,
+      "lon": 34.987662856446306,
       "newly_covered_buildings": 6,
       "newly_covered_people_est": 42,
       "covered_building_indices": [
@@ -1288,197 +1818,18 @@
         436,
         875,
         1164
+      ],
+      "marginal_covered_building_indices": [
+        13,
+        228,
+        279,
+        436,
+        875,
+        1164
       ]
     },
     {
-      "rank": 53,
-      "building_idx": 802,
-      "coordinates": "31.736947,34.981580",
-      "lat": 31.736946803194947,
-      "lon": 34.981579547540875,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        221,
-        223,
-        726,
-        775,
-        802,
-        1311
-      ]
-    },
-    {
-      "rank": 54,
-      "building_idx": 171,
-      "coordinates": "31.751746,34.982621",
-      "lat": 31.75174585170415,
-      "lon": 34.98262080609546,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        112,
-        171,
-        321,
-        498,
-        884,
-        1213
-      ]
-    },
-    {
-      "rank": 55,
-      "building_idx": 1183,
-      "coordinates": "31.737171,34.983781",
-      "lat": 31.737170646459486,
-      "lon": 34.98378092790866,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        162,
-        372,
-        679,
-        919,
-        1042,
-        1183
-      ]
-    },
-    {
-      "rank": 56,
-      "building_idx": 1342,
-      "coordinates": "31.742072,34.989118",
-      "lat": 31.74207170599268,
-      "lon": 34.98911761033185,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        261,
-        572,
-        677,
-        934,
-        952,
-        1342
-      ]
-    },
-    {
-      "rank": 57,
-      "building_idx": 48,
-      "coordinates": "31.747644,34.984592",
-      "lat": 31.747644481301542,
-      "lon": 34.984591808975175,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        48,
-        123,
-        207,
-        406,
-        532,
-        792
-      ]
-    },
-    {
-      "rank": 58,
-      "building_idx": 705,
-      "coordinates": "31.749436,34.987481",
-      "lat": 31.749436409069297,
-      "lon": 34.98748067209959,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        348,
-        588,
-        619,
-        705,
-        729,
-        942
-      ]
-    },
-    {
-      "rank": 59,
-      "building_idx": 119,
-      "coordinates": "31.750539,34.984658",
-      "lat": 31.750538678127253,
-      "lon": 34.98465824938077,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        119,
-        159,
-        367,
-        550,
-        597,
-        827
-      ]
-    },
-    {
-      "rank": 60,
-      "building_idx": 929,
-      "coordinates": "31.754453,34.996659",
-      "lat": 31.75445340611012,
-      "lon": 34.99665904077924,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        255,
-        303,
-        408,
-        929,
-        1025,
-        1290
-      ]
-    },
-    {
-      "rank": 61,
-      "building_idx": 42,
-      "coordinates": "31.755787,34.993875",
-      "lat": 31.75578676760494,
-      "lon": 34.99387535537151,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        42,
-        317,
-        393,
-        520,
-        685,
-        777
-      ]
-    },
-    {
-      "rank": 62,
-      "building_idx": 140,
-      "coordinates": "31.737037,34.994315",
-      "lat": 31.737037144606177,
-      "lon": 34.994315148860935,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        140,
-        472,
-        908,
-        1080,
-        1099,
-        1252
-      ]
-    },
-    {
-      "rank": 63,
-      "building_idx": 445,
-      "coordinates": "31.735951,34.979523",
-      "lat": 31.735950866713033,
-      "lon": 34.97952306156176,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
-      "covered_building_indices": [
-        97,
-        234,
-        445,
-        773,
-        984,
-        1177
-      ]
-    },
-    {
-      "rank": 64,
+      "rank": 52,
       "building_idx": 35,
       "coordinates": "31.746737,34.991338",
       "lat": 31.74673664778588,
@@ -1492,10 +1843,293 @@
         328,
         530,
         1243
+      ],
+      "marginal_covered_building_indices": [
+        35,
+        79,
+        187,
+        328,
+        530,
+        1243
       ]
     },
     {
-      "rank": 65,
+      "rank": 53,
+      "building_idx": 42,
+      "coordinates": "31.755787,34.993875",
+      "lat": 31.75578676760494,
+      "lon": 34.99387535537151,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        42,
+        317,
+        393,
+        520,
+        685,
+        777
+      ],
+      "marginal_covered_building_indices": [
+        42,
+        317,
+        393,
+        520,
+        685,
+        777
+      ]
+    },
+    {
+      "rank": 54,
+      "building_idx": 48,
+      "coordinates": "31.747644,34.984592",
+      "lat": 31.747644481301542,
+      "lon": 34.984591808975175,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        48,
+        123,
+        207,
+        406,
+        532,
+        792
+      ],
+      "marginal_covered_building_indices": [
+        48,
+        123,
+        207,
+        406,
+        532,
+        792
+      ]
+    },
+    {
+      "rank": 55,
+      "building_idx": 62,
+      "coordinates": "31.744507,34.978583",
+      "lat": 31.744506826794513,
+      "lon": 34.97858262433568,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        62,
+        505,
+        759,
+        803,
+        957,
+        1091
+      ],
+      "marginal_covered_building_indices": [
+        62,
+        505,
+        759,
+        803,
+        957,
+        1091
+      ]
+    },
+    {
+      "rank": 56,
+      "building_idx": 97,
+      "coordinates": "31.735724,34.979618",
+      "lat": 31.735723990620315,
+      "lon": 34.97961849215155,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        97,
+        234,
+        445,
+        773,
+        984,
+        1177
+      ],
+      "marginal_covered_building_indices": [
+        97,
+        234,
+        445,
+        773,
+        984,
+        1177
+      ]
+    },
+    {
+      "rank": 57,
+      "building_idx": 112,
+      "coordinates": "31.751389,34.981561",
+      "lat": 31.751388774213066,
+      "lon": 34.981561310401794,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        112,
+        171,
+        321,
+        498,
+        884,
+        1213
+      ],
+      "marginal_covered_building_indices": [
+        112,
+        171,
+        321,
+        498,
+        884,
+        1213
+      ]
+    },
+    {
+      "rank": 58,
+      "building_idx": 119,
+      "coordinates": "31.750539,34.984658",
+      "lat": 31.750538678127253,
+      "lon": 34.98465824938077,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        119,
+        159,
+        367,
+        550,
+        597,
+        827
+      ],
+      "marginal_covered_building_indices": [
+        119,
+        159,
+        367,
+        550,
+        597,
+        827
+      ]
+    },
+    {
+      "rank": 59,
+      "building_idx": 140,
+      "coordinates": "31.737037,34.994315",
+      "lat": 31.737037144606177,
+      "lon": 34.994315148860935,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        140,
+        472,
+        908,
+        1080,
+        1099,
+        1252
+      ],
+      "marginal_covered_building_indices": [
+        140,
+        472,
+        908,
+        1080,
+        1099,
+        1252
+      ]
+    },
+    {
+      "rank": 60,
+      "building_idx": 162,
+      "coordinates": "31.738081,34.983161",
+      "lat": 31.738080806053475,
+      "lon": 34.98316097404316,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        162,
+        372,
+        679,
+        919,
+        1042,
+        1183
+      ],
+      "marginal_covered_building_indices": [
+        162,
+        372,
+        679,
+        919,
+        1042,
+        1183
+      ]
+    },
+    {
+      "rank": 61,
+      "building_idx": 221,
+      "coordinates": "31.736981,34.980562",
+      "lat": 31.73698112978494,
+      "lon": 34.9805623330526,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        221,
+        223,
+        726,
+        775,
+        802,
+        1311
+      ],
+      "marginal_covered_building_indices": [
+        221,
+        223,
+        726,
+        775,
+        802,
+        1311
+      ]
+    },
+    {
+      "rank": 62,
+      "building_idx": 255,
+      "coordinates": "31.754243,34.996225",
+      "lat": 31.75424285834226,
+      "lon": 34.996225391064996,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        255,
+        303,
+        408,
+        929,
+        1025,
+        1290
+      ],
+      "marginal_covered_building_indices": [
+        255,
+        303,
+        408,
+        929,
+        1025,
+        1290
+      ]
+    },
+    {
+      "rank": 63,
+      "building_idx": 261,
+      "coordinates": "31.741397,34.989811",
+      "lat": 31.74139726197037,
+      "lon": 34.989810864093045,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        261,
+        572,
+        677,
+        934,
+        952,
+        1342
+      ],
+      "marginal_covered_building_indices": [
+        261,
+        572,
+        677,
+        934,
+        952,
+        1342
+      ]
+    },
+    {
+      "rank": 64,
       "building_idx": 499,
       "coordinates": "31.739659,34.996975",
       "lat": 31.739658535019124,
@@ -1509,42 +2143,44 @@
         1035,
         1109,
         1140
+      ],
+      "marginal_covered_building_indices": [
+        499,
+        818,
+        847,
+        1035,
+        1109,
+        1140
+      ]
+    },
+    {
+      "rank": 65,
+      "building_idx": 619,
+      "coordinates": "31.749902,34.987347",
+      "lat": 31.74990154948942,
+      "lon": 34.9873467338489,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        348,
+        588,
+        613,
+        619,
+        705,
+        729,
+        942
+      ],
+      "marginal_covered_building_indices": [
+        348,
+        588,
+        619,
+        705,
+        729,
+        942
       ]
     },
     {
       "rank": 66,
-      "building_idx": 497,
-      "coordinates": "31.744188,34.979031",
-      "lat": 31.744187560433737,
-      "lon": 34.97903138315161,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        497,
-        620,
-        1101,
-        1147,
-        1306
-      ]
-    },
-    {
-      "rank": 67,
-      "building_idx": 1325,
-      "coordinates": "31.742890,34.975907",
-      "lat": 31.742890161507734,
-      "lon": 34.975906713607344,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        109,
-        124,
-        148,
-        664,
-        1325
-      ]
-    },
-    {
-      "rank": 68,
       "building_idx": 29,
       "coordinates": "31.712088,35.000802",
       "lat": 31.712088198999602,
@@ -1557,30 +2193,44 @@
         622,
         1007,
         1157
+      ],
+      "marginal_covered_building_indices": [
+        29,
+        457,
+        622,
+        1007,
+        1157
       ]
     },
     {
-      "rank": 69,
-      "building_idx": 230,
-      "coordinates": "31.750670,34.995259",
-      "lat": 31.750670251996823,
-      "lon": 34.995258718680056,
+      "rank": 67,
+      "building_idx": 103,
+      "coordinates": "31.739881,34.983745",
+      "lat": 31.73988065860387,
+      "lon": 34.98374530197818,
       "newly_covered_buildings": 5,
       "newly_covered_people_est": 35,
       "covered_building_indices": [
-        230,
-        383,
-        617,
-        930,
-        1068
+        103,
+        203,
+        430,
+        971,
+        1043
+      ],
+      "marginal_covered_building_indices": [
+        103,
+        203,
+        430,
+        971,
+        1043
       ]
     },
     {
-      "rank": 70,
-      "building_idx": 373,
-      "coordinates": "31.744631,34.975007",
-      "lat": 31.74463054126344,
-      "lon": 34.97500748414424,
+      "rank": 68,
+      "building_idx": 104,
+      "coordinates": "31.745153,34.975438",
+      "lat": 31.745153385289314,
+      "lon": 34.97543797092434,
       "newly_covered_buildings": 5,
       "newly_covered_people_est": 35,
       "covered_building_indices": [
@@ -1589,90 +2239,63 @@
         373,
         631,
         826
+      ],
+      "marginal_covered_building_indices": [
+        104,
+        368,
+        373,
+        631,
+        826
+      ]
+    },
+    {
+      "rank": 69,
+      "building_idx": 109,
+      "coordinates": "31.742969,34.975474",
+      "lat": 31.742968581339937,
+      "lon": 34.97547404176321,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        109,
+        124,
+        148,
+        664,
+        1325
+      ],
+      "marginal_covered_building_indices": [
+        109,
+        124,
+        148,
+        664,
+        1325
+      ]
+    },
+    {
+      "rank": 70,
+      "building_idx": 117,
+      "coordinates": "31.754642,34.989404",
+      "lat": 31.754642023519864,
+      "lon": 34.989404261478256,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        117,
+        288,
+        290,
+        431,
+        1339
+      ],
+      "marginal_covered_building_indices": [
+        117,
+        288,
+        290,
+        431,
+        1339
       ]
     },
     {
       "rank": 71,
-      "building_idx": 776,
-      "coordinates": "31.736578,34.998463",
-      "lat": 31.736577660576362,
-      "lon": 34.99846277678256,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        236,
-        507,
-        776,
-        840,
-        970
-      ]
-    },
-    {
-      "rank": 72,
-      "building_idx": 490,
-      "coordinates": "31.744720,34.979054",
-      "lat": 31.744719731539636,
-      "lon": 34.9790544479401,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        138,
-        139,
-        386,
-        490,
-        585
-      ]
-    },
-    {
-      "rank": 73,
-      "building_idx": 1323,
-      "coordinates": "31.737050,34.984412",
-      "lat": 31.737050220901867,
-      "lon": 34.98441158994555,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        557,
-        954,
-        1193,
-        1230,
-        1323
-      ]
-    },
-    {
-      "rank": 74,
-      "building_idx": 437,
-      "coordinates": "31.743156,34.983484",
-      "lat": 31.74315615537454,
-      "lon": 34.983484429217725,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        437,
-        830,
-        927,
-        1084,
-        1237
-      ]
-    },
-    {
-      "rank": 75,
-      "building_idx": 545,
-      "coordinates": "31.738756,34.993768",
-      "lat": 31.73875645535409,
-      "lon": 34.99376833125194,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        127,
-        545,
-        858,
-        939,
-        1324
-      ]
-    },
-    {
-      "rank": 76,
       "building_idx": 120,
       "coordinates": "31.713807,34.989696",
       "lat": 31.713806968549086,
@@ -1685,90 +2308,178 @@
         389,
         645,
         725
+      ],
+      "marginal_covered_building_indices": [
+        120,
+        359,
+        389,
+        645,
+        725
+      ]
+    },
+    {
+      "rank": 72,
+      "building_idx": 127,
+      "coordinates": "31.738525,34.993742",
+      "lat": 31.738525261903447,
+      "lon": 34.99374174416063,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        127,
+        545,
+        858,
+        939,
+        1324
+      ],
+      "marginal_covered_building_indices": [
+        127,
+        545,
+        858,
+        939,
+        1324
+      ]
+    },
+    {
+      "rank": 73,
+      "building_idx": 134,
+      "coordinates": "31.750652,34.980336",
+      "lat": 31.750651569313487,
+      "lon": 34.98033610653385,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        122,
+        134,
+        391,
+        580,
+        1220
+      ],
+      "marginal_covered_building_indices": [
+        122,
+        134,
+        391,
+        580,
+        1220
+      ]
+    },
+    {
+      "rank": 74,
+      "building_idx": 138,
+      "coordinates": "31.744387,34.979596",
+      "lat": 31.744387383892732,
+      "lon": 34.979595964927356,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        138,
+        139,
+        386,
+        490,
+        585
+      ],
+      "marginal_covered_building_indices": [
+        138,
+        139,
+        386,
+        490,
+        585
+      ]
+    },
+    {
+      "rank": 75,
+      "building_idx": 200,
+      "coordinates": "31.739900,34.992781",
+      "lat": 31.73990032772834,
+      "lon": 34.99278109368506,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        200,
+        378,
+        388,
+        598,
+        912
+      ],
+      "marginal_covered_building_indices": [
+        200,
+        378,
+        388,
+        598,
+        912
+      ]
+    },
+    {
+      "rank": 76,
+      "building_idx": 230,
+      "coordinates": "31.750670,34.995259",
+      "lat": 31.750670251996823,
+      "lon": 34.995258718680056,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        230,
+        383,
+        617,
+        930,
+        1068
+      ],
+      "marginal_covered_building_indices": [
+        230,
+        383,
+        617,
+        930,
+        1068
       ]
     },
     {
       "rank": 77,
-      "building_idx": 426,
-      "coordinates": "31.738740,34.992755",
-      "lat": 31.738740363249615,
-      "lon": 34.99275536691526,
+      "building_idx": 236,
+      "coordinates": "31.735793,34.998577",
+      "lat": 31.735793051819083,
+      "lon": 34.998577051069056,
       "newly_covered_buildings": 5,
       "newly_covered_people_est": 35,
       "covered_building_indices": [
-        267,
-        426,
-        558,
-        912,
-        1284
+        236,
+        507,
+        776,
+        840,
+        970
+      ],
+      "marginal_covered_building_indices": [
+        236,
+        507,
+        776,
+        840,
+        970
       ]
     },
     {
       "rank": 78,
-      "building_idx": 203,
-      "coordinates": "31.740609,34.983595",
-      "lat": 31.740608925955474,
-      "lon": 34.98359499126781,
+      "building_idx": 267,
+      "coordinates": "31.738213,34.992505",
+      "lat": 31.738213194201,
+      "lon": 34.992504720565,
       "newly_covered_buildings": 5,
       "newly_covered_people_est": 35,
       "covered_building_indices": [
-        103,
-        203,
-        430,
-        971,
-        1043
+        238,
+        267,
+        426,
+        589,
+        1284
+      ],
+      "marginal_covered_building_indices": [
+        238,
+        267,
+        426,
+        589,
+        1284
       ]
     },
     {
       "rank": 79,
-      "building_idx": 290,
-      "coordinates": "31.754157,34.989823",
-      "lat": 31.75415712403575,
-      "lon": 34.98982255209415,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        117,
-        288,
-        290,
-        431,
-        1339
-      ]
-    },
-    {
-      "rank": 80,
-      "building_idx": 599,
-      "coordinates": "31.715916,34.982529",
-      "lat": 31.715915969567533,
-      "lon": 34.98252893375078,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        599,
-        632,
-        647,
-        678,
-        883
-      ]
-    },
-    {
-      "rank": 81,
-      "building_idx": 1021,
-      "coordinates": "31.709721,34.994810",
-      "lat": 31.709720664922383,
-      "lon": 34.99481039239613,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
-      "covered_building_indices": [
-        911,
-        998,
-        1021,
-        1240,
-        1312
-      ]
-    },
-    {
-      "rank": 82,
       "building_idx": 339,
       "coordinates": "31.741063,34.996345",
       "lat": 31.741062751321007,
@@ -1781,10 +2492,17 @@
         995,
         1063,
         1249
+      ],
+      "marginal_covered_building_indices": [
+        339,
+        897,
+        995,
+        1063,
+        1249
       ]
     },
     {
-      "rank": 83,
+      "rank": 80,
       "building_idx": 357,
       "coordinates": "31.716144,34.989463",
       "lat": 31.7161441744142,
@@ -1797,176 +2515,132 @@
         848,
         859,
         1251
+      ],
+      "marginal_covered_building_indices": [
+        357,
+        750,
+        848,
+        859,
+        1251
+      ]
+    },
+    {
+      "rank": 81,
+      "building_idx": 437,
+      "coordinates": "31.743156,34.983484",
+      "lat": 31.74315615537454,
+      "lon": 34.983484429217725,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        437,
+        830,
+        927,
+        1084,
+        1237
+      ],
+      "marginal_covered_building_indices": [
+        437,
+        830,
+        927,
+        1084,
+        1237
+      ]
+    },
+    {
+      "rank": 82,
+      "building_idx": 497,
+      "coordinates": "31.744188,34.979031",
+      "lat": 31.744187560433737,
+      "lon": 34.97903138315161,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        497,
+        620,
+        1101,
+        1147,
+        1306
+      ],
+      "marginal_covered_building_indices": [
+        497,
+        620,
+        1101,
+        1147,
+        1306
+      ]
+    },
+    {
+      "rank": 83,
+      "building_idx": 557,
+      "coordinates": "31.737291,34.984647",
+      "lat": 31.73729066219115,
+      "lon": 34.98464677153976,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        557,
+        954,
+        1193,
+        1230,
+        1323
+      ],
+      "marginal_covered_building_indices": [
+        557,
+        954,
+        1193,
+        1230,
+        1323
       ]
     },
     {
       "rank": 84,
-      "building_idx": 1220,
-      "coordinates": "31.750205,34.980657",
-      "lat": 31.750204971980846,
-      "lon": 34.98065704546836,
+      "building_idx": 599,
+      "coordinates": "31.715916,34.982529",
+      "lat": 31.715915969567533,
+      "lon": 34.98252893375078,
       "newly_covered_buildings": 5,
       "newly_covered_people_est": 35,
       "covered_building_indices": [
-        122,
-        134,
-        391,
-        580,
-        1220
+        599,
+        632,
+        647,
+        678,
+        883
+      ],
+      "marginal_covered_building_indices": [
+        599,
+        632,
+        647,
+        678,
+        883
       ]
     },
     {
       "rank": 85,
-      "building_idx": 756,
-      "coordinates": "31.742586,34.978873",
-      "lat": 31.7425857159529,
-      "lon": 34.97887268245041,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
+      "building_idx": 1021,
+      "coordinates": "31.709721,34.994810",
+      "lat": 31.709720664922383,
+      "lon": 34.99481039239613,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
       "covered_building_indices": [
-        551,
-        756,
-        1055,
-        1319
+        911,
+        998,
+        1021,
+        1240,
+        1312
+      ],
+      "marginal_covered_building_indices": [
+        911,
+        998,
+        1021,
+        1240,
+        1312
       ]
     },
     {
       "rank": 86,
-      "building_idx": 398,
-      "coordinates": "31.745091,34.976087",
-      "lat": 31.74509052404045,
-      "lon": 34.97608706190484,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        101,
-        240,
-        398,
-        534
-      ]
-    },
-    {
-      "rank": 87,
-      "building_idx": 793,
-      "coordinates": "31.744121,34.979829",
-      "lat": 31.74412110303049,
-      "lon": 34.979828611378636,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        192,
-        793,
-        796,
-        1070
-      ]
-    },
-    {
-      "rank": 88,
-      "building_idx": 275,
-      "coordinates": "31.711835,35.001256",
-      "lat": 31.71183464952752,
-      "lon": 35.00125579943415,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        30,
-        275,
-        1072,
-        1173
-      ]
-    },
-    {
-      "rank": 89,
-      "building_idx": 754,
-      "coordinates": "31.739156,34.986744",
-      "lat": 31.73915576716498,
-      "lon": 34.98674367569723,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        513,
-        688,
-        754,
-        976
-      ]
-    },
-    {
-      "rank": 90,
-      "building_idx": 388,
-      "coordinates": "31.739185,34.993486",
-      "lat": 31.739185165442027,
-      "lon": 34.99348556966351,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        200,
-        378,
-        388,
-        598
-      ]
-    },
-    {
-      "rank": 91,
-      "building_idx": 519,
-      "coordinates": "31.737155,34.998532",
-      "lat": 31.737154756322553,
-      "lon": 34.998531985949114,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        410,
-        519,
-        701,
-        1020
-      ]
-    },
-    {
-      "rank": 92,
-      "building_idx": 649,
-      "coordinates": "31.713966,34.981696",
-      "lat": 31.713966338131517,
-      "lon": 34.98169592966992,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        649,
-        676,
-        740,
-        1334
-      ]
-    },
-    {
-      "rank": 93,
-      "building_idx": 1235,
-      "coordinates": "31.746635,34.990411",
-      "lat": 31.746634898163332,
-      "lon": 34.99041137964066,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        247,
-        522,
-        1073,
-        1235
-      ]
-    },
-    {
-      "rank": 94,
-      "building_idx": 1302,
-      "coordinates": "31.743456,34.983038",
-      "lat": 31.743455967357654,
-      "lon": 34.98303804387148,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        668,
-        1113,
-        1302,
-        1318
-      ]
-    },
-    {
-      "rank": 95,
       "building_idx": 8,
       "coordinates": "31.716670,34.998817",
       "lat": 31.716670470891902,
@@ -1978,74 +2652,20 @@
         9,
         710,
         1250
+      ],
+      "marginal_covered_building_indices": [
+        8,
+        9,
+        710,
+        1250
       ]
     },
     {
-      "rank": 96,
-      "building_idx": 110,
-      "coordinates": "31.747348,34.983351",
-      "lat": 31.74734755825448,
-      "lon": 34.98335066187526,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        110,
-        211,
-        496,
-        660
-      ]
-    },
-    {
-      "rank": 97,
-      "building_idx": 353,
-      "coordinates": "31.739663,34.993799",
-      "lat": 31.73966272624024,
-      "lon": 34.99379949554764,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        353,
-        385,
-        788,
-        1303
-      ]
-    },
-    {
-      "rank": 98,
-      "building_idx": 451,
-      "coordinates": "31.744874,34.989826",
-      "lat": 31.74487389212396,
-      "lon": 34.98982640903089,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        163,
-        451,
-        536,
-        541
-      ]
-    },
-    {
-      "rank": 99,
-      "building_idx": 592,
-      "coordinates": "31.709979,34.998669",
-      "lat": 31.709979227878573,
-      "lon": 34.99866885615888,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        592,
-        828,
-        881,
-        1040
-      ]
-    },
-    {
-      "rank": 100,
-      "building_idx": 737,
-      "coordinates": "31.714857,34.990032",
-      "lat": 31.714857451110042,
-      "lon": 34.990032382878596,
+      "rank": 87,
+      "building_idx": 12,
+      "coordinates": "31.715767,34.989376",
+      "lat": 31.715766898087477,
+      "lon": 34.989376400026735,
       "newly_covered_buildings": 4,
       "newly_covered_people_est": 28,
       "covered_building_indices": [
@@ -2053,25 +2673,37 @@
         609,
         737,
         1254
+      ],
+      "marginal_covered_building_indices": [
+        12,
+        609,
+        737,
+        1254
       ]
     },
     {
-      "rank": 101,
-      "building_idx": 770,
-      "coordinates": "31.750790,34.998035",
-      "lat": 31.750789892923837,
-      "lon": 34.998035470229546,
+      "rank": 88,
+      "building_idx": 30,
+      "coordinates": "31.710903,35.000449",
+      "lat": 31.710902615813797,
+      "lon": 35.0004488275913,
       "newly_covered_buildings": 4,
       "newly_covered_people_est": 28,
       "covered_building_indices": [
-        346,
-        731,
-        770,
-        1343
+        30,
+        275,
+        1072,
+        1173
+      ],
+      "marginal_covered_building_indices": [
+        30,
+        275,
+        1072,
+        1173
       ]
     },
     {
-      "rank": 102,
+      "rank": 89,
       "building_idx": 72,
       "coordinates": "31.745468,34.995729",
       "lat": 31.745467669141366,
@@ -2083,10 +2715,79 @@
         276,
         306,
         404
+      ],
+      "marginal_covered_building_indices": [
+        72,
+        276,
+        306,
+        404
       ]
     },
     {
-      "rank": 103,
+      "rank": 90,
+      "building_idx": 101,
+      "coordinates": "31.745180,34.975869",
+      "lat": 31.745180368048626,
+      "lon": 34.97586889366886,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        101,
+        240,
+        398,
+        534
+      ],
+      "marginal_covered_building_indices": [
+        101,
+        240,
+        398,
+        534
+      ]
+    },
+    {
+      "rank": 91,
+      "building_idx": 110,
+      "coordinates": "31.747348,34.983351",
+      "lat": 31.74734755825448,
+      "lon": 34.98335066187526,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        110,
+        211,
+        496,
+        660
+      ],
+      "marginal_covered_building_indices": [
+        110,
+        211,
+        496,
+        660
+      ]
+    },
+    {
+      "rank": 92,
+      "building_idx": 163,
+      "coordinates": "31.744512,34.990766",
+      "lat": 31.744512101962677,
+      "lon": 34.990766423933806,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        163,
+        451,
+        536,
+        541
+      ],
+      "marginal_covered_building_indices": [
+        163,
+        451,
+        536,
+        541
+      ]
+    },
+    {
+      "rank": 93,
       "building_idx": 175,
       "coordinates": "31.742180,34.984470",
       "lat": 31.742179786869414,
@@ -2098,10 +2799,37 @@
         1136,
         1152,
         1271
+      ],
+      "marginal_covered_building_indices": [
+        175,
+        1136,
+        1152,
+        1271
       ]
     },
     {
-      "rank": 104,
+      "rank": 94,
+      "building_idx": 192,
+      "coordinates": "31.743947,34.980360",
+      "lat": 31.743947280575977,
+      "lon": 34.98035981493593,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        192,
+        793,
+        796,
+        1070
+      ],
+      "marginal_covered_building_indices": [
+        192,
+        793,
+        796,
+        1070
+      ]
+    },
+    {
+      "rank": 95,
       "building_idx": 213,
       "coordinates": "31.726769,34.978231",
       "lat": 31.726769209999528,
@@ -2113,25 +2841,205 @@
         226,
         665,
         779
+      ],
+      "marginal_covered_building_indices": [
+        213,
+        226,
+        665,
+        779
+      ]
+    },
+    {
+      "rank": 96,
+      "building_idx": 247,
+      "coordinates": "31.746120,34.991186",
+      "lat": 31.74611988537377,
+      "lon": 34.991185614410796,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        247,
+        522,
+        1073,
+        1235
+      ],
+      "marginal_covered_building_indices": [
+        247,
+        522,
+        1073,
+        1235
+      ]
+    },
+    {
+      "rank": 97,
+      "building_idx": 346,
+      "coordinates": "31.749852,34.997711",
+      "lat": 31.74985232708268,
+      "lon": 34.9977109826584,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        346,
+        731,
+        770,
+        1343
+      ],
+      "marginal_covered_building_indices": [
+        346,
+        731,
+        770,
+        1343
+      ]
+    },
+    {
+      "rank": 98,
+      "building_idx": 353,
+      "coordinates": "31.739663,34.993799",
+      "lat": 31.73966272624024,
+      "lon": 34.99379949554764,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        353,
+        385,
+        788,
+        1303
+      ],
+      "marginal_covered_building_indices": [
+        353,
+        385,
+        788,
+        1303
+      ]
+    },
+    {
+      "rank": 99,
+      "building_idx": 410,
+      "coordinates": "31.736835,34.998584",
+      "lat": 31.736835174553175,
+      "lon": 34.99858373356589,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        410,
+        519,
+        701,
+        1020
+      ],
+      "marginal_covered_building_indices": [
+        410,
+        519,
+        701,
+        1020
+      ]
+    },
+    {
+      "rank": 100,
+      "building_idx": 513,
+      "coordinates": "31.739242,34.987046",
+      "lat": 31.739241633106932,
+      "lon": 34.987046092914795,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        513,
+        688,
+        754,
+        976
+      ],
+      "marginal_covered_building_indices": [
+        513,
+        688,
+        754,
+        976
+      ]
+    },
+    {
+      "rank": 101,
+      "building_idx": 551,
+      "coordinates": "31.742455,34.979146",
+      "lat": 31.7424546836214,
+      "lon": 34.979146042668795,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        551,
+        756,
+        1055,
+        1319
+      ],
+      "marginal_covered_building_indices": [
+        551,
+        756,
+        1055,
+        1319
+      ]
+    },
+    {
+      "rank": 102,
+      "building_idx": 592,
+      "coordinates": "31.709979,34.998669",
+      "lat": 31.709979227878573,
+      "lon": 34.99866885615888,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        592,
+        828,
+        881,
+        1040
+      ],
+      "marginal_covered_building_indices": [
+        592,
+        828,
+        881,
+        1040
+      ]
+    },
+    {
+      "rank": 103,
+      "building_idx": 649,
+      "coordinates": "31.713966,34.981696",
+      "lat": 31.713966338131517,
+      "lon": 34.98169592966992,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        649,
+        676,
+        740,
+        1334
+      ],
+      "marginal_covered_building_indices": [
+        649,
+        676,
+        740,
+        1334
+      ]
+    },
+    {
+      "rank": 104,
+      "building_idx": 668,
+      "coordinates": "31.743264,34.983243",
+      "lat": 31.743263505962116,
+      "lon": 34.98324271715862,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        668,
+        1113,
+        1302,
+        1318
+      ],
+      "marginal_covered_building_indices": [
+        668,
+        1113,
+        1302,
+        1318
       ]
     },
     {
       "rank": 105,
-      "building_idx": 782,
-      "coordinates": "31.748312,34.997727",
-      "lat": 31.74831154090311,
-      "lon": 34.99772656108079,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        0,
-        89,
-        403,
-        782
-      ]
-    },
-    {
-      "rank": 106,
       "building_idx": 692,
       "coordinates": "31.713453,35.000149",
       "lat": 31.713453312819176,
@@ -2143,6 +3051,33 @@
         692,
         1239,
         1292
+      ],
+      "marginal_covered_building_indices": [
+        273,
+        692,
+        1239,
+        1292
+      ]
+    },
+    {
+      "rank": 106,
+      "building_idx": 782,
+      "coordinates": "31.748312,34.997727",
+      "lat": 31.74831154090311,
+      "lon": 34.99772656108079,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        0,
+        89,
+        403,
+        782
+      ],
+      "marginal_covered_building_indices": [
+        0,
+        89,
+        403,
+        782
       ]
     },
     {
@@ -2158,220 +3093,114 @@
         734,
         1083,
         1088
+      ],
+      "marginal_covered_building_indices": [
+        680,
+        734,
+        1083,
+        1088
       ]
     },
     {
       "rank": 108,
-      "building_idx": 1205,
-      "coordinates": "31.752384,34.995870",
-      "lat": 31.752384400860798,
-      "lon": 34.995869745057725,
+      "building_idx": 7,
+      "coordinates": "31.747554,34.982118",
+      "lat": 31.747553893873683,
+      "lon": 34.982117507553504,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        672,
-        1205,
-        1227
+        7,
+        49,
+        53,
+        282,
+        850,
+        867
+      ],
+      "marginal_covered_building_indices": [
+        49,
+        53,
+        282
       ]
     },
     {
       "rank": 109,
-      "building_idx": 322,
-      "coordinates": "31.745664,34.975970",
-      "lat": 31.745663901200963,
-      "lon": 34.975969935459005,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        229,
-        322,
-        1066
-      ]
-    },
-    {
-      "rank": 110,
-      "building_idx": 933,
-      "coordinates": "31.749031,34.995174",
-      "lat": 31.74903109702697,
-      "lon": 34.995173945550185,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        933,
-        1123,
-        1153
-      ]
-    },
-    {
-      "rank": 111,
-      "building_idx": 956,
-      "coordinates": "31.736507,34.983813",
-      "lat": 31.73650718133273,
-      "lon": 34.98381327082302,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        604,
-        755,
-        956
-      ]
-    },
-    {
-      "rank": 112,
-      "building_idx": 1044,
-      "coordinates": "31.712265,35.001382",
-      "lat": 31.71226518491664,
-      "lon": 35.001382406578706,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        861,
-        1044,
-        1288
-      ]
-    },
-    {
-      "rank": 113,
-      "building_idx": 1333,
-      "coordinates": "31.745508,34.975505",
-      "lat": 31.745508064139216,
-      "lon": 34.97550520352934,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        337,
-        396,
-        1333
-      ]
-    },
-    {
-      "rank": 114,
-      "building_idx": 412,
-      "coordinates": "31.736194,34.997944",
-      "lat": 31.73619425727603,
-      "lon": 34.9979443160766,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        164,
-        182,
-        412
-      ]
-    },
-    {
-      "rank": 115,
-      "building_idx": 1279,
-      "coordinates": "31.739010,34.985651",
-      "lat": 31.739009732587913,
-      "lon": 34.98565086142795,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        455,
-        657,
-        1279
-      ]
-    },
-    {
-      "rank": 116,
-      "building_idx": 988,
-      "coordinates": "31.743509,34.981968",
-      "lat": 31.743508641744196,
-      "lon": 34.98196840729796,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        988,
-        1001,
-        1081
-      ]
-    },
-    {
-      "rank": 117,
-      "building_idx": 1332,
-      "coordinates": "31.710701,34.997114",
-      "lat": 31.710700688300093,
-      "lon": 34.997114064410646,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        1034,
-        1248,
-        1332
-      ]
-    },
-    {
-      "rank": 118,
-      "building_idx": 99,
-      "coordinates": "31.739302,34.989062",
-      "lat": 31.739301849958807,
-      "lon": 34.98906163773728,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        99,
-        783,
-        1011
-      ]
-    },
-    {
-      "rank": 119,
-      "building_idx": 787,
-      "coordinates": "31.737045,34.984926",
-      "lat": 31.73704488471402,
-      "lon": 34.98492604198289,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        57,
-        787,
-        994
-      ]
-    },
-    {
-      "rank": 120,
-      "building_idx": 892,
-      "coordinates": "31.752943,34.981188",
-      "lat": 31.752942877367275,
-      "lon": 34.98118761555683,
+      "building_idx": 15,
+      "coordinates": "31.752780,34.980982",
+      "lat": 31.75278002563003,
+      "lon": 34.98098197465406,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
         15,
         719,
         892
+      ],
+      "marginal_covered_building_indices": [
+        15,
+        719,
+        892
       ]
     },
     {
-      "rank": 121,
-      "building_idx": 1116,
-      "coordinates": "31.742263,34.989961",
-      "lat": 31.742263315414323,
-      "lon": 34.989960806793626,
+      "rank": 110,
+      "building_idx": 37,
+      "coordinates": "31.741196,34.986764",
+      "lat": 31.741195917380843,
+      "lon": 34.98676431367981,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        1116,
-        1245,
-        1287
+        37,
+        38,
+        1293
+      ],
+      "marginal_covered_building_indices": [
+        37,
+        38,
+        1293
       ]
     },
     {
-      "rank": 122,
-      "building_idx": 1272,
-      "coordinates": "31.738440,34.982731",
-      "lat": 31.738440390791922,
-      "lon": 34.98273055087666,
+      "rank": 111,
+      "building_idx": 57,
+      "coordinates": "31.736848,34.984538",
+      "lat": 31.73684792356871,
+      "lon": 34.98453771293413,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        57,
+        787,
+        994
+      ],
+      "marginal_covered_building_indices": [
+        57,
+        787,
+        994
+      ]
+    },
+    {
+      "rank": 112,
+      "building_idx": 66,
+      "coordinates": "31.737953,34.982212",
+      "lat": 31.737952615949,
+      "lon": 34.98221162632395,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
         66,
         1199,
         1272
+      ],
+      "marginal_covered_building_indices": [
+        66,
+        1199,
+        1272
       ]
     },
     {
-      "rank": 123,
+      "rank": 113,
       "building_idx": 90,
       "coordinates": "31.745207,34.993098",
       "lat": 31.74520717992835,
@@ -2382,10 +3211,15 @@
         90,
         502,
         547
+      ],
+      "marginal_covered_building_indices": [
+        90,
+        502,
+        547
       ]
     },
     {
-      "rank": 124,
+      "rank": 114,
       "building_idx": 91,
       "coordinates": "31.740680,34.984267",
       "lat": 31.740679598015923,
@@ -2396,66 +3230,34 @@
         91,
         900,
         1241
+      ],
+      "marginal_covered_building_indices": [
+        91,
+        900,
+        1241
       ]
     },
     {
-      "rank": 125,
-      "building_idx": 836,
-      "coordinates": "31.742016,34.993279",
-      "lat": 31.74201644763134,
-      "lon": 34.993279397355224,
+      "rank": 115,
+      "building_idx": 99,
+      "coordinates": "31.739302,34.989062",
+      "lat": 31.739301849958807,
+      "lon": 34.98906163773728,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        556,
-        836,
-        1281
+        99,
+        783,
+        1011
+      ],
+      "marginal_covered_building_indices": [
+        99,
+        783,
+        1011
       ]
     },
     {
-      "rank": 126,
-      "building_idx": 1197,
-      "coordinates": "31.739105,34.989637",
-      "lat": 31.739104807532417,
-      "lon": 34.98963700404863,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        181,
-        1131,
-        1197
-      ]
-    },
-    {
-      "rank": 127,
-      "building_idx": 38,
-      "coordinates": "31.741102,34.987309",
-      "lat": 31.741102431050102,
-      "lon": 34.987308967848406,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        37,
-        38,
-        1293
-      ]
-    },
-    {
-      "rank": 128,
-      "building_idx": 49,
-      "coordinates": "31.747162,34.982085",
-      "lat": 31.747161787481186,
-      "lon": 34.982084707430204,
-      "newly_covered_buildings": 3,
-      "newly_covered_people_est": 21,
-      "covered_building_indices": [
-        49,
-        53,
-        282
-      ]
-    },
-    {
-      "rank": 129,
+      "rank": 116,
       "building_idx": 118,
       "coordinates": "31.728012,34.994511",
       "lat": 31.728011579543768,
@@ -2466,10 +3268,15 @@
         118,
         891,
         1309
+      ],
+      "marginal_covered_building_indices": [
+        118,
+        891,
+        1309
       ]
     },
     {
-      "rank": 130,
+      "rank": 117,
       "building_idx": 145,
       "coordinates": "31.742424,34.995303",
       "lat": 31.742424378132725,
@@ -2480,24 +3287,72 @@
         145,
         194,
         1122
+      ],
+      "marginal_covered_building_indices": [
+        145,
+        194,
+        1122
       ]
     },
     {
-      "rank": 131,
-      "building_idx": 268,
-      "coordinates": "31.716038,34.992654",
-      "lat": 31.71603770157814,
-      "lon": 34.992653813986074,
+      "rank": 118,
+      "building_idx": 164,
+      "coordinates": "31.736683,34.998180",
+      "lat": 31.736683079165715,
+      "lon": 34.998179680580364,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        268,
-        342,
-        845
+        164,
+        182,
+        412
+      ],
+      "marginal_covered_building_indices": [
+        164,
+        182,
+        412
       ]
     },
     {
-      "rank": 132,
+      "rank": 119,
+      "building_idx": 181,
+      "coordinates": "31.739726,34.990818",
+      "lat": 31.739725686694158,
+      "lon": 34.99081846940252,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        181,
+        1131,
+        1197
+      ],
+      "marginal_covered_building_indices": [
+        181,
+        1131,
+        1197
+      ]
+    },
+    {
+      "rank": 120,
+      "building_idx": 229,
+      "coordinates": "31.745582,34.976574",
+      "lat": 31.745581597547677,
+      "lon": 34.97657374206486,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        229,
+        322,
+        1066
+      ],
+      "marginal_covered_building_indices": [
+        229,
+        322,
+        1066
+      ]
+    },
+    {
+      "rank": 121,
       "building_idx": 265,
       "coordinates": "31.724852,34.996172",
       "lat": 31.724852162070615,
@@ -2508,10 +3363,53 @@
         265,
         523,
         654
+      ],
+      "marginal_covered_building_indices": [
+        265,
+        523,
+        654
       ]
     },
     {
-      "rank": 133,
+      "rank": 122,
+      "building_idx": 268,
+      "coordinates": "31.716038,34.992654",
+      "lat": 31.71603770157814,
+      "lon": 34.992653813986074,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        268,
+        342,
+        845
+      ],
+      "marginal_covered_building_indices": [
+        268,
+        342,
+        845
+      ]
+    },
+    {
+      "rank": 123,
+      "building_idx": 337,
+      "coordinates": "31.745653,34.975374",
+      "lat": 31.745652939198393,
+      "lon": 34.975374375922684,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        337,
+        396,
+        1333
+      ],
+      "marginal_covered_building_indices": [
+        337,
+        396,
+        1333
+      ]
+    },
+    {
+      "rank": 124,
       "building_idx": 424,
       "coordinates": "31.756955,34.997522",
       "lat": 31.756954815930587,
@@ -2522,23 +3420,297 @@
         424,
         460,
         612
+      ],
+      "marginal_covered_building_indices": [
+        424,
+        460,
+        612
+      ]
+    },
+    {
+      "rank": 125,
+      "building_idx": 455,
+      "coordinates": "31.739130,34.985932",
+      "lat": 31.73912985987016,
+      "lon": 34.98593162011447,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        455,
+        657,
+        1279
+      ],
+      "marginal_covered_building_indices": [
+        455,
+        657,
+        1279
+      ]
+    },
+    {
+      "rank": 126,
+      "building_idx": 556,
+      "coordinates": "31.742449,34.993349",
+      "lat": 31.742448905976296,
+      "lon": 34.99334944034552,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        438,
+        556,
+        836
+      ],
+      "marginal_covered_building_indices": [
+        438,
+        556,
+        836
+      ]
+    },
+    {
+      "rank": 127,
+      "building_idx": 604,
+      "coordinates": "31.736756,34.984344",
+      "lat": 31.736755808420988,
+      "lon": 34.98434360653966,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        604,
+        755,
+        956
+      ],
+      "marginal_covered_building_indices": [
+        604,
+        755,
+        956
+      ]
+    },
+    {
+      "rank": 128,
+      "building_idx": 672,
+      "coordinates": "31.752232,34.996052",
+      "lat": 31.75223160192441,
+      "lon": 34.99605193820357,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        672,
+        1205,
+        1227
+      ],
+      "marginal_covered_building_indices": [
+        672,
+        1205,
+        1227
+      ]
+    },
+    {
+      "rank": 129,
+      "building_idx": 861,
+      "coordinates": "31.711855,35.001438",
+      "lat": 31.711854521583145,
+      "lon": 35.001438262087326,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        861,
+        1044,
+        1288
+      ],
+      "marginal_covered_building_indices": [
+        861,
+        1044,
+        1288
+      ]
+    },
+    {
+      "rank": 130,
+      "building_idx": 933,
+      "coordinates": "31.749031,34.995174",
+      "lat": 31.74903109702697,
+      "lon": 34.995173945550185,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        933,
+        1123,
+        1153
+      ],
+      "marginal_covered_building_indices": [
+        933,
+        1123,
+        1153
+      ]
+    },
+    {
+      "rank": 131,
+      "building_idx": 988,
+      "coordinates": "31.743509,34.981968",
+      "lat": 31.743508641744196,
+      "lon": 34.98196840729796,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        988,
+        1001,
+        1081
+      ],
+      "marginal_covered_building_indices": [
+        988,
+        1001,
+        1081
+      ]
+    },
+    {
+      "rank": 132,
+      "building_idx": 1116,
+      "coordinates": "31.742263,34.989961",
+      "lat": 31.742263315414323,
+      "lon": 34.989960806793626,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        1116,
+        1245,
+        1287
+      ],
+      "marginal_covered_building_indices": [
+        1116,
+        1245,
+        1287
+      ]
+    },
+    {
+      "rank": 133,
+      "building_idx": 1332,
+      "coordinates": "31.710701,34.997114",
+      "lat": 31.710700688300093,
+      "lon": 34.997114064410646,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        1034,
+        1248,
+        1332
+      ],
+      "marginal_covered_building_indices": [
+        1034,
+        1248,
+        1332
       ]
     },
     {
       "rank": 134,
-      "building_idx": 804,
-      "coordinates": "31.750657,34.994247",
-      "lat": 31.750656945060275,
-      "lon": 34.994246789838286,
+      "building_idx": 1,
+      "coordinates": "31.762931,35.015497",
+      "lat": 31.762930606856617,
+      "lon": 35.01549699557728,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
+        1,
+        893
+      ],
+      "marginal_covered_building_indices": [
+        1,
+        893
+      ]
+    },
+    {
+      "rank": 135,
+      "building_idx": 17,
+      "coordinates": "31.716076,34.983107",
+      "lat": 31.71607603194016,
+      "lon": 34.98310742464078,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        17,
+        560
+      ],
+      "marginal_covered_building_indices": [
+        17,
+        560
+      ]
+    },
+    {
+      "rank": 136,
+      "building_idx": 36,
+      "coordinates": "31.749994,34.993970",
+      "lat": 31.749993773354536,
+      "lon": 34.993970015818256,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        36,
+        280,
+        326,
+        380,
+        535,
+        641,
+        691,
+        804,
+        819,
+        935,
+        1027
+      ],
+      "marginal_covered_building_indices": [
         380,
         804
       ]
     },
     {
-      "rank": 135,
+      "rank": 137,
+      "building_idx": 82,
+      "coordinates": "31.726394,34.993057",
+      "lat": 31.726393855650425,
+      "lon": 34.993056627883604,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        82,
+        1089
+      ],
+      "marginal_covered_building_indices": [
+        82,
+        1089
+      ]
+    },
+    {
+      "rank": 138,
+      "building_idx": 83,
+      "coordinates": "31.713641,34.994451",
+      "lat": 31.713641088639164,
+      "lon": 34.99445121062604,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        83,
+        1163
+      ],
+      "marginal_covered_building_indices": [
+        83,
+        1163
+      ]
+    },
+    {
+      "rank": 139,
+      "building_idx": 84,
+      "coordinates": "31.741291,34.982431",
+      "lat": 31.741290780541778,
+      "lon": 34.98243141908505,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        84,
+        870
+      ],
+      "marginal_covered_building_indices": [
+        84,
+        870
+      ]
+    },
+    {
+      "rank": 140,
       "building_idx": 108,
       "coordinates": "31.748609,34.986834",
       "lat": 31.748609011469558,
@@ -2548,205 +3720,14 @@
       "covered_building_indices": [
         108,
         243
-      ]
-    },
-    {
-      "rank": 136,
-      "building_idx": 635,
-      "coordinates": "31.740879,34.992889",
-      "lat": 31.740879189122033,
-      "lon": 34.992888728427715,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        851,
-        1223
-      ]
-    },
-    {
-      "rank": 137,
-      "building_idx": 636,
-      "coordinates": "31.714320,34.989863",
-      "lat": 31.71431988606946,
-      "lon": 34.98986269097369,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        636,
-        724
-      ]
-    },
-    {
-      "rank": 138,
-      "building_idx": 1156,
-      "coordinates": "31.743508,34.979569",
-      "lat": 31.743508063085095,
-      "lon": 34.979569467611235,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        151,
-        1156
-      ]
-    },
-    {
-      "rank": 139,
-      "building_idx": 1304,
-      "coordinates": "31.709086,35.001828",
-      "lat": 31.709086129287854,
-      "lon": 35.00182771611622,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        305,
-        1304
-      ]
-    },
-    {
-      "rank": 140,
-      "building_idx": 561,
-      "coordinates": "31.750117,34.987280",
-      "lat": 31.750117032494106,
-      "lon": 34.98728038441325,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        381,
-        561
+      ],
+      "marginal_covered_building_indices": [
+        108,
+        243
       ]
     },
     {
       "rank": 141,
-      "building_idx": 894,
-      "coordinates": "31.709807,34.994319",
-      "lat": 31.70980712671077,
-      "lon": 34.99431876337795,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        894,
-        1294
-      ]
-    },
-    {
-      "rank": 142,
-      "building_idx": 267,
-      "coordinates": "31.738213,34.992505",
-      "lat": 31.738213194201,
-      "lon": 34.992504720565,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        238,
-        589
-      ]
-    },
-    {
-      "rank": 143,
-      "building_idx": 907,
-      "coordinates": "31.717197,34.999134",
-      "lat": 31.71719724760747,
-      "lon": 34.999133526217705,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        591,
-        907
-      ]
-    },
-    {
-      "rank": 144,
-      "building_idx": 1076,
-      "coordinates": "31.742485,34.989301",
-      "lat": 31.74248544763558,
-      "lon": 34.989300934761815,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        574,
-        1076
-      ]
-    },
-    {
-      "rank": 145,
-      "building_idx": 189,
-      "coordinates": "31.743763,34.981329",
-      "lat": 31.74376274352283,
-      "lon": 34.98132943103002,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        189,
-        355
-      ]
-    },
-    {
-      "rank": 146,
-      "building_idx": 448,
-      "coordinates": "31.739622,34.986892",
-      "lat": 31.73962185385348,
-      "lon": 34.98689219151343,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        448,
-        905
-      ]
-    },
-    {
-      "rank": 147,
-      "building_idx": 640,
-      "coordinates": "31.742571,34.987899",
-      "lat": 31.74257055468747,
-      "lon": 34.987898629573756,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        640,
-        1322
-      ]
-    },
-    {
-      "rank": 148,
-      "building_idx": 857,
-      "coordinates": "31.749210,34.994674",
-      "lat": 31.749210135139375,
-      "lon": 34.99467398177104,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        332,
-        857
-      ]
-    },
-    {
-      "rank": 149,
-      "building_idx": 1032,
-      "coordinates": "31.710330,34.996772",
-      "lat": 31.710329869775446,
-      "lon": 34.996772310679646,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        1014,
-        1032
-      ]
-    },
-    {
-      "rank": 150,
-      "building_idx": 1077,
-      "coordinates": "31.741068,34.988094",
-      "lat": 31.741068456213558,
-      "lon": 34.98809354934793,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        1077,
-        1264
-      ]
-    },
-    {
-      "rank": 151,
       "building_idx": 115,
       "coordinates": "31.747090,34.996960",
       "lat": 31.7470895003499,
@@ -2756,10 +3737,14 @@
       "covered_building_indices": [
         115,
         456
+      ],
+      "marginal_covered_building_indices": [
+        115,
+        456
       ]
     },
     {
-      "rank": 152,
+      "rank": 142,
       "building_idx": 121,
       "coordinates": "31.741847,34.996140",
       "lat": 31.741847279681394,
@@ -2769,10 +3754,14 @@
       "covered_building_indices": [
         121,
         278
+      ],
+      "marginal_covered_building_indices": [
+        121,
+        278
       ]
     },
     {
-      "rank": 153,
+      "rank": 143,
       "building_idx": 132,
       "coordinates": "31.750065,34.984299",
       "lat": 31.750064584098176,
@@ -2782,6 +3771,180 @@
       "covered_building_indices": [
         132,
         800
+      ],
+      "marginal_covered_building_indices": [
+        132,
+        800
+      ]
+    },
+    {
+      "rank": 144,
+      "building_idx": 141,
+      "coordinates": "31.751054,34.997941",
+      "lat": 31.75105436666855,
+      "lon": 34.99794074354264,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        141,
+        274
+      ],
+      "marginal_covered_building_indices": [
+        141,
+        274
+      ]
+    },
+    {
+      "rank": 145,
+      "building_idx": 151,
+      "coordinates": "31.743578,34.980846",
+      "lat": 31.743577878046647,
+      "lon": 34.980845989487335,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        151,
+        1156
+      ],
+      "marginal_covered_building_indices": [
+        151,
+        1156
+      ]
+    },
+    {
+      "rank": 146,
+      "building_idx": 154,
+      "coordinates": "31.735248,34.992476",
+      "lat": 31.73524832299723,
+      "lon": 34.99247589359631,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        154,
+        1019
+      ],
+      "marginal_covered_building_indices": [
+        154,
+        1019
+      ]
+    },
+    {
+      "rank": 147,
+      "building_idx": 155,
+      "coordinates": "31.743297,34.982088",
+      "lat": 31.743296722743015,
+      "lon": 34.98208777547545,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        155,
+        174
+      ],
+      "marginal_covered_building_indices": [
+        155,
+        174
+      ]
+    },
+    {
+      "rank": 148,
+      "building_idx": 176,
+      "coordinates": "31.729577,34.991012",
+      "lat": 31.729577070900874,
+      "lon": 34.991011637926796,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        176,
+        333
+      ],
+      "marginal_covered_building_indices": [
+        176,
+        333
+      ]
+    },
+    {
+      "rank": 149,
+      "building_idx": 179,
+      "coordinates": "31.751553,34.987082",
+      "lat": 31.75155313859431,
+      "lon": 34.98708168569645,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        179,
+        1062
+      ],
+      "marginal_covered_building_indices": [
+        179,
+        1062
+      ]
+    },
+    {
+      "rank": 150,
+      "building_idx": 189,
+      "coordinates": "31.743763,34.981329",
+      "lat": 31.74376274352283,
+      "lon": 34.98132943103002,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        189,
+        355
+      ],
+      "marginal_covered_building_indices": [
+        189,
+        355
+      ]
+    },
+    {
+      "rank": 151,
+      "building_idx": 210,
+      "coordinates": "31.754919,34.992963",
+      "lat": 31.754919006221986,
+      "lon": 34.99296347452581,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        210,
+        299
+      ],
+      "marginal_covered_building_indices": [
+        210,
+        299
+      ]
+    },
+    {
+      "rank": 152,
+      "building_idx": 256,
+      "coordinates": "31.733527,34.952616",
+      "lat": 31.733527012243623,
+      "lon": 34.95261592848236,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        256,
+        1307
+      ],
+      "marginal_covered_building_indices": [
+        256,
+        1307
+      ]
+    },
+    {
+      "rank": 153,
+      "building_idx": 270,
+      "coordinates": "31.715518,34.998455",
+      "lat": 31.71551830620081,
+      "lon": 34.99845458773116,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        270,
+        377
+      ],
+      "marginal_covered_building_indices": [
+        270,
+        377
       ]
     },
     {
@@ -2795,270 +3958,88 @@
       "covered_building_indices": [
         295,
         615
+      ],
+      "marginal_covered_building_indices": [
+        295,
+        615
       ]
     },
     {
       "rank": 155,
-      "building_idx": 377,
-      "coordinates": "31.715493,34.997901",
-      "lat": 31.71549329034677,
-      "lon": 34.99790070557206,
+      "building_idx": 305,
+      "coordinates": "31.708927,35.001720",
+      "lat": 31.708926811657438,
+      "lon": 35.00172016494341,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        270,
-        377
+        305,
+        1304
+      ],
+      "marginal_covered_building_indices": [
+        305,
+        1304
       ]
     },
     {
       "rank": 156,
-      "building_idx": 567,
-      "coordinates": "31.750109,34.983522",
-      "lat": 31.75010850002209,
-      "lon": 34.98352157486559,
+      "building_idx": 311,
+      "coordinates": "31.740406,34.992416",
+      "lat": 31.74040575866577,
+      "lon": 34.99241607730025,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        413,
-        567
+        311,
+        453,
+        487,
+        509,
+        635,
+        851,
+        990,
+        1223
+      ],
+      "marginal_covered_building_indices": [
+        851,
+        1223
       ]
     },
     {
       "rank": 157,
-      "building_idx": 600,
-      "coordinates": "31.715005,34.996945",
-      "lat": 31.715005197816456,
-      "lon": 34.996945483316466,
+      "building_idx": 332,
+      "coordinates": "31.749434,34.994156",
+      "lat": 31.74943439569229,
+      "lon": 34.99415565618379,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        600,
-        639
+        332,
+        857
+      ],
+      "marginal_covered_building_indices": [
+        332,
+        857
       ]
     },
     {
       "rank": 158,
-      "building_idx": 899,
-      "coordinates": "31.746843,34.983208",
-      "lat": 31.74684268487631,
-      "lon": 34.98320822524215,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        899,
-        1128
-      ]
-    },
-    {
-      "rank": 159,
-      "building_idx": 949,
-      "coordinates": "31.739218,34.992028",
-      "lat": 31.73921766243257,
-      "lon": 34.99202750291477,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        949,
-        1244
-      ]
-    },
-    {
-      "rank": 160,
-      "building_idx": 968,
-      "coordinates": "31.742433,34.990608",
-      "lat": 31.742432934203794,
-      "lon": 34.99060776736298,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        968,
-        1102
-      ]
-    },
-    {
-      "rank": 161,
-      "building_idx": 1112,
-      "coordinates": "31.712105,34.995276",
-      "lat": 31.712104939494967,
-      "lon": 34.99527558092995,
+      "building_idx": 338,
+      "coordinates": "31.712060,34.995073",
+      "lat": 31.712059660947354,
+      "lon": 34.99507250870524,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
         338,
         1112
+      ],
+      "marginal_covered_building_indices": [
+        338,
+        1112
       ]
     },
     {
-      "rank": 162,
-      "building_idx": 1286,
-      "coordinates": "31.738998,34.996037",
-      "lat": 31.738997588077858,
-      "lon": 34.996037190770544,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        1286,
-        1316
-      ]
-    },
-    {
-      "rank": 163,
-      "building_idx": 17,
-      "coordinates": "31.716076,34.983107",
-      "lat": 31.71607603194016,
-      "lon": 34.98310742464078,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        17,
-        560
-      ]
-    },
-    {
-      "rank": 164,
-      "building_idx": 82,
-      "coordinates": "31.726394,34.993057",
-      "lat": 31.726393855650425,
-      "lon": 34.993056627883604,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        82,
-        1089
-      ]
-    },
-    {
-      "rank": 165,
-      "building_idx": 432,
-      "coordinates": "31.714430,34.993289",
-      "lat": 31.714430081587047,
-      "lon": 34.99328882874549,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        432,
-        1061
-      ]
-    },
-    {
-      "rank": 166,
-      "building_idx": 962,
-      "coordinates": "31.707856,34.998647",
-      "lat": 31.70785557132628,
-      "lon": 34.99864713656286,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        962,
-        1305
-      ]
-    },
-    {
-      "rank": 167,
-      "building_idx": 1,
-      "coordinates": "31.762931,35.015497",
-      "lat": 31.762930606856617,
-      "lon": 35.01549699557728,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        1,
-        893
-      ]
-    },
-    {
-      "rank": 168,
-      "building_idx": 83,
-      "coordinates": "31.713641,34.994451",
-      "lat": 31.713641088639164,
-      "lon": 34.99445121062604,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        83,
-        1163
-      ]
-    },
-    {
-      "rank": 169,
-      "building_idx": 84,
-      "coordinates": "31.741291,34.982431",
-      "lat": 31.741290780541778,
-      "lon": 34.98243141908505,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        84,
-        870
-      ]
-    },
-    {
-      "rank": 170,
-      "building_idx": 154,
-      "coordinates": "31.735248,34.992476",
-      "lat": 31.73524832299723,
-      "lon": 34.99247589359631,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        154,
-        1019
-      ]
-    },
-    {
-      "rank": 171,
-      "building_idx": 176,
-      "coordinates": "31.729577,34.991012",
-      "lat": 31.729577070900874,
-      "lon": 34.991011637926796,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        176,
-        333
-      ]
-    },
-    {
-      "rank": 172,
-      "building_idx": 179,
-      "coordinates": "31.751553,34.987082",
-      "lat": 31.75155313859431,
-      "lon": 34.98708168569645,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        179,
-        1062
-      ]
-    },
-    {
-      "rank": 173,
-      "building_idx": 210,
-      "coordinates": "31.754919,34.992963",
-      "lat": 31.754919006221986,
-      "lon": 34.99296347452581,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        210,
-        299
-      ]
-    },
-    {
-      "rank": 174,
-      "building_idx": 274,
-      "coordinates": "31.751869,34.998416",
-      "lat": 31.751869272497046,
-      "lon": 34.998416444883226,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        141,
-        274
-      ]
-    },
-    {
-      "rank": 175,
+      "rank": 159,
       "building_idx": 365,
       "coordinates": "31.743433,34.997206",
       "lat": 31.74343266792885,
@@ -3068,10 +4049,153 @@
       "covered_building_indices": [
         365,
         667
+      ],
+      "marginal_covered_building_indices": [
+        365,
+        667
       ]
     },
     {
-      "rank": 176,
+      "rank": 160,
+      "building_idx": 381,
+      "coordinates": "31.749896,34.987026",
+      "lat": 31.74989638201694,
+      "lon": 34.98702581100039,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        381,
+        434,
+        561,
+        690,
+        1029
+      ],
+      "marginal_covered_building_indices": [
+        381,
+        561
+      ]
+    },
+    {
+      "rank": 161,
+      "building_idx": 413,
+      "coordinates": "31.750173,34.983268",
+      "lat": 31.750172788264667,
+      "lon": 34.98326762563025,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        413,
+        567
+      ],
+      "marginal_covered_building_indices": [
+        413,
+        567
+      ]
+    },
+    {
+      "rank": 162,
+      "building_idx": 432,
+      "coordinates": "31.714430,34.993289",
+      "lat": 31.714430081587047,
+      "lon": 34.99328882874549,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        432,
+        1061
+      ],
+      "marginal_covered_building_indices": [
+        432,
+        1061
+      ]
+    },
+    {
+      "rank": 163,
+      "building_idx": 448,
+      "coordinates": "31.739622,34.986892",
+      "lat": 31.73962185385348,
+      "lon": 34.98689219151343,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        448,
+        905
+      ],
+      "marginal_covered_building_indices": [
+        448,
+        905
+      ]
+    },
+    {
+      "rank": 164,
+      "building_idx": 564,
+      "coordinates": "31.716312,34.987775",
+      "lat": 31.716312217013567,
+      "lon": 34.987775392488615,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        564,
+        1024
+      ],
+      "marginal_covered_building_indices": [
+        564,
+        1024
+      ]
+    },
+    {
+      "rank": 165,
+      "building_idx": 574,
+      "coordinates": "31.742477,34.988718",
+      "lat": 31.742476944642046,
+      "lon": 34.98871760430408,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        574,
+        1076
+      ],
+      "marginal_covered_building_indices": [
+        574,
+        1076
+      ]
+    },
+    {
+      "rank": 166,
+      "building_idx": 591,
+      "coordinates": "31.717714,34.998814",
+      "lat": 31.71771373521085,
+      "lon": 34.99881363768304,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        591,
+        907
+      ],
+      "marginal_covered_building_indices": [
+        591,
+        907
+      ]
+    },
+    {
+      "rank": 167,
+      "building_idx": 600,
+      "coordinates": "31.715005,34.996945",
+      "lat": 31.715005197816456,
+      "lon": 34.996945483316466,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        600,
+        639
+      ],
+      "marginal_covered_building_indices": [
+        600,
+        639
+      ]
+    },
+    {
+      "rank": 168,
       "building_idx": 629,
       "coordinates": "31.716250,34.996976",
       "lat": 31.716250244107457,
@@ -3081,192 +4205,398 @@
       "covered_building_indices": [
         629,
         709
+      ],
+      "marginal_covered_building_indices": [
+        629,
+        709
+      ]
+    },
+    {
+      "rank": 169,
+      "building_idx": 636,
+      "coordinates": "31.714320,34.989863",
+      "lat": 31.71431988606946,
+      "lon": 34.98986269097369,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        636,
+        724
+      ],
+      "marginal_covered_building_indices": [
+        636,
+        724
+      ]
+    },
+    {
+      "rank": 170,
+      "building_idx": 640,
+      "coordinates": "31.742571,34.987899",
+      "lat": 31.74257055468747,
+      "lon": 34.987898629573756,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        640,
+        1322
+      ],
+      "marginal_covered_building_indices": [
+        640,
+        1322
+      ]
+    },
+    {
+      "rank": 171,
+      "building_idx": 894,
+      "coordinates": "31.709807,34.994319",
+      "lat": 31.70980712671077,
+      "lon": 34.99431876337795,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        894,
+        911,
+        998,
+        1294
+      ],
+      "marginal_covered_building_indices": [
+        894,
+        1294
+      ]
+    },
+    {
+      "rank": 172,
+      "building_idx": 899,
+      "coordinates": "31.746843,34.983208",
+      "lat": 31.74684268487631,
+      "lon": 34.98320822524215,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        899,
+        1128
+      ],
+      "marginal_covered_building_indices": [
+        899,
+        1128
+      ]
+    },
+    {
+      "rank": 173,
+      "building_idx": 949,
+      "coordinates": "31.739218,34.992028",
+      "lat": 31.73921766243257,
+      "lon": 34.99202750291477,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        949,
+        1244
+      ],
+      "marginal_covered_building_indices": [
+        949,
+        1244
+      ]
+    },
+    {
+      "rank": 174,
+      "building_idx": 962,
+      "coordinates": "31.707856,34.998647",
+      "lat": 31.70785557132628,
+      "lon": 34.99864713656286,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        962,
+        1305
+      ],
+      "marginal_covered_building_indices": [
+        962,
+        1305
+      ]
+    },
+    {
+      "rank": 175,
+      "building_idx": 968,
+      "coordinates": "31.742433,34.990608",
+      "lat": 31.742432934203794,
+      "lon": 34.99060776736298,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        968,
+        1102
+      ],
+      "marginal_covered_building_indices": [
+        968,
+        1102
+      ]
+    },
+    {
+      "rank": 176,
+      "building_idx": 1006,
+      "coordinates": "31.714036,34.981451",
+      "lat": 31.714036398214144,
+      "lon": 34.98145106876264,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        1006,
+        1138
+      ],
+      "marginal_covered_building_indices": [
+        1006,
+        1138
       ]
     },
     {
       "rank": 177,
-      "building_idx": 1024,
-      "coordinates": "31.715647,34.988418",
-      "lat": 31.715647129715194,
-      "lon": 34.988418086620726,
+      "building_idx": 1014,
+      "coordinates": "31.710121,34.996989",
+      "lat": 31.710121063761814,
+      "lon": 34.996988906905024,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        564,
-        1024
+        1014,
+        1032
+      ],
+      "marginal_covered_building_indices": [
+        1014,
+        1032
       ]
     },
     {
       "rank": 178,
-      "building_idx": 256,
-      "coordinates": "31.733527,34.952616",
-      "lat": 31.733527012243623,
-      "lon": 34.95261592848236,
+      "building_idx": 1077,
+      "coordinates": "31.741068,34.988094",
+      "lat": 31.741068456213558,
+      "lon": 34.98809354934793,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        256,
-        1307
+        1077,
+        1264
+      ],
+      "marginal_covered_building_indices": [
+        1077,
+        1264
       ]
     },
     {
       "rank": 179,
-      "building_idx": 837,
-      "coordinates": "31.752619,34.995402",
-      "lat": 31.75261863532065,
-      "lon": 34.995401989863716,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
+      "building_idx": 1286,
+      "coordinates": "31.738998,34.996037",
+      "lat": 31.738997588077858,
+      "lon": 34.996037190770544,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
       "covered_building_indices": [
-        682
+        1286,
+        1316
+      ],
+      "marginal_covered_building_indices": [
+        1286,
+        1316
       ]
     },
     {
       "rank": 180,
-      "building_idx": 602,
-      "coordinates": "31.740888,34.992196",
-      "lat": 31.74088751069447,
-      "lon": 34.99219609579952,
+      "building_idx": 5,
+      "coordinates": "31.714284,34.985086",
+      "lat": 31.714283630346824,
+      "lon": 34.985085971958455,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        1340
+        5
+      ],
+      "marginal_covered_building_indices": [
+        5
       ]
     },
     {
       "rank": 181,
-      "building_idx": 476,
-      "coordinates": "31.743742,34.980097",
-      "lat": 31.74374197004127,
-      "lon": 34.98009747450501,
+      "building_idx": 14,
+      "coordinates": "31.720691,34.997008",
+      "lat": 31.720691368715727,
+      "lon": 34.997008326719794,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        476
+        14
+      ],
+      "marginal_covered_building_indices": [
+        14
       ]
     },
     {
       "rank": 182,
-      "building_idx": 485,
-      "coordinates": "31.742928,34.984060",
-      "lat": 31.742928461382842,
-      "lon": 34.98406046772675,
+      "building_idx": 20,
+      "coordinates": "31.738792,34.955291",
+      "lat": 31.738791528392483,
+      "lon": 34.95529134311434,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        485
+        20
+      ],
+      "marginal_covered_building_indices": [
+        20
       ]
     },
     {
       "rank": 183,
-      "building_idx": 985,
-      "coordinates": "31.735870,34.981881",
-      "lat": 31.735870341549052,
-      "lon": 34.98188124848196,
+      "building_idx": 21,
+      "coordinates": "31.756336,35.007595",
+      "lat": 31.756335816459583,
+      "lon": 35.00759451758836,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        985
+        21
+      ],
+      "marginal_covered_building_indices": [
+        21
       ]
     },
     {
       "rank": 184,
-      "building_idx": 874,
-      "coordinates": "31.752600,34.988152",
-      "lat": 31.752600313175122,
-      "lon": 34.988151884145104,
+      "building_idx": 22,
+      "coordinates": "31.759229,34.997560",
+      "lat": 31.759229169759475,
+      "lon": 34.997559624444285,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        874
+        22
+      ],
+      "marginal_covered_building_indices": [
+        22
       ]
     },
     {
       "rank": 185,
-      "building_idx": 623,
-      "coordinates": "31.713856,34.981171",
-      "lat": 31.71385562089221,
-      "lon": 34.98117104699005,
+      "building_idx": 25,
+      "coordinates": "31.758834,34.996612",
+      "lat": 31.75883384075812,
+      "lon": 34.99661211070291,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        623
+        25
+      ],
+      "marginal_covered_building_indices": [
+        25
       ]
     },
     {
       "rank": 186,
-      "building_idx": 841,
-      "coordinates": "31.739330,34.987348",
-      "lat": 31.739330156732514,
-      "lon": 34.987348498847375,
+      "building_idx": 32,
+      "coordinates": "31.752690,34.990666",
+      "lat": 31.752690446048035,
+      "lon": 34.990666300159845,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        841
+        32
+      ],
+      "marginal_covered_building_indices": [
+        32
       ]
     },
     {
       "rank": 187,
-      "building_idx": 438,
-      "coordinates": "31.742356,34.993738",
-      "lat": 31.742356415437552,
-      "lon": 34.99373764775927,
+      "building_idx": 34,
+      "coordinates": "31.752323,34.998119",
+      "lat": 31.752323019835373,
+      "lon": 34.99811908735187,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        438
+        34
+      ],
+      "marginal_covered_building_indices": [
+        34
       ]
     },
     {
       "rank": 188,
-      "building_idx": 578,
-      "coordinates": "31.710064,34.997949",
-      "lat": 31.71006355343392,
-      "lon": 34.99794869183313,
+      "building_idx": 56,
+      "coordinates": "31.733035,34.954304",
+      "lat": 31.73303464433595,
+      "lon": 34.954304130279375,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        578
+        56
+      ],
+      "marginal_covered_building_indices": [
+        56
       ]
     },
     {
       "rank": 189,
-      "building_idx": 593,
-      "coordinates": "31.716549,34.999529",
-      "lat": 31.716549188324617,
-      "lon": 34.99952941913718,
+      "building_idx": 81,
+      "coordinates": "31.742786,34.985966",
+      "lat": 31.7427861221674,
+      "lon": 34.985966254568005,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        593
+        81
+      ],
+      "marginal_covered_building_indices": [
+        81
       ]
     },
     {
       "rank": 190,
-      "building_idx": 769,
-      "coordinates": "31.750721,34.980559",
-      "lat": 31.750720977457956,
-      "lon": 34.980558634132166,
+      "building_idx": 86,
+      "coordinates": "31.713851,34.991178",
+      "lat": 31.71385138599239,
+      "lon": 34.991177811499405,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        769
+        86
+      ],
+      "marginal_covered_building_indices": [
+        86
       ]
     },
     {
       "rank": 191,
-      "building_idx": 854,
-      "coordinates": "31.740466,34.981780",
-      "lat": 31.740465733762424,
-      "lon": 34.98178037264715,
+      "building_idx": 92,
+      "coordinates": "31.713819,34.991951",
+      "lat": 31.713818669293047,
+      "lon": 34.99195108399097,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        854
+        92
+      ],
+      "marginal_covered_building_indices": [
+        92
       ]
     },
     {
       "rank": 192,
+      "building_idx": 96,
+      "coordinates": "31.709192,34.992788",
+      "lat": 31.709192307462132,
+      "lon": 34.99278770709902,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        96
+      ],
+      "marginal_covered_building_indices": [
+        96
+      ]
+    },
+    {
+      "rank": 193,
       "building_idx": 98,
       "coordinates": "31.710406,34.994082",
       "lat": 31.710405865394616,
@@ -3275,10 +4605,95 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         98
+      ],
+      "marginal_covered_building_indices": [
+        98
       ]
     },
     {
-      "rank": 193,
+      "rank": 194,
+      "building_idx": 102,
+      "coordinates": "31.715857,34.992263",
+      "lat": 31.715857316773455,
+      "lon": 34.99226309471771,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        102
+      ],
+      "marginal_covered_building_indices": [
+        102
+      ]
+    },
+    {
+      "rank": 195,
+      "building_idx": 114,
+      "coordinates": "31.757747,34.999451",
+      "lat": 31.757747364782194,
+      "lon": 34.99945141993591,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        114
+      ],
+      "marginal_covered_building_indices": [
+        114
+      ]
+    },
+    {
+      "rank": 196,
+      "building_idx": 128,
+      "coordinates": "31.746015,34.986036",
+      "lat": 31.74601507755627,
+      "lon": 34.986035519906736,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        128,
+        409,
+        675,
+        711,
+        762,
+        873,
+        1218,
+        1226
+      ],
+      "marginal_covered_building_indices": [
+        762
+      ]
+    },
+    {
+      "rank": 197,
+      "building_idx": 129,
+      "coordinates": "31.708612,34.993330",
+      "lat": 31.708611943482957,
+      "lon": 34.993329914655895,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        129
+      ],
+      "marginal_covered_building_indices": [
+        129
+      ]
+    },
+    {
+      "rank": 198,
+      "building_idx": 130,
+      "coordinates": "31.761454,34.994302",
+      "lat": 31.761453835209778,
+      "lon": 34.994301829788924,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        130
+      ],
+      "marginal_covered_building_indices": [
+        130
+      ]
+    },
+    {
+      "rank": 199,
       "building_idx": 137,
       "coordinates": "31.737499,34.992935",
       "lat": 31.737499077146325,
@@ -3287,102 +4702,39 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         137
-      ]
-    },
-    {
-      "rank": 194,
-      "building_idx": 289,
-      "coordinates": "31.748397,34.985111",
-      "lat": 31.74839653309089,
-      "lon": 34.985111427559396,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        289
-      ]
-    },
-    {
-      "rank": 195,
-      "building_idx": 358,
-      "coordinates": "31.711207,34.996956",
-      "lat": 31.71120656579044,
-      "lon": 34.996956040736784,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        358
-      ]
-    },
-    {
-      "rank": 196,
-      "building_idx": 402,
-      "coordinates": "31.712220,34.995859",
-      "lat": 31.712220180186005,
-      "lon": 34.995858735360784,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        402
-      ]
-    },
-    {
-      "rank": 197,
-      "building_idx": 418,
-      "coordinates": "31.754630,34.997140",
-      "lat": 31.754629656993586,
-      "lon": 34.997140013719644,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        418
-      ]
-    },
-    {
-      "rank": 198,
-      "building_idx": 473,
-      "coordinates": "31.748319,34.984406",
-      "lat": 31.748318694197287,
-      "lon": 34.98440581210546,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        473
-      ]
-    },
-    {
-      "rank": 199,
-      "building_idx": 515,
-      "coordinates": "31.737316,34.996295",
-      "lat": 31.737316447634754,
-      "lon": 34.99629458402392,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        515
+      ],
+      "marginal_covered_building_indices": [
+        137
       ]
     },
     {
       "rank": 200,
-      "building_idx": 586,
-      "coordinates": "31.742778,34.986858",
-      "lat": 31.742778471166005,
-      "lon": 34.98685793217924,
+      "building_idx": 149,
+      "coordinates": "31.761146,34.995240",
+      "lat": 31.76114552105576,
+      "lon": 34.99524008493654,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        586
+        149
+      ],
+      "marginal_covered_building_indices": [
+        149
       ]
     },
     {
       "rank": 201,
-      "building_idx": 1331,
-      "coordinates": "31.736665,34.995411",
-      "lat": 31.736664594002956,
-      "lon": 34.99541074454176,
+      "building_idx": 161,
+      "coordinates": "31.708890,34.995610",
+      "lat": 31.708890435870504,
+      "lon": 34.99560998567077,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        1331
+        161
+      ],
+      "marginal_covered_building_indices": [
+        161
       ]
     },
     {
@@ -3395,538 +4747,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         191
+      ],
+      "marginal_covered_building_indices": [
+        191
       ]
     },
     {
       "rank": 203,
-      "building_idx": 263,
-      "coordinates": "31.708185,35.000437",
-      "lat": 31.708185474285166,
-      "lon": 35.00043676197874,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        263
-      ]
-    },
-    {
-      "rank": 204,
-      "building_idx": 382,
-      "coordinates": "31.737298,34.996946",
-      "lat": 31.737297994010138,
-      "lon": 34.996946092841846,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        382
-      ]
-    },
-    {
-      "rank": 205,
-      "building_idx": 425,
-      "coordinates": "31.751304,34.980802",
-      "lat": 31.75130395032316,
-      "lon": 34.98080218270702,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        425
-      ]
-    },
-    {
-      "rank": 206,
-      "building_idx": 562,
-      "coordinates": "31.715034,34.993392",
-      "lat": 31.71503388416536,
-      "lon": 34.99339213385755,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        562
-      ]
-    },
-    {
-      "rank": 207,
-      "building_idx": 616,
-      "coordinates": "31.741395,34.990669",
-      "lat": 31.741395128352924,
-      "lon": 34.99066928777309,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        616
-      ]
-    },
-    {
-      "rank": 208,
-      "building_idx": 625,
-      "coordinates": "31.757180,34.998037",
-      "lat": 31.75717978042101,
-      "lon": 34.99803663157199,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        625
-      ]
-    },
-    {
-      "rank": 209,
-      "building_idx": 703,
-      "coordinates": "31.715362,34.997350",
-      "lat": 31.71536212519604,
-      "lon": 34.99734979437482,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        703
-      ]
-    },
-    {
-      "rank": 210,
-      "building_idx": 728,
-      "coordinates": "31.715110,34.998255",
-      "lat": 31.71511008035007,
-      "lon": 34.998254718881775,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        728
-      ]
-    },
-    {
-      "rank": 211,
-      "building_idx": 943,
-      "coordinates": "31.707727,35.001050",
-      "lat": 31.70772724504899,
-      "lon": 35.00105042894784,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        943
-      ]
-    },
-    {
-      "rank": 212,
-      "building_idx": 1047,
-      "coordinates": "31.728520,34.994286",
-      "lat": 31.72851962536757,
-      "lon": 34.99428594862514,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1047
-      ]
-    },
-    {
-      "rank": 213,
-      "building_idx": 1117,
-      "coordinates": "31.708398,35.000865",
-      "lat": 31.70839813593569,
-      "lon": 35.00086454616526,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1117
-      ]
-    },
-    {
-      "rank": 214,
-      "building_idx": 1162,
-      "coordinates": "31.740687,34.990589",
-      "lat": 31.740686655719106,
-      "lon": 34.99058901094763,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1162
-      ]
-    },
-    {
-      "rank": 215,
-      "building_idx": 34,
-      "coordinates": "31.752323,34.998119",
-      "lat": 31.752323019835373,
-      "lon": 34.99811908735187,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        34
-      ]
-    },
-    {
-      "rank": 216,
-      "building_idx": 86,
-      "coordinates": "31.713851,34.991178",
-      "lat": 31.71385138599239,
-      "lon": 34.991177811499405,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        86
-      ]
-    },
-    {
-      "rank": 217,
-      "building_idx": 92,
-      "coordinates": "31.713819,34.991951",
-      "lat": 31.713818669293047,
-      "lon": 34.99195108399097,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        92
-      ]
-    },
-    {
-      "rank": 218,
-      "building_idx": 239,
-      "coordinates": "31.755887,34.991314",
-      "lat": 31.755886819632945,
-      "lon": 34.99131426460908,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        239
-      ]
-    },
-    {
-      "rank": 219,
-      "building_idx": 360,
-      "coordinates": "31.710512,34.995148",
-      "lat": 31.710512043196825,
-      "lon": 34.995147822172775,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        360
-      ]
-    },
-    {
-      "rank": 220,
-      "building_idx": 362,
-      "coordinates": "31.749138,34.983412",
-      "lat": 31.749138059397602,
-      "lon": 34.98341206682762,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        362
-      ]
-    },
-    {
-      "rank": 221,
-      "building_idx": 379,
-      "coordinates": "31.711807,34.992241",
-      "lat": 31.71180726810026,
-      "lon": 34.99224097129825,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        379
-      ]
-    },
-    {
-      "rank": 222,
-      "building_idx": 504,
-      "coordinates": "31.755779,34.992060",
-      "lat": 31.755779421453518,
-      "lon": 34.99206043911289,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        504
-      ]
-    },
-    {
-      "rank": 223,
-      "building_idx": 563,
-      "coordinates": "31.716007,34.994097",
-      "lat": 31.71600723376996,
-      "lon": 34.99409679741317,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        563
-      ]
-    },
-    {
-      "rank": 224,
-      "building_idx": 763,
-      "coordinates": "31.747203,34.995738",
-      "lat": 31.74720287515775,
-      "lon": 34.99573816457441,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        763
-      ]
-    },
-    {
-      "rank": 225,
-      "building_idx": 820,
-      "coordinates": "31.711100,34.995169",
-      "lat": 31.711100116826277,
-      "lon": 34.995169290899454,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        820
-      ]
-    },
-    {
-      "rank": 226,
-      "building_idx": 838,
-      "coordinates": "31.726966,34.992633",
-      "lat": 31.726966272837707,
-      "lon": 34.99263309727287,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        838
-      ]
-    },
-    {
-      "rank": 227,
-      "building_idx": 890,
-      "coordinates": "31.750142,34.978842",
-      "lat": 31.75014200490588,
-      "lon": 34.978841793084975,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        890
-      ]
-    },
-    {
-      "rank": 228,
-      "building_idx": 1038,
-      "coordinates": "31.743839,34.992440",
-      "lat": 31.743839051742256,
-      "lon": 34.99243975483988,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1038
-      ]
-    },
-    {
-      "rank": 229,
-      "building_idx": 1154,
-      "coordinates": "31.740435,34.994240",
-      "lat": 31.740435020805993,
-      "lon": 34.99423966302236,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1154
-      ]
-    },
-    {
-      "rank": 230,
-      "building_idx": 1203,
-      "coordinates": "31.742369,34.991997",
-      "lat": 31.74236897674953,
-      "lon": 34.99199664162923,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1203
-      ]
-    },
-    {
-      "rank": 231,
-      "building_idx": 1298,
-      "coordinates": "31.708278,34.999184",
-      "lat": 31.708278147561444,
-      "lon": 34.99918356607968,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        1298
-      ]
-    },
-    {
-      "rank": 232,
-      "building_idx": 5,
-      "coordinates": "31.714284,34.985086",
-      "lat": 31.714283630346824,
-      "lon": 34.985085971958455,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        5
-      ]
-    },
-    {
-      "rank": 233,
-      "building_idx": 14,
-      "coordinates": "31.720691,34.997008",
-      "lat": 31.720691368715727,
-      "lon": 34.997008326719794,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        14
-      ]
-    },
-    {
-      "rank": 234,
-      "building_idx": 20,
-      "coordinates": "31.738792,34.955291",
-      "lat": 31.738791528392483,
-      "lon": 34.95529134311434,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        20
-      ]
-    },
-    {
-      "rank": 235,
-      "building_idx": 21,
-      "coordinates": "31.756336,35.007595",
-      "lat": 31.756335816459583,
-      "lon": 35.00759451758836,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        21
-      ]
-    },
-    {
-      "rank": 236,
-      "building_idx": 22,
-      "coordinates": "31.759229,34.997560",
-      "lat": 31.759229169759475,
-      "lon": 34.997559624444285,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        22
-      ]
-    },
-    {
-      "rank": 237,
-      "building_idx": 25,
-      "coordinates": "31.758834,34.996612",
-      "lat": 31.75883384075812,
-      "lon": 34.99661211070291,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        25
-      ]
-    },
-    {
-      "rank": 238,
-      "building_idx": 32,
-      "coordinates": "31.752690,34.990666",
-      "lat": 31.752690446048035,
-      "lon": 34.990666300159845,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        32
-      ]
-    },
-    {
-      "rank": 239,
-      "building_idx": 56,
-      "coordinates": "31.733035,34.954304",
-      "lat": 31.73303464433595,
-      "lon": 34.954304130279375,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        56
-      ]
-    },
-    {
-      "rank": 240,
-      "building_idx": 81,
-      "coordinates": "31.742786,34.985966",
-      "lat": 31.7427861221674,
-      "lon": 34.985966254568005,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        81
-      ]
-    },
-    {
-      "rank": 241,
-      "building_idx": 96,
-      "coordinates": "31.709192,34.992788",
-      "lat": 31.709192307462132,
-      "lon": 34.99278770709902,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        96
-      ]
-    },
-    {
-      "rank": 242,
-      "building_idx": 114,
-      "coordinates": "31.757747,34.999451",
-      "lat": 31.757747364782194,
-      "lon": 34.99945141993591,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        114
-      ]
-    },
-    {
-      "rank": 243,
-      "building_idx": 129,
-      "coordinates": "31.708612,34.993330",
-      "lat": 31.708611943482957,
-      "lon": 34.993329914655895,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        129
-      ]
-    },
-    {
-      "rank": 244,
-      "building_idx": 130,
-      "coordinates": "31.761454,34.994302",
-      "lat": 31.761453835209778,
-      "lon": 34.994301829788924,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        130
-      ]
-    },
-    {
-      "rank": 245,
-      "building_idx": 149,
-      "coordinates": "31.761146,34.995240",
-      "lat": 31.76114552105576,
-      "lon": 34.99524008493654,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        149
-      ]
-    },
-    {
-      "rank": 246,
-      "building_idx": 161,
-      "coordinates": "31.708890,34.995610",
-      "lat": 31.708890435870504,
-      "lon": 34.99560998567077,
-      "newly_covered_buildings": 1,
-      "newly_covered_people_est": 7,
-      "covered_building_indices": [
-        161
-      ]
-    },
-    {
-      "rank": 247,
       "building_idx": 212,
       "coordinates": "31.728639,34.985848",
       "lat": 31.72863914811369,
@@ -3935,10 +4762,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         212
+      ],
+      "marginal_covered_building_indices": [
+        212
       ]
     },
     {
-      "rank": 248,
+      "rank": 204,
       "building_idx": 231,
       "coordinates": "31.726791,34.993800",
       "lat": 31.726790598224216,
@@ -3947,10 +4777,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         231
+      ],
+      "marginal_covered_building_indices": [
+        231
       ]
     },
     {
-      "rank": 249,
+      "rank": 205,
+      "building_idx": 239,
+      "coordinates": "31.755887,34.991314",
+      "lat": 31.755886819632945,
+      "lon": 34.99131426460908,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        239
+      ],
+      "marginal_covered_building_indices": [
+        239
+      ]
+    },
+    {
+      "rank": 206,
       "building_idx": 250,
       "coordinates": "31.759172,35.019733",
       "lat": 31.759172287078982,
@@ -3959,10 +4807,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         250
+      ],
+      "marginal_covered_building_indices": [
+        250
       ]
     },
     {
-      "rank": 250,
+      "rank": 207,
       "building_idx": 252,
       "coordinates": "31.759676,35.014877",
       "lat": 31.759675898699427,
@@ -3971,10 +4822,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         252
+      ],
+      "marginal_covered_building_indices": [
+        252
       ]
     },
     {
-      "rank": 251,
+      "rank": 208,
       "building_idx": 257,
       "coordinates": "31.759524,34.996114",
       "lat": 31.759524048736235,
@@ -3983,10 +4837,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         257
+      ],
+      "marginal_covered_building_indices": [
+        257
       ]
     },
     {
-      "rank": 252,
+      "rank": 209,
+      "building_idx": 263,
+      "coordinates": "31.708185,35.000437",
+      "lat": 31.708185474285166,
+      "lon": 35.00043676197874,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        263
+      ],
+      "marginal_covered_building_indices": [
+        263
+      ]
+    },
+    {
+      "rank": 210,
       "building_idx": 287,
       "coordinates": "31.760995,34.996332",
       "lat": 31.760995275265476,
@@ -3995,10 +4867,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         287
+      ],
+      "marginal_covered_building_indices": [
+        287
       ]
     },
     {
-      "rank": 253,
+      "rank": 211,
+      "building_idx": 289,
+      "coordinates": "31.748397,34.985111",
+      "lat": 31.74839653309089,
+      "lon": 34.985111427559396,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        289
+      ],
+      "marginal_covered_building_indices": [
+        289
+      ]
+    },
+    {
+      "rank": 212,
       "building_idx": 291,
       "coordinates": "31.758939,34.998456",
       "lat": 31.758938672882973,
@@ -4007,10 +4897,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         291
+      ],
+      "marginal_covered_building_indices": [
+        291
       ]
     },
     {
-      "rank": 254,
+      "rank": 213,
       "building_idx": 293,
       "coordinates": "31.760808,35.009239",
       "lat": 31.76080760938614,
@@ -4019,10 +4912,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         293
+      ],
+      "marginal_covered_building_indices": [
+        293
       ]
     },
     {
-      "rank": 255,
+      "rank": 214,
+      "building_idx": 294,
+      "coordinates": "31.714622,34.996872",
+      "lat": 31.714621865194733,
+      "lon": 34.99687239325051,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        294
+      ],
+      "marginal_covered_building_indices": [
+        294
+      ]
+    },
+    {
+      "rank": 215,
       "building_idx": 318,
       "coordinates": "31.728359,34.991816",
       "lat": 31.728358803784594,
@@ -4031,10 +4942,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         318
+      ],
+      "marginal_covered_building_indices": [
+        318
       ]
     },
     {
-      "rank": 256,
+      "rank": 216,
       "building_idx": 324,
       "coordinates": "31.713626,34.983259",
       "lat": 31.713625584585532,
@@ -4043,10 +4957,35 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         324
+      ],
+      "marginal_covered_building_indices": [
+        324
       ]
     },
     {
-      "rank": 257,
+      "rank": 217,
+      "building_idx": 329,
+      "coordinates": "31.752923,34.995689",
+      "lat": 31.752922503994707,
+      "lon": 34.9956893126353,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        286,
+        329,
+        443,
+        579,
+        682,
+        717,
+        837,
+        997
+      ],
+      "marginal_covered_building_indices": [
+        682
+      ]
+    },
+    {
+      "rank": 218,
       "building_idx": 340,
       "coordinates": "31.722567,34.990657",
       "lat": 31.722567134836417,
@@ -4055,10 +4994,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         340
+      ],
+      "marginal_covered_building_indices": [
+        340
       ]
     },
     {
-      "rank": 258,
+      "rank": 219,
       "building_idx": 347,
       "coordinates": "31.749550,34.979641",
       "lat": 31.749550473837342,
@@ -4067,10 +5009,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         347
+      ],
+      "marginal_covered_building_indices": [
+        347
       ]
     },
     {
-      "rank": 259,
+      "rank": 220,
       "building_idx": 351,
       "coordinates": "31.711476,34.997933",
       "lat": 31.711475511535955,
@@ -4079,10 +5024,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         351
+      ],
+      "marginal_covered_building_indices": [
+        351
       ]
     },
     {
-      "rank": 260,
+      "rank": 221,
       "building_idx": 354,
       "coordinates": "31.713164,34.984968",
       "lat": 31.713164196414063,
@@ -4091,10 +5039,103 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         354
+      ],
+      "marginal_covered_building_indices": [
+        354
       ]
     },
     {
-      "rank": 261,
+      "rank": 222,
+      "building_idx": 358,
+      "coordinates": "31.711207,34.996956",
+      "lat": 31.71120656579044,
+      "lon": 34.996956040736784,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        358
+      ],
+      "marginal_covered_building_indices": [
+        358
+      ]
+    },
+    {
+      "rank": 223,
+      "building_idx": 360,
+      "coordinates": "31.710512,34.995148",
+      "lat": 31.710512043196825,
+      "lon": 34.995147822172775,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        360
+      ],
+      "marginal_covered_building_indices": [
+        360
+      ]
+    },
+    {
+      "rank": 224,
+      "building_idx": 362,
+      "coordinates": "31.749138,34.983412",
+      "lat": 31.749138059397602,
+      "lon": 34.98341206682762,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        362
+      ],
+      "marginal_covered_building_indices": [
+        362
+      ]
+    },
+    {
+      "rank": 225,
+      "building_idx": 379,
+      "coordinates": "31.711807,34.992241",
+      "lat": 31.71180726810026,
+      "lon": 34.99224097129825,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        379
+      ],
+      "marginal_covered_building_indices": [
+        379
+      ]
+    },
+    {
+      "rank": 226,
+      "building_idx": 382,
+      "coordinates": "31.737298,34.996946",
+      "lat": 31.737297994010138,
+      "lon": 34.996946092841846,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        382
+      ],
+      "marginal_covered_building_indices": [
+        382
+      ]
+    },
+    {
+      "rank": 227,
+      "building_idx": 397,
+      "coordinates": "31.739395,34.989765",
+      "lat": 31.73939546908224,
+      "lon": 34.98976535430049,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        397
+      ],
+      "marginal_covered_building_indices": [
+        397
+      ]
+    },
+    {
+      "rank": 228,
       "building_idx": 400,
       "coordinates": "31.723419,34.991671",
       "lat": 31.723419041217547,
@@ -4103,10 +5144,77 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         400
+      ],
+      "marginal_covered_building_indices": [
+        400
       ]
     },
     {
-      "rank": 262,
+      "rank": 229,
+      "building_idx": 402,
+      "coordinates": "31.712220,34.995859",
+      "lat": 31.712220180186005,
+      "lon": 34.995858735360784,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        402
+      ],
+      "marginal_covered_building_indices": [
+        402
+      ]
+    },
+    {
+      "rank": 230,
+      "building_idx": 418,
+      "coordinates": "31.754630,34.997140",
+      "lat": 31.754629656993586,
+      "lon": 34.997140013719644,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        418
+      ],
+      "marginal_covered_building_indices": [
+        418
+      ]
+    },
+    {
+      "rank": 231,
+      "building_idx": 425,
+      "coordinates": "31.751304,34.980802",
+      "lat": 31.75130395032316,
+      "lon": 34.98080218270702,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        425
+      ],
+      "marginal_covered_building_indices": [
+        425
+      ]
+    },
+    {
+      "rank": 232,
+      "building_idx": 426,
+      "coordinates": "31.738740,34.992755",
+      "lat": 31.738740363249615,
+      "lon": 34.99275536691526,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        267,
+        426,
+        558,
+        912,
+        1284
+      ],
+      "marginal_covered_building_indices": [
+        558
+      ]
+    },
+    {
+      "rank": 233,
       "building_idx": 468,
       "coordinates": "31.738882,34.990539",
       "lat": 31.738882367576366,
@@ -4115,10 +5223,58 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         468
+      ],
+      "marginal_covered_building_indices": [
+        468
       ]
     },
     {
-      "rank": 263,
+      "rank": 234,
+      "building_idx": 473,
+      "coordinates": "31.748319,34.984406",
+      "lat": 31.748318694197287,
+      "lon": 34.98440581210546,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        473
+      ],
+      "marginal_covered_building_indices": [
+        473
+      ]
+    },
+    {
+      "rank": 235,
+      "building_idx": 476,
+      "coordinates": "31.743742,34.980097",
+      "lat": 31.74374197004127,
+      "lon": 34.98009747450501,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        476
+      ],
+      "marginal_covered_building_indices": [
+        476
+      ]
+    },
+    {
+      "rank": 236,
+      "building_idx": 485,
+      "coordinates": "31.742928,34.984060",
+      "lat": 31.742928461382842,
+      "lon": 34.98406046772675,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        485
+      ],
+      "marginal_covered_building_indices": [
+        485
+      ]
+    },
+    {
+      "rank": 237,
       "building_idx": 492,
       "coordinates": "31.748614,34.981193",
       "lat": 31.748613568086572,
@@ -4127,10 +5283,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         492
+      ],
+      "marginal_covered_building_indices": [
+        492
       ]
     },
     {
-      "rank": 264,
+      "rank": 238,
       "building_idx": 493,
       "coordinates": "31.722154,34.996065",
       "lat": 31.72215449654714,
@@ -4139,10 +5298,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         493
+      ],
+      "marginal_covered_building_indices": [
+        493
       ]
     },
     {
-      "rank": 265,
+      "rank": 239,
       "building_idx": 494,
       "coordinates": "31.714491,34.984147",
       "lat": 31.71449118219568,
@@ -4151,10 +5313,44 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         494
+      ],
+      "marginal_covered_building_indices": [
+        494
       ]
     },
     {
-      "rank": 266,
+      "rank": 240,
+      "building_idx": 503,
+      "coordinates": "31.739683,34.988291",
+      "lat": 31.739682858302,
+      "lon": 34.98829133664352,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        503,
+        941
+      ],
+      "marginal_covered_building_indices": [
+        941
+      ]
+    },
+    {
+      "rank": 241,
+      "building_idx": 504,
+      "coordinates": "31.755779,34.992060",
+      "lat": 31.755779421453518,
+      "lon": 34.99206043911289,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        504
+      ],
+      "marginal_covered_building_indices": [
+        504
+      ]
+    },
+    {
+      "rank": 242,
       "building_idx": 506,
       "coordinates": "31.715849,34.990284",
       "lat": 31.715849446176822,
@@ -4163,10 +5359,51 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         506
+      ],
+      "marginal_covered_building_indices": [
+        506
       ]
     },
     {
-      "rank": 267,
+      "rank": 243,
+      "building_idx": 515,
+      "coordinates": "31.737316,34.996295",
+      "lat": 31.737316447634754,
+      "lon": 34.99629458402392,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        515
+      ],
+      "marginal_covered_building_indices": [
+        515
+      ]
+    },
+    {
+      "rank": 244,
+      "building_idx": 555,
+      "coordinates": "31.740842,34.991837",
+      "lat": 31.740841553517164,
+      "lon": 34.991837460800085,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        453,
+        509,
+        555,
+        602,
+        866,
+        953,
+        990,
+        1256,
+        1340
+      ],
+      "marginal_covered_building_indices": [
+        1340
+      ]
+    },
+    {
+      "rank": 245,
       "building_idx": 559,
       "coordinates": "31.745286,34.979793",
       "lat": 31.74528555445051,
@@ -4175,10 +5412,43 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         559
+      ],
+      "marginal_covered_building_indices": [
+        559
       ]
     },
     {
-      "rank": 268,
+      "rank": 246,
+      "building_idx": 562,
+      "coordinates": "31.715034,34.993392",
+      "lat": 31.71503388416536,
+      "lon": 34.99339213385755,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        562
+      ],
+      "marginal_covered_building_indices": [
+        562
+      ]
+    },
+    {
+      "rank": 247,
+      "building_idx": 563,
+      "coordinates": "31.716007,34.994097",
+      "lat": 31.71600723376996,
+      "lon": 34.99409679741317,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        563
+      ],
+      "marginal_covered_building_indices": [
+        563
+      ]
+    },
+    {
+      "rank": 248,
       "building_idx": 571,
       "coordinates": "31.745365,34.997311",
       "lat": 31.745364516108246,
@@ -4187,10 +5457,58 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         571
+      ],
+      "marginal_covered_building_indices": [
+        571
       ]
     },
     {
-      "rank": 269,
+      "rank": 249,
+      "building_idx": 578,
+      "coordinates": "31.710064,34.997949",
+      "lat": 31.71006355343392,
+      "lon": 34.99794869183313,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        578
+      ],
+      "marginal_covered_building_indices": [
+        578
+      ]
+    },
+    {
+      "rank": 250,
+      "building_idx": 586,
+      "coordinates": "31.742778,34.986858",
+      "lat": 31.742778471166005,
+      "lon": 34.98685793217924,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        586
+      ],
+      "marginal_covered_building_indices": [
+        586
+      ]
+    },
+    {
+      "rank": 251,
+      "building_idx": 593,
+      "coordinates": "31.716549,34.999529",
+      "lat": 31.716549188324617,
+      "lon": 34.99952941913718,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        593
+      ],
+      "marginal_covered_building_indices": [
+        593
+      ]
+    },
+    {
+      "rank": 252,
       "building_idx": 594,
       "coordinates": "31.716966,34.991126",
       "lat": 31.716966062218876,
@@ -4199,10 +5517,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         594
+      ],
+      "marginal_covered_building_indices": [
+        594
       ]
     },
     {
-      "rank": 270,
+      "rank": 253,
       "building_idx": 596,
       "coordinates": "31.718799,35.001741",
       "lat": 31.718798681393643,
@@ -4211,10 +5532,88 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         596
+      ],
+      "marginal_covered_building_indices": [
+        596
       ]
     },
     {
-      "rank": 271,
+      "rank": 254,
+      "building_idx": 610,
+      "coordinates": "31.714183,34.990210",
+      "lat": 31.714182916700516,
+      "lon": 34.99020965394813,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        610
+      ],
+      "marginal_covered_building_indices": [
+        610
+      ]
+    },
+    {
+      "rank": 255,
+      "building_idx": 616,
+      "coordinates": "31.741395,34.990669",
+      "lat": 31.741395128352924,
+      "lon": 34.99066928777309,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        616
+      ],
+      "marginal_covered_building_indices": [
+        616
+      ]
+    },
+    {
+      "rank": 256,
+      "building_idx": 623,
+      "coordinates": "31.713856,34.981171",
+      "lat": 31.71385562089221,
+      "lon": 34.98117104699005,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        623
+      ],
+      "marginal_covered_building_indices": [
+        623
+      ]
+    },
+    {
+      "rank": 257,
+      "building_idx": 625,
+      "coordinates": "31.757180,34.998037",
+      "lat": 31.75717978042101,
+      "lon": 34.99803663157199,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        625
+      ],
+      "marginal_covered_building_indices": [
+        625
+      ]
+    },
+    {
+      "rank": 258,
+      "building_idx": 634,
+      "coordinates": "31.738676,34.982618",
+      "lat": 31.738675717429622,
+      "lon": 34.9826183614451,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        634
+      ],
+      "marginal_covered_building_indices": [
+        634
+      ]
+    },
+    {
+      "rank": 259,
       "building_idx": 638,
       "coordinates": "31.734422,34.969793",
       "lat": 31.73442208207732,
@@ -4223,10 +5622,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         638
+      ],
+      "marginal_covered_building_indices": [
+        638
       ]
     },
     {
-      "rank": 272,
+      "rank": 260,
       "building_idx": 643,
       "coordinates": "31.723977,34.992940",
       "lat": 31.72397664147378,
@@ -4235,10 +5637,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         643
+      ],
+      "marginal_covered_building_indices": [
+        643
       ]
     },
     {
-      "rank": 273,
+      "rank": 261,
       "building_idx": 652,
       "coordinates": "31.696946,34.954560",
       "lat": 31.696945644375944,
@@ -4247,10 +5652,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         652
+      ],
+      "marginal_covered_building_indices": [
+        652
       ]
     },
     {
-      "rank": 274,
+      "rank": 262,
+      "building_idx": 703,
+      "coordinates": "31.715362,34.997350",
+      "lat": 31.71536212519604,
+      "lon": 34.99734979437482,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        703
+      ],
+      "marginal_covered_building_indices": [
+        703
+      ]
+    },
+    {
+      "rank": 263,
       "building_idx": 708,
       "coordinates": "31.718023,34.994393",
       "lat": 31.718023341930238,
@@ -4259,10 +5682,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         708
+      ],
+      "marginal_covered_building_indices": [
+        708
       ]
     },
     {
-      "rank": 275,
+      "rank": 264,
       "building_idx": 713,
       "coordinates": "31.730521,34.992989",
       "lat": 31.73052089136239,
@@ -4271,22 +5697,73 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         713
+      ],
+      "marginal_covered_building_indices": [
+        713
       ]
     },
     {
-      "rank": 276,
-      "building_idx": 762,
-      "coordinates": "31.746175,34.985828",
-      "lat": 31.746174524346145,
-      "lon": 34.98582800624407,
+      "rank": 265,
+      "building_idx": 728,
+      "coordinates": "31.715110,34.998255",
+      "lat": 31.71511008035007,
+      "lon": 34.998254718881775,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        762
+        728
+      ],
+      "marginal_covered_building_indices": [
+        728
       ]
     },
     {
-      "rank": 277,
+      "rank": 266,
+      "building_idx": 763,
+      "coordinates": "31.747203,34.995738",
+      "lat": 31.74720287515775,
+      "lon": 34.99573816457441,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        763
+      ],
+      "marginal_covered_building_indices": [
+        763
+      ]
+    },
+    {
+      "rank": 267,
+      "building_idx": 769,
+      "coordinates": "31.750721,34.980559",
+      "lat": 31.750720977457956,
+      "lon": 34.980558634132166,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        769
+      ],
+      "marginal_covered_building_indices": [
+        769
+      ]
+    },
+    {
+      "rank": 268,
+      "building_idx": 778,
+      "coordinates": "31.711928,34.992119",
+      "lat": 31.71192810129822,
+      "lon": 34.992118880062804,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        778
+      ],
+      "marginal_covered_building_indices": [
+        778
+      ]
+    },
+    {
+      "rank": 269,
       "building_idx": 816,
       "coordinates": "31.737082,35.000345",
       "lat": 31.73708166135615,
@@ -4295,10 +5772,120 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         816
+      ],
+      "marginal_covered_building_indices": [
+        816
       ]
     },
     {
-      "rank": 278,
+      "rank": 270,
+      "building_idx": 820,
+      "coordinates": "31.711100,34.995169",
+      "lat": 31.711100116826277,
+      "lon": 34.995169290899454,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        820
+      ],
+      "marginal_covered_building_indices": [
+        820
+      ]
+    },
+    {
+      "rank": 271,
+      "building_idx": 836,
+      "coordinates": "31.742016,34.993279",
+      "lat": 31.74201644763134,
+      "lon": 34.993279397355224,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        556,
+        836,
+        1281
+      ],
+      "marginal_covered_building_indices": [
+        1281
+      ]
+    },
+    {
+      "rank": 272,
+      "building_idx": 838,
+      "coordinates": "31.726966,34.992633",
+      "lat": 31.726966272837707,
+      "lon": 34.99263309727287,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        838
+      ],
+      "marginal_covered_building_indices": [
+        838
+      ]
+    },
+    {
+      "rank": 273,
+      "building_idx": 841,
+      "coordinates": "31.739330,34.987348",
+      "lat": 31.739330156732514,
+      "lon": 34.987348498847375,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        841
+      ],
+      "marginal_covered_building_indices": [
+        841
+      ]
+    },
+    {
+      "rank": 274,
+      "building_idx": 843,
+      "coordinates": "31.712284,34.996052",
+      "lat": 31.712283756119167,
+      "lon": 34.996052480131226,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        843
+      ],
+      "marginal_covered_building_indices": [
+        843
+      ]
+    },
+    {
+      "rank": 275,
+      "building_idx": 852,
+      "coordinates": "31.710766,34.997488",
+      "lat": 31.710766218414058,
+      "lon": 34.997488150366166,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        852
+      ],
+      "marginal_covered_building_indices": [
+        852
+      ]
+    },
+    {
+      "rank": 276,
+      "building_idx": 854,
+      "coordinates": "31.740466,34.981780",
+      "lat": 31.740465733762424,
+      "lon": 34.98178037264715,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        854
+      ],
+      "marginal_covered_building_indices": [
+        854
+      ]
+    },
+    {
+      "rank": 277,
       "building_idx": 869,
       "coordinates": "31.757276,34.990812",
       "lat": 31.757275902568193,
@@ -4307,10 +5894,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         869
+      ],
+      "marginal_covered_building_indices": [
+        869
       ]
     },
     {
-      "rank": 279,
+      "rank": 278,
       "building_idx": 872,
       "coordinates": "31.714311,35.000165",
       "lat": 31.714310686469613,
@@ -4319,10 +5909,73 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         872
+      ],
+      "marginal_covered_building_indices": [
+        872
+      ]
+    },
+    {
+      "rank": 279,
+      "building_idx": 874,
+      "coordinates": "31.752600,34.988152",
+      "lat": 31.752600313175122,
+      "lon": 34.988151884145104,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        874
+      ],
+      "marginal_covered_building_indices": [
+        874
       ]
     },
     {
       "rank": 280,
+      "building_idx": 890,
+      "coordinates": "31.750142,34.978842",
+      "lat": 31.75014200490588,
+      "lon": 34.978841793084975,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        890
+      ],
+      "marginal_covered_building_indices": [
+        890
+      ]
+    },
+    {
+      "rank": 281,
+      "building_idx": 943,
+      "coordinates": "31.707727,35.001050",
+      "lat": 31.70772724504899,
+      "lon": 35.00105042894784,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        943
+      ],
+      "marginal_covered_building_indices": [
+        943
+      ]
+    },
+    {
+      "rank": 282,
+      "building_idx": 960,
+      "coordinates": "31.709024,35.001465",
+      "lat": 31.709023782439324,
+      "lon": 35.001464718170794,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        960
+      ],
+      "marginal_covered_building_indices": [
+        960
+      ]
+    },
+    {
+      "rank": 283,
       "building_idx": 966,
       "coordinates": "31.758230,34.997475",
       "lat": 31.758230415670727,
@@ -4331,10 +5984,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         966
+      ],
+      "marginal_covered_building_indices": [
+        966
       ]
     },
     {
-      "rank": 281,
+      "rank": 284,
       "building_idx": 975,
       "coordinates": "31.714184,34.986010",
       "lat": 31.714183713688215,
@@ -4343,10 +5999,43 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         975
+      ],
+      "marginal_covered_building_indices": [
+        975
       ]
     },
     {
-      "rank": 282,
+      "rank": 285,
+      "building_idx": 982,
+      "coordinates": "31.749066,34.983795",
+      "lat": 31.749065506696777,
+      "lon": 34.983794888506125,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        982
+      ],
+      "marginal_covered_building_indices": [
+        982
+      ]
+    },
+    {
+      "rank": 286,
+      "building_idx": 985,
+      "coordinates": "31.735870,34.981881",
+      "lat": 31.735870341549052,
+      "lon": 34.98188124848196,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        985
+      ],
+      "marginal_covered_building_indices": [
+        985
+      ]
+    },
+    {
+      "rank": 287,
       "building_idx": 986,
       "coordinates": "31.715584,35.000026",
       "lat": 31.715583737726824,
@@ -4355,10 +6044,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         986
+      ],
+      "marginal_covered_building_indices": [
+        986
       ]
     },
     {
-      "rank": 283,
+      "rank": 288,
       "building_idx": 996,
       "coordinates": "31.711091,34.999427",
       "lat": 31.711090938072946,
@@ -4367,10 +6059,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         996
+      ],
+      "marginal_covered_building_indices": [
+        996
       ]
     },
     {
-      "rank": 284,
+      "rank": 289,
+      "building_idx": 1038,
+      "coordinates": "31.743839,34.992440",
+      "lat": 31.743839051742256,
+      "lon": 34.99243975483988,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1038
+      ],
+      "marginal_covered_building_indices": [
+        1038
+      ]
+    },
+    {
+      "rank": 290,
       "building_idx": 1041,
       "coordinates": "31.712741,34.997538",
       "lat": 31.71274147694063,
@@ -4379,10 +6089,43 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1041
+      ],
+      "marginal_covered_building_indices": [
+        1041
       ]
     },
     {
-      "rank": 285,
+      "rank": 291,
+      "building_idx": 1047,
+      "coordinates": "31.728520,34.994286",
+      "lat": 31.72851962536757,
+      "lon": 34.99428594862514,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1047
+      ],
+      "marginal_covered_building_indices": [
+        1047
+      ]
+    },
+    {
+      "rank": 292,
+      "building_idx": 1117,
+      "coordinates": "31.708398,35.000865",
+      "lat": 31.70839813593569,
+      "lon": 35.00086454616526,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1117
+      ],
+      "marginal_covered_building_indices": [
+        1117
+      ]
+    },
+    {
+      "rank": 293,
       "building_idx": 1129,
       "coordinates": "31.740480,34.955605",
       "lat": 31.740479758843644,
@@ -4391,10 +6134,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1129
+      ],
+      "marginal_covered_building_indices": [
+        1129
       ]
     },
     {
-      "rank": 286,
+      "rank": 294,
       "building_idx": 1151,
       "coordinates": "31.727434,34.995393",
       "lat": 31.727434186885535,
@@ -4403,10 +6149,58 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1151
+      ],
+      "marginal_covered_building_indices": [
+        1151
       ]
     },
     {
-      "rank": 287,
+      "rank": 295,
+      "building_idx": 1154,
+      "coordinates": "31.740435,34.994240",
+      "lat": 31.740435020805993,
+      "lon": 34.99423966302236,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1154
+      ],
+      "marginal_covered_building_indices": [
+        1154
+      ]
+    },
+    {
+      "rank": 296,
+      "building_idx": 1162,
+      "coordinates": "31.740687,34.990589",
+      "lat": 31.740686655719106,
+      "lon": 34.99058901094763,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1162
+      ],
+      "marginal_covered_building_indices": [
+        1162
+      ]
+    },
+    {
+      "rank": 297,
+      "building_idx": 1175,
+      "coordinates": "31.742665,34.987626",
+      "lat": 31.742664702971325,
+      "lon": 34.987626448689014,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1175
+      ],
+      "marginal_covered_building_indices": [
+        1175
+      ]
+    },
+    {
+      "rank": 298,
       "building_idx": 1185,
       "coordinates": "31.731284,34.991666",
       "lat": 31.731283591040423,
@@ -4415,10 +6209,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1185
+      ],
+      "marginal_covered_building_indices": [
+        1185
       ]
     },
     {
-      "rank": 288,
+      "rank": 299,
       "building_idx": 1200,
       "coordinates": "31.733918,34.955058",
       "lat": 31.733918390232503,
@@ -4427,10 +6224,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1200
+      ],
+      "marginal_covered_building_indices": [
+        1200
       ]
     },
     {
-      "rank": 289,
+      "rank": 300,
       "building_idx": 1201,
       "coordinates": "31.732635,34.958045",
       "lat": 31.732635076270398,
@@ -4439,10 +6239,28 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1201
+      ],
+      "marginal_covered_building_indices": [
+        1201
       ]
     },
     {
-      "rank": 290,
+      "rank": 301,
+      "building_idx": 1203,
+      "coordinates": "31.742369,34.991997",
+      "lat": 31.74236897674953,
+      "lon": 34.99199664162923,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1203
+      ],
+      "marginal_covered_building_indices": [
+        1203
+      ]
+    },
+    {
+      "rank": 302,
       "building_idx": 1228,
       "coordinates": "31.731402,34.992486",
       "lat": 31.731401979573125,
@@ -4451,10 +6269,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1228
+      ],
+      "marginal_covered_building_indices": [
+        1228
       ]
     },
     {
-      "rank": 291,
+      "rank": 303,
       "building_idx": 1269,
       "coordinates": "31.755386,34.990229",
       "lat": 31.75538649459455,
@@ -4463,10 +6284,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1269
+      ],
+      "marginal_covered_building_indices": [
+        1269
       ]
     },
     {
-      "rank": 292,
+      "rank": 304,
       "building_idx": 1275,
       "coordinates": "31.728758,34.993121",
       "lat": 31.72875756769222,
@@ -4475,10 +6299,43 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1275
+      ],
+      "marginal_covered_building_indices": [
+        1275
       ]
     },
     {
-      "rank": 293,
+      "rank": 305,
+      "building_idx": 1289,
+      "coordinates": "31.740684,34.981402",
+      "lat": 31.740684159972307,
+      "lon": 34.98140168139015,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1289
+      ],
+      "marginal_covered_building_indices": [
+        1289
+      ]
+    },
+    {
+      "rank": 306,
+      "building_idx": 1298,
+      "coordinates": "31.708278,34.999184",
+      "lat": 31.708278147561444,
+      "lon": 34.99918356607968,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1298
+      ],
+      "marginal_covered_building_indices": [
+        1298
+      ]
+    },
+    {
+      "rank": 307,
       "building_idx": 1315,
       "coordinates": "31.715664,34.994817",
       "lat": 31.71566376391963,
@@ -4487,10 +6344,13 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1315
+      ],
+      "marginal_covered_building_indices": [
+        1315
       ]
     },
     {
-      "rank": 294,
+      "rank": 308,
       "building_idx": 1326,
       "coordinates": "31.709932,35.000454",
       "lat": 31.70993174084636,
@@ -4499,6 +6359,24 @@
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         1326
+      ],
+      "marginal_covered_building_indices": [
+        1326
+      ]
+    },
+    {
+      "rank": 309,
+      "building_idx": 1331,
+      "coordinates": "31.736665,34.995411",
+      "lat": 31.736664594002956,
+      "lon": 34.99541074454176,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1331
+      ],
+      "marginal_covered_building_indices": [
+        1331
       ]
     }
   ]
