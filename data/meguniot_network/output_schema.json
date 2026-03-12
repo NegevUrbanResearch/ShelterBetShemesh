@@ -1,66 +1,14 @@
 {
-  "schema_version": "2.0.0",
+  "schema_version": "3.0.0",
   "time_buckets": [
     "1min",
     "2min",
     "3min"
   ],
-  "files": {
-    "building_coverage_network.json": {
-      "required_top_level_fields": [
-        "schema_version",
-        "time_buckets",
-        "walk_speed_mps",
-        "total_target_buildings",
-        "buildings"
-      ]
-    },
-    "optimal_meguniot_<bucket>.json": {
-      "required_top_level_fields": [
-        "schema_version",
-        "time_bucket",
-        "time_seconds",
-        "radius_meters",
-        "walk_speed_mps",
-        "optimization_method",
-        "statistics",
-        "proposed_meguniot"
-      ]
-    },
-    "recommended_meguniot_<bucket>.csv": {
-      "required_columns": [
-        "rank",
-        "time_bucket",
-        "time_seconds",
-        "coordinates",
-        "lat",
-        "lon",
-        "newly_covered_buildings",
-        "newly_covered_people_est"
-      ]
-    },
-    "recommended_meguniot_<bucket>.geojson": {
-      "required_top_level_fields": [
-        "type",
-        "features"
-      ],
-      "expected_type": "FeatureCollection"
-    },
-    "shelter_isochrones_<bucket>.geojson": {
-      "required_top_level_fields": [
-        "type",
-        "features"
-      ],
-      "expected_type": "FeatureCollection"
-    },
-    "optimization_summary.json": {
-      "required_top_level_fields": [
-        "schema_version",
-        "walk_speed_mps",
-        "time_buckets",
-        "total_target_buildings",
-        "results"
-      ]
-    }
-  }
+  "notes": [
+    "Optimization uses walk_time (seconds), not flat distance.",
+    "elevation_model.mode is dem_tobler when DEM is supplied.",
+    "candidate_source documents where each proposed shelter came from.",
+    "Isochrones can come from mapbox walking API when token is configured."
+  ]
 }

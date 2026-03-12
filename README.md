@@ -26,10 +26,17 @@ The backend currently:
 - Builds/loads an OSMnx walk graph in EPSG:2039.
 - Computes existing network coverage for buckets:
   - `1min`, `2min`, `3min`
+- Supports elevation-aware travel impedance when a DEM is provided (`--dem-path`).
 - Solves shelter placement as a maximum-coverage problem with lazy-greedy selection.
+- Evaluates candidate shelters from configurable sources:
+  - building centroids
+  - intersection/network nodes near buildings
+  - optional public parcel centroids
 - Stops recommendations when:
   - full uncovered-building coverage is reached, or
   - shelter budget is reached (optional `--max-new-shelters`; default is no cap).
+- Builds shelter isochrones from Mapbox (when `mapbox_token` exists in `.env`) with a
+  network-hull fallback if the API is unavailable.
 - Exports JSON, CSV, and GeoJSON outputs under `data/meguniot_network/`.
 
 ## Frontend scope
@@ -62,6 +69,15 @@ pip install -r requirements.txt
 
 ```bash
 python scripts/run_meguniot_backend.py --force-rebuild-graph
+```
+
+Optional example with DEM + public parcels:
+
+```bash
+python scripts/run_meguniot_backend.py \
+  --dem-path data/dem.tif \
+  --candidate-sources buildings network_nodes public_parcels \
+  --public-parcels data/public_parcels.geojson
 ```
 
 Outputs are written to `data/meguniot_network/`.

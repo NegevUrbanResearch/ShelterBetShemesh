@@ -1,40 +1,50 @@
 {
-  "schema_version": "2.0.0",
-  "walk_speed_mps": 1.3,
+  "schema_version": "3.0.0",
+  "walk_speed_mps_fallback": 1.3,
+  "elevation_model": {
+    "mode": "flat_speed",
+    "dem_file": null
+  },
+  "mapbox_isochrones": true,
   "time_buckets": {
     "1min": 60,
     "2min": 120,
     "3min": 180
   },
   "total_target_buildings": 1347,
+  "candidate_generation": {
+    "sources": [
+      "buildings",
+      "network_nodes"
+    ],
+    "node_proximity_m": 150.0,
+    "total_candidates": 1883
+  },
   "results": [
     {
       "time_bucket": "1min",
       "time_seconds": 60,
-      "radius_meters": 78.0,
       "currently_uncovered": 1144,
       "additional_covered_by_proposed": 1144,
-      "num_proposed_meguniot": 309,
+      "num_proposed_meguniot": 295,
       "final_uncovered": 0,
       "stop_reason": "full_coverage_achieved"
     },
     {
       "time_bucket": "2min",
       "time_seconds": 120,
-      "radius_meters": 156.0,
       "currently_uncovered": 1007,
       "additional_covered_by_proposed": 1007,
-      "num_proposed_meguniot": 197,
+      "num_proposed_meguniot": 184,
       "final_uncovered": 0,
       "stop_reason": "full_coverage_achieved"
     },
     {
       "time_bucket": "3min",
       "time_seconds": 180,
-      "radius_meters": 234.0,
       "currently_uncovered": 941,
       "additional_covered_by_proposed": 941,
-      "num_proposed_meguniot": 134,
+      "num_proposed_meguniot": 122,
       "final_uncovered": 0,
       "stop_reason": "full_coverage_achieved"
     }

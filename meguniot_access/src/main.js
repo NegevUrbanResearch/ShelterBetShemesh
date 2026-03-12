@@ -378,15 +378,17 @@ function renderRecommended() {
   layers.recommended.clearLayers();
   const rows = recommendationsForCurrentView();
   for (const rec of rows) {
+    const shelterId = rec.shelter_id ?? rec.candidate_id ?? rec.building_idx;
     const marker = L.marker([rec.lat, rec.lon], { icon: recommendedIcon });
     marker.bindPopup(
       `<strong>Recommended #${rec.rank}</strong><br>` +
+        `Source: ${rec.candidate_source || "building"}<br>` +
         `Covers: ${rec.covered_building_indices.length} buildings`,
     );
     marker.on("click", () =>
       selectShelter({
         kind: "recommended",
-        id: rec.building_idx,
+        id: shelterId,
         lat: rec.lat,
         lon: rec.lon,
         label: `Recommended #${rec.rank}`,
