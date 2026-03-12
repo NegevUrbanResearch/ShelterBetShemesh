@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bet Shemesh Meguniot Access</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <aside class="sidebar">
+        <h1>Bet Shemesh Meguniot</h1>
+        <p class="subtitle">Existing shelters, recommendations, and uncovered need by time bucket.</p>
+
+        <section class="panel">
+          <h2>Controls</h2>
+          <div class="control-group">
+          <label for="bucketSelect">Time bucket</label>
+          <select id="bucketSelect"></select>
+          </div>
+          <div class="control-group">
+            <label for="countRange">Recommendations count</label>
+            <input id="countRange" type="range" min="0" max="300" value="100" />
+            <div id="countValue">100</div>
+          </div>
+          <div class="control-group toggles">
+            <label><input type="checkbox" id="toggleMeguniot" checked /> Existing meguniot</label>
+            <label><input type="checkbox" id="toggleMiklatim" checked /> Existing miklatim</label>
+            <label><input type="checkbox" id="toggleRecommended" checked /> Recommended meguniot</label>
+            <label><input type="checkbox" id="toggleUncovered" /> Uncovered / high-need</label>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Core stats</h2>
+          <div id="stats" class="stats"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Downloads</h2>
+          <div class="downloads">
+          <button id="downloadCsv">Download CSV</button>
+          <button id="downloadGeojson">Download GeoJSON</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Legend</h2>
+          <div class="legend">
+            <div><span class="dot dot-megunit"></span> Existing meguniot</div>
+            <div><span class="dot dot-miklat"></span> Existing miklatim</div>
+            <div><span class="dot dot-recommended"></span> Recommended meguniot</div>
+            <div><span class="dot dot-uncovered"></span> Uncovered/high-need</div>
+          </div>
+        </section>
+
+        <section class="panel panel-foot">
+          <small>Data source: <code>data/meguniot_network</code></small>
+        </section>
+      </aside>
+      <main>
+        <div id="map"></div>
+      </main>
+    </div>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/proj4@2.19.10/dist/proj4.min.js"></script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
