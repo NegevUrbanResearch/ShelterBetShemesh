@@ -12,7 +12,6 @@ const LAYER_DEFAULTS = {
   recommended: true,
   uncoveredBuildings: true,
   coveredBuildingsBase: true,
-  isochrones: true,
   covered: true,
 };
 
@@ -34,7 +33,6 @@ const layerMiklatim = document.getElementById("layerMiklatim");
 const layerRecommended = document.getElementById("layerRecommended");
 const layerUncoveredBuildings = document.getElementById("layerUncoveredBuildings");
 const layerCoveredBuildingsBase = document.getElementById("layerCoveredBuildingsBase");
-const layerIsochrones = document.getElementById("layerIsochrones");
 const layerCovered = document.getElementById("layerCovered");
 
 const openGuideBtn = document.getElementById("openGuideBtn");
@@ -73,7 +71,6 @@ const layers = {
   recommended: L.layerGroup().addTo(map),
   uncoveredBuildings: L.layerGroup().addTo(map),
   coveredBuildingsBase: L.layerGroup().addTo(map),
-  isochrones: L.layerGroup().addTo(map),
   coveredBuildings: L.layerGroup().addTo(map),
   selectedShelter: L.layerGroup().addTo(map),
 };
@@ -87,7 +84,7 @@ const dataStore = {
   buildingsSourceCrs: "EPSG:2039",
   coverage: null,
   optimalByBucket: {},
-  isochronesByBucket: {},
+  shelterCoveragesByBucket: {},
 };
 
 let selectedShelter = null;
@@ -198,9 +195,9 @@ function getCurrentBucketData() {
 }
 
 async function ensureBucketAuxData(bucketKey) {
-  if (!dataStore.isochronesByBucket[bucketKey]) {
-    dataStore.isochronesByBucket[bucketKey] = await fetchJson(
-      `${NETWORK_BASE}/shelter_isochrones_${bucketKey}.geojson`,
+  if (!dataStore.shelterCoveragesByBucket[bucketKey]) {
+    dataStore.shelterCoveragesByBucket[bucketKey] = await fetchJson(
+      `${NETWORK_BASE}/shelter_coverages_${bucketKey}.json`,
     );
   }
 }
@@ -258,18 +255,18 @@ function renderExistingCoverageBuildings() {
   layers.coveredBuildingsBase.clearLayers();
   const bucket = bucketSelect.value;
   const uncoveredStyle = {
-    color: "#c65cff",
+    color: "#ff4d4f",
     weight: 1.4,
-    fillColor: "#ca78ff",
-    fillOpacity: 0.34,
+    fillColor: "#ff6b6d",
+    fillOpacity: 0.38,
     opacity: 0.95,
   };
   const coveredStyle = {
-    color: "#5cb0ff",
+    color: "#2ecc71",
     weight: 1.2,
-    fillColor: "#6cbcff",
-    fillOpacity: 0.18,
-    opacity: 0.9,
+    fillColor: "#34d27c",
+    fillOpacity: 0.22,
+    opacity: 0.92,
   };
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
@@ -324,7 +321,6 @@ function toCsv(rows) {
 
 function clearSelection() {
   selectedShelter = null;
-  layers.isochrones.clearLayers();
   layers.coveredBuildings.clearLayers();
   layers.selectedShelter.clearLayers();
 }
@@ -399,35 +395,29 @@ function renderRecommended() {
   return rows;
 }
 
-function renderSelectedShelterIsochrone() {
-  layers.isochrones.clearLayers();
+function renderSelectedShelterCoverage() {
   layers.coveredBuildings.clearLayers();
   layers.selectedShelter.clearLayers();
   if (!selectedShelter) return;
 
   const bucket = bucketSelect.value;
-  const allIso = dataStore.isochronesByBucket[bucket]?.features || [];
-  const match = allIso.find(
-    (f) =>
-      f?.properties?.shelter_kind === selectedShelter.kind &&
-      Number(f?.properties?.shelter_id) === Number(selectedShelter.id),
+  const payload = dataStore.shelterCoveragesByBucket[bucket];
+  const allCoverages = Array.isArray(payload?.coverages) ? payload.coverages : [];
+  const match = allCoverages.find(
+    (c) =>
+      c?.shelter_kind === selectedShelter.kind &&
+      Number(c?.shelter_id) === Number(selectedShelter.id),
   );
   if (!match) return;
 
-  const isoStyle =
-    selectedShelter.kind === "recommended"
-      ? { color: "#45dd9e", weight: 2, fillColor: "#45dd9e", fillOpacity: 0.18 }
-      : { color: "#58b4ff", weight: 2, fillColor: "#58b4ff", fillOpacity: 0.16 };
-  L.geoJSON(match, { style: isoStyle }).addTo(layers.isochrones);
-
-  const coveredIndices = Array.isArray(match.properties?.covered_building_indices)
-    ? match.properties.covered_building_indices
+  const coveredIndices = Array.isArray(match.covered_building_indices)
+    ? match.covered_building_indices
     : [];
   const selectedCoveredStyle = {
-    color: "#ffce57",
+    color: "#2f80ff",
     weight: 2,
-    fillColor: "#ffce57",
-    fillOpacity: 0.55,
+    fillColor: "#2f80ff",
+    fillOpacity: 0.7,
     opacity: 1,
   };
   for (const idx of coveredIndices) {
@@ -451,14 +441,14 @@ function renderSelectedShelterIsochrone() {
     radius: 9,
     color: "#ffffff",
     fillColor: "#ffffff",
-    fillOpacity: 0.12,
+    fillOpacity: 0.16,
     weight: 2,
   }).addTo(layers.selectedShelter);
 }
 
 function selectShelter(shelter) {
   selectedShelter = shelter;
-  renderSelectedShelterIsochrone();
+  renderSelectedShelterCoverage();
   renderStats();
 }
 
@@ -469,7 +459,6 @@ function applyLayerVisibility() {
     ["recommended", layers.recommended],
     ["uncoveredBuildings", layers.uncoveredBuildings],
     ["coveredBuildingsBase", layers.coveredBuildingsBase],
-    ["isochrones", layers.isochrones],
     ["covered", layers.coveredBuildings],
   ];
   for (const [key, layer] of bindings) {
@@ -492,7 +481,7 @@ function renderStats() {
   const fullImprovementPct =
     uncoveredNow > 0 ? (Number(stats.additional_covered_by_proposed || 0) / uncoveredNow) * 100 : 0;
   const selectedNote = selectedShelter
-    ? `You selected <strong>${selectedShelter.label}</strong>. Its walking area and covered buildings are highlighted on the map.`
+    ? `You selected <strong>${selectedShelter.label}</strong>. Buildings it covers within the selected time are highlighted in blue on the map.`
     : "Click any shelter to instantly see which nearby buildings it can cover within the selected time.";
 
   statsEl.innerHTML =
@@ -511,7 +500,7 @@ async function refreshView() {
   countValue.textContent = countRange.value;
   renderExistingCoverageBuildings();
   renderRecommended();
-  renderSelectedShelterIsochrone();
+  renderSelectedShelterCoverage();
   renderStats();
   applyLayerVisibility();
 }
@@ -532,7 +521,7 @@ function renderGuideContent() {
       <ul>
         <li>Choose a travel-time target (1 to 3 minutes).</li>
         <li>Set how many suggested shelters you want to view using the slider.</li>
-        <li>Click any shelter marker to highlight its walkable coverage area.</li>
+        <li>Click any shelter marker to highlight the buildings it can cover within that time.</li>
         <li>Use the <strong>Layers</strong> section in the legend to hide or show map information.</li>
       </ul>
       <p><strong>Tip:</strong> Start with 1 minute to focus on the most urgent uncovered buildings.</p>
@@ -545,7 +534,7 @@ function renderGuideContent() {
       <ul>
         <li>בוחרים יעד זמן הגעה (מ-1 עד 3 דקות).</li>
         <li>מגדירים בסליידר כמה מיקומים מומלצים יוצגו על המפה.</li>
-        <li>לוחצים על סמן של מקלט/מיגונית כדי לראות את אזור הכיסוי בהליכה.</li>
+        <li>לוחצים על סמן של מקלט/מיגונית כדי לראות אילו בניינים הוא מכסה בזמן שנבחר.</li>
         <li>משתמשים באזור <strong>Layers</strong> שבמקרא כדי להסתיר או להציג שכבות כשיש עומס מידע.</li>
       </ul>
       <p><strong>טיפ:</strong> כדאי להתחיל ביעד של דקה כדי לזהות מהר אזורים דחופים.</p>
@@ -560,7 +549,7 @@ function renderGuideContent() {
         <li>Coverage is estimated along <strong>real walking streets</strong>, not straight-line distance.</li>
         <li>The analysis combines existing shelters and focuses on residential buildings likely to need nearby protection.</li>
         <li>Suggested shelter points are ranked by how many currently uncovered buildings they can newly cover.</li>
-        <li>Isochrone layers are precomputed, so the app stays fast during interaction.</li>
+        <li>Per-shelter coverage is precomputed, so clicking a shelter simply highlights the buildings it can reach within the selected time.</li>
       </ul>
       <p>Goal: help prioritize locations that reduce uncovered buildings under strict response times.</p>
     </div>
@@ -573,7 +562,7 @@ function renderGuideContent() {
         <li>הכיסוי מחושב לפי <strong>הליכה ברחובות אמיתיים</strong>, ולא לפי קו אווירי.</li>
         <li>הניתוח משלב מקלטים קיימים ומתמקד בבנייני מגורים שסביר שנדרשת להם הגנה קרובה.</li>
         <li>המיקומים המומלצים מדורגים לפי מספר המבנים הלא-מכוסים שהם יכולים לכסות מחדש.</li>
-        <li>שכבות אזורי הכיסוי חושבו מראש כדי לשמור על חוויית שימוש מהירה.</li>
+        <li>הכיסוי של כל מקלט/מיגונית מחושב מראש, כך שלחיצה על סמן רק מדגישה את הבניינים שהוא יכול לכסות בזמן הנבחר.</li>
       </ul>
       <p>המטרה: לסייע בתעדוף מיקומים שמצמצמים מבנים לא מכוסים בזמני תגובה קצרים.</p>
     </div>
@@ -682,7 +671,6 @@ function wireEvents() {
     [layerRecommended, "recommended"],
     [layerUncoveredBuildings, "uncoveredBuildings"],
     [layerCoveredBuildingsBase, "coveredBuildingsBase"],
-    [layerIsochrones, "isochrones"],
     [layerCovered, "covered"],
   ];
   for (const [checkbox, key] of layerCheckboxMap) {

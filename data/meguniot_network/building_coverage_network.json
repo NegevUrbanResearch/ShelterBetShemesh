@@ -6,6 +6,7 @@
     "3min": 180
   },
   "walk_speed_mps_fallback": 1.3,
+  "emergency_crossing_radius_m": 22.0,
   "elevation_model": {
     "mode": "flat_speed",
     "dem_file": null
@@ -1104,10 +1105,10 @@
       "floors": 3,
       "apartments": 33,
       "before_1992": true,
-      "nearest_shelter_walk_seconds": null,
-      "covered_1min": false,
-      "covered_2min": false,
-      "covered_3min": false
+      "nearest_shelter_walk_seconds": 11.8,
+      "covered_1min": true,
+      "covered_2min": true,
+      "covered_3min": true
     },
     {
       "id": 1089,
@@ -7138,7 +7139,7 @@
       "floors": 3,
       "apartments": 13,
       "before_1992": true,
-      "nearest_shelter_walk_seconds": 47.8,
+      "nearest_shelter_walk_seconds": 7.1,
       "covered_1min": true,
       "covered_2min": true,
       "covered_3min": true

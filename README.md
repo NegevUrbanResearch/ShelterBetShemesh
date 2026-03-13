@@ -27,6 +27,8 @@ The backend currently:
 - Computes existing network coverage for buckets:
   - `1min`, `2min`, `3min`
 - Supports elevation-aware travel impedance when a DEM is provided (`--dem-path`).
+- Supports short direct emergency crossing for near-across-street access
+  (`--emergency-crossing-radius-m`, default `22` meters).
 - Solves shelter placement as a maximum-coverage problem with lazy-greedy selection.
 - Evaluates candidate shelters from configurable sources:
   - building centroids
@@ -35,8 +37,8 @@ The backend currently:
 - Stops recommendations when:
   - full uncovered-building coverage is reached, or
   - shelter budget is reached (optional `--max-new-shelters`; default is no cap).
-- Builds shelter isochrones from Mapbox (when `mapbox_token` exists in `.env`) with a
-  network-hull fallback if the API is unavailable.
+- Precomputes per-shelter building coverage sets for each time bucket, which the frontend
+  uses to highlight covered buildings directly on the map.
 - Exports JSON, CSV, and GeoJSON outputs under `data/meguniot_network/`.
 
 ## Frontend scope
@@ -47,7 +49,7 @@ The frontend currently supports:
   - Existing meguniot
   - Existing miklatim
   - Recommended meguniot
-  - Selected shelter coverage + covered buildings
+  - Buildings covered by selected shelter
 - Controls:
   - Time bucket selector (`1m`, `2m`, `3m`)
   - Recommendation count slider (`0..300`)
@@ -78,6 +80,14 @@ python scripts/run_meguniot_backend.py \
   --dem-path data/dem.tif \
   --candidate-sources buildings network_nodes public_parcels \
   --public-parcels data/public_parcels.geojson
+```
+
+Optional stricter crossing behavior (reduce direct crossing radius):
+
+```bash
+python scripts/run_meguniot_backend.py \
+  --force-rebuild-graph \
+  --emergency-crossing-radius-m 12
 ```
 
 Outputs are written to `data/meguniot_network/`.

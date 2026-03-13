@@ -4,7 +4,7 @@
 Key upgrades:
 - Elevation-aware walking times (optional DEM via --dem-path).
 - Candidate search across buildings, network nodes, and optional public parcels.
-- Optional Mapbox isochrones for existing and recommended shelters.
+- Emergency direct-crossing fallback for short mid-block access.
 """
 
 from __future__ import annotations
@@ -14,22 +14,17 @@ import heapq
 import json
 import logging
 import math
-import os
-import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
-from urllib.request import urlopen
 
 import geopandas as gpd
 import networkx as nx
 import numpy as np
 import osmnx as ox
 import pandas as pd
-from shapely.geometry import MultiPoint, Point, mapping, shape
+from shapely.geometry import MultiPoint, Point, mapping
 from sklearn.neighbors import KDTree
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,7 +42,7 @@ DEFAULT_MAX_PROPOSED: int | None = None
 SCHEMA_VERSION = "3.0.0"
 DEFAULT_NODE_PROXIMITY_M = 150.0
 DEFAULT_WALK_SPEED_MPS = 1.3
-MAPBOX_CACHE_FILE = OUTPUT_DIR / "mapbox_isochrone_cache.json"
+DEFAULT_EMERGENCY_CROSSING_RADIUS_M = 22.0
 
 logger = logging.getLogger("meguniot_backend")
 
@@ -109,7 +104,7 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def _cleanup_stale_bucket_outputs() -> None:
     valid_suffixes = set(TIME_BUCKETS.keys())
-    prefixes = ("optimal_meguniot_", "recommended_meguniot_", "shelter_isochrones_")
+    prefixes = ("optimal_meguniot_", "recommended_meguniot_", "shelter_coverages_", "shelter_isochrones_")
     extensions = (".json", ".csv", ".geojson")
     for path in OUTPUT_DIR.glob("*"):
         if not path.is_file():
@@ -118,6 +113,9 @@ def _cleanup_stale_bucket_outputs() -> None:
         for prefix in prefixes:
             if not name.startswith(prefix) or not name.endswith(extensions):
                 continue
+            if prefix == "shelter_isochrones_":
+                path.unlink(missing_ok=True)
+                break
             bucket = name[len(prefix) :].split(".")[0]
             if bucket not in valid_suffixes:
                 path.unlink(missing_ok=True)
@@ -132,7 +130,6 @@ def _build_output_schema_doc() -> dict[str, Any]:
             "Optimization uses walk_time (seconds), not flat distance.",
             "elevation_model.mode is dem_tobler when DEM is supplied.",
             "candidate_source documents where each proposed shelter came from.",
-            "Isochrones can come from mapbox walking API when token is configured.",
         ],
     }
 
@@ -147,7 +144,7 @@ def _validate_outputs() -> None:
         expected.append(OUTPUT_DIR / f"optimal_meguniot_{bucket}.json")
         expected.append(OUTPUT_DIR / f"recommended_meguniot_{bucket}.csv")
         expected.append(OUTPUT_DIR / f"recommended_meguniot_{bucket}.geojson")
-        expected.append(OUTPUT_DIR / f"shelter_isochrones_{bucket}.geojson")
+        expected.append(OUTPUT_DIR / f"shelter_coverages_{bucket}.json")
     missing = [str(p) for p in expected if not p.exists()]
     if missing:
         raise RuntimeError(f"Pipeline completed but missing outputs: {missing}")
@@ -540,32 +537,45 @@ def _shelter_coverages_for_bucket(
     return coverages
 
 
-def _coverage_hull_polygon(
-    buildings: gpd.GeoDataFrame,
-    covered_indices: set[int],
-    shelter_point: Point | None = None,
-    padding_m: float = 8.0,
-) -> Any | None:
-    raw_points = [buildings.geometry.iloc[int(idx)] for idx in sorted(covered_indices)]
-    if shelter_point is not None:
-        raw_points.append(shelter_point)
-    points = []
-    for geom in raw_points:
-        if geom is None or geom.is_empty or not geom.is_valid:
+def _augment_coverages_with_direct_crossing(
+    coverages: dict[int, set[int]],
+    source_points_by_id: dict[int, Point],
+    building_tree: KDTree,
+    crossing_radius_m: float,
+) -> None:
+    """Add short direct-access matches for emergency mid-block crossing behavior."""
+    if crossing_radius_m <= 0:
+        return
+    for source_id, point in source_points_by_id.items():
+        matched = building_tree.query_radius(np.array([[float(point.x), float(point.y)]]), r=float(crossing_radius_m))
+        if not len(matched):
             continue
-        if not math.isfinite(float(geom.x)) or not math.isfinite(float(geom.y)):
+        indices = matched[0]
+        if len(indices) == 0:
             continue
-        points.append(Point(float(geom.x), float(geom.y)))
-    if not points:
-        return None
+        covered = coverages.setdefault(int(source_id), set())
+        covered.update(int(i) for i in indices)
 
-    hull = MultiPoint(points).convex_hull if len(points) >= 3 else MultiPoint(points).buffer(max(padding_m, 12.0))
-    if hull.geom_type in {"Point", "LineString"}:
-        hull = hull.buffer(max(padding_m, 12.0))
-    if not hull.is_valid:
-        hull = hull.buffer(0)
-    polygon = hull.simplify(3, preserve_topology=True)
-    return None if polygon.is_empty else polygon
+
+def _nearest_shelter_direct_times(
+    buildings: gpd.GeoDataFrame,
+    shelters: gpd.GeoDataFrame,
+    crossing_radius_m: float,
+    walk_speed_mps: float,
+) -> np.ndarray:
+    """Compute nearest direct-access seconds to any shelter within crossing radius."""
+    if crossing_radius_m <= 0 or shelters.empty:
+        return np.full(len(buildings), np.inf, dtype=float)
+    shelter_xy = np.array([(float(g.x), float(g.y)) for g in shelters.geometry], dtype=float)
+    out = np.full(len(buildings), np.inf, dtype=float)
+    for i, geom in enumerate(buildings.geometry):
+        dx = shelter_xy[:, 0] - float(geom.x)
+        dy = shelter_xy[:, 1] - float(geom.y)
+        dists = np.hypot(dx, dy)
+        nearest = float(np.min(dists)) if dists.size else math.inf
+        if nearest <= crossing_radius_m:
+            out[i] = nearest / walk_speed_mps
+    return out
 
 
 def _greedy_select(
@@ -615,105 +625,6 @@ def _greedy_select(
     return selected, selected_sets, uncovered, stop_reason
 
 
-def _load_mapbox_token() -> str | None:
-    env_token = os.getenv("MAPBOX_TOKEN")
-    if env_token:
-        return env_token.strip()
-    env_path = ROOT / ".env"
-    if not env_path.exists():
-        return None
-    with env_path.open("r", encoding="utf-8") as f:
-        for line in f:
-            raw = line.strip()
-            if not raw or raw.startswith("#") or "=" not in raw:
-                continue
-            key, value = raw.split("=", 1)
-            if key.strip().lower() == "mapbox_token":
-                return value.strip()
-    return None
-
-
-def _load_mapbox_cache() -> dict[str, Any]:
-    if not MAPBOX_CACHE_FILE.exists():
-        return {}
-    try:
-        with MAPBOX_CACHE_FILE.open("r", encoding="utf-8") as f:
-            payload = json.load(f)
-        if isinstance(payload, dict):
-            return payload
-    except Exception:
-        return {}
-    return {}
-
-
-def _save_mapbox_cache(cache: dict[str, Any]) -> None:
-    MAPBOX_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with MAPBOX_CACHE_FILE.open("w", encoding="utf-8") as f:
-        json.dump(cache, f, ensure_ascii=False, indent=2)
-
-
-def _fetch_mapbox_isochrone_polygon(
-    *,
-    lon: float,
-    lat: float,
-    seconds: int,
-    token: str,
-    cache: dict[str, Any],
-    profile: str = "walking",
-    retries: int = 3,
-) -> Any | None:
-    minutes = max(seconds / 60.0, 0.5)
-    cache_key = f"{profile}:{lon:.6f},{lat:.6f}:{minutes:.2f}"
-    cached = cache.get(cache_key)
-    if cached:
-        try:
-            return shape(cached)
-        except Exception:
-            cache.pop(cache_key, None)
-
-    params = urlencode(
-        {
-            "contours_minutes": f"{minutes:.2f}",
-            "polygons": "true",
-            "denoise": "1",
-            "generalize": "5",
-            "access_token": token,
-        }
-    )
-    url = f"https://api.mapbox.com/isochrone/v1/mapbox/{profile}/{lon},{lat}?{params}"
-
-    for attempt in range(retries):
-        try:
-            with urlopen(url, timeout=20) as resp:
-                payload = json.loads(resp.read().decode("utf-8"))
-            features = payload.get("features") or []
-            if not features:
-                return None
-            geom = features[0].get("geometry")
-            if not geom:
-                return None
-            cache[cache_key] = geom
-            return shape(geom)
-        except HTTPError as exc:
-            if exc.code in {401, 403}:
-                logger.warning("Mapbox token rejected (HTTP %s). Falling back to hulls.", exc.code)
-                return None
-            if exc.code == 429 and attempt < retries - 1:
-                time.sleep(1.5 * (attempt + 1))
-                continue
-            if attempt == retries - 1:
-                logger.warning("Mapbox request failed (HTTP %s) for %.6f,%.6f", exc.code, lon, lat)
-        except URLError:
-            if attempt < retries - 1:
-                time.sleep(1.2 * (attempt + 1))
-                continue
-            logger.warning("Mapbox network error for %.6f,%.6f", lon, lat)
-        except Exception:
-            if attempt == retries - 1:
-                logger.warning("Mapbox response parse error for %.6f,%.6f", lon, lat)
-    return None
-
-
 def run_pipeline(
     walk_speed_mps: float,
     force_rebuild_graph: bool,
@@ -722,13 +633,14 @@ def run_pipeline(
     node_proximity_m: float,
     public_parcels_path: Path | None,
     dem_path: Path | None,
-    use_mapbox_isochrones: bool,
-    mapbox_profile: str,
+    emergency_crossing_radius_m: float,
 ) -> None:
     if walk_speed_mps <= 0:
         raise ValueError("walk_speed_mps must be positive.")
     if max_new_shelters is not None and max_new_shelters < 0:
         raise ValueError("max_new_shelters must be non-negative.")
+    if emergency_crossing_radius_m < 0:
+        raise ValueError("emergency_crossing_radius_m must be non-negative.")
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     _cleanup_stale_bucket_outputs()
 
@@ -773,6 +685,7 @@ def run_pipeline(
         node_proximity_m=node_proximity_m,
         public_parcels_path=public_parcels_path,
     )
+    building_tree, _ = _build_building_kdtree(buildings)
     cand_lookup = {c.candidate_id: c for c in candidates}
     cand_points_wgs = gpd.GeoSeries([c.geometry_2039 for c in candidates], crs="EPSG:2039").to_crs("EPSG:4326")
 
@@ -780,11 +693,19 @@ def run_pipeline(
     dist_to_any = nx.multi_source_dijkstra_path_length(
         graph, shelter_nodes, cutoff=float(max_cutoff_seconds), weight="walk_time"
     )
+    direct_to_any = _nearest_shelter_direct_times(
+        buildings=buildings,
+        shelters=shelters,
+        crossing_radius_m=emergency_crossing_radius_m,
+        walk_speed_mps=walk_speed_mps,
+    )
 
     buildings_wgs = buildings.to_crs("EPSG:4326")
     coverage_records: list[dict[str, Any]] = []
-    for row, row_wgs in zip(buildings.itertuples(), buildings_wgs.itertuples()):
-        walk_sec = float(dist_to_any.get(int(row.node_id), math.inf))
+    for idx, (row, row_wgs) in enumerate(zip(buildings.itertuples(), buildings_wgs.itertuples())):
+        walk_sec_network = float(dist_to_any.get(int(row.node_id), math.inf))
+        walk_sec_direct = float(direct_to_any[idx])
+        walk_sec = min(walk_sec_network, walk_sec_direct)
         rec = {
             "id": int(row.id),
             "building_idx": int(row.building_idx),
@@ -806,6 +727,7 @@ def run_pipeline(
             "schema_version": SCHEMA_VERSION,
             "time_buckets": TIME_BUCKETS,
             "walk_speed_mps_fallback": walk_speed_mps,
+            "emergency_crossing_radius_m": emergency_crossing_radius_m,
             "elevation_model": elevation_model,
             "candidate_sources": [s.value for s in sorted(candidate_sources, key=lambda x: x.value)],
             "total_candidates": len(candidates),
@@ -814,14 +736,8 @@ def run_pipeline(
         },
     )
 
-    mapbox_token = _load_mapbox_token() if use_mapbox_isochrones else None
-    mapbox_cache = _load_mapbox_cache() if mapbox_token else {}
-    if use_mapbox_isochrones and not mapbox_token:
-        logger.warning("Mapbox isochrones requested but token is missing; falling back to hull polygons.")
-
     results: list[BucketResult] = []
     candidate_coverages_by_bucket: dict[str, dict[int, set[int]]] = {}
-    shelter_isochrones_by_bucket: dict[str, list[dict[str, Any]]] = {}
     shelters_wgs = shelters.to_crs("EPSG:4326")
 
     for bucket, seconds in TIME_BUCKETS.items():
@@ -835,6 +751,13 @@ def run_pipeline(
             candidates=candidates,
             cutoff_seconds=float(seconds),
         )
+        candidate_points_by_id = {int(c.candidate_id): c.geometry_2039 for c in candidates}
+        _augment_coverages_with_direct_crossing(
+            coverages=candidate_coverages,
+            source_points_by_id=candidate_points_by_id,
+            building_tree=building_tree,
+            crossing_radius_m=emergency_crossing_radius_m,
+        )
         candidate_coverages_by_bucket[bucket] = candidate_coverages
         existing_coverages = _shelter_coverages_for_bucket(
             graph=graph,
@@ -842,104 +765,70 @@ def run_pipeline(
             shelter_node_ids=shelter_nodes,
             cutoff_seconds=float(seconds),
         )
+        shelter_points_by_id = {
+            int(row.shelter_id): row.geometry for row in shelters.itertuples()
+        }
+        _augment_coverages_with_direct_crossing(
+            coverages=existing_coverages,
+            source_points_by_id=shelter_points_by_id,
+            building_tree=building_tree,
+            crossing_radius_m=emergency_crossing_radius_m,
+        )
 
         selected_ids, selected_sets, final_uncovered, stop_reason = _greedy_select(
             initially_uncovered, candidate_coverages, max_new_shelters
         )
 
-        bucket_isochrones: list[dict[str, Any]] = []
+        coverage_entries: list[dict[str, Any]] = []
 
         for shelter_row in shelters.itertuples():
             sid = int(shelter_row.shelter_id)
             covered_set = existing_coverages.get(sid, set())
             covered_indices = sorted(int(x) for x in covered_set)
-            shelter_wgs = shelters_wgs.geometry.iloc[sid]
-            lon = float(shelter_wgs.x)
-            lat = float(shelter_wgs.y)
-
-            poly = None
-            if mapbox_token:
-                poly = _fetch_mapbox_isochrone_polygon(
-                    lon=lon,
-                    lat=lat,
-                    seconds=seconds,
-                    token=mapbox_token,
-                    cache=mapbox_cache,
-                    profile=mapbox_profile,
-                )
-            if poly is None:
-                poly = _coverage_hull_polygon(buildings, covered_set, shelter_point=shelter_row.geometry)
-                if poly is not None:
-                    poly = gpd.GeoSeries([poly], crs="EPSG:2039").to_crs("EPSG:4326").iloc[0]
-            if poly is None:
+            if not covered_indices:
                 continue
-
-            bucket_isochrones.append(
+            coverage_entries.append(
                 {
-                    "type": "Feature",
-                    "geometry": mapping(poly),
-                    "properties": {
-                        "shelter_kind": "existing",
-                        "shelter_id": sid,
-                        "shelter_type": str(shelter_row.shelter_type),
-                        "lat": lat,
-                        "lon": lon,
-                        "time_bucket": bucket,
-                        "time_seconds": seconds,
-                        "covered_building_indices": covered_indices,
-                        "covered_buildings_count": len(covered_indices),
-                        "isochrone_source": "mapbox" if mapbox_token else "network_hull",
-                    },
+                    "shelter_kind": "existing",
+                    "shelter_id": sid,
+                    "shelter_type": str(shelter_row.shelter_type),
+                    "time_bucket": bucket,
+                    "time_seconds": seconds,
+                    "covered_building_indices": covered_indices,
+                    "covered_buildings_count": len(covered_indices),
                 }
             )
 
-        for rank, cid in enumerate(selected_ids, start=1):
+        for cid in selected_ids:
             candidate = cand_lookup[cid]
-            covered_set = candidate_coverages.get(cid, set())
-            covered_indices = sorted(int(x) for x in covered_set)
-            candidate_wgs = cand_points_wgs.iloc[cid]
-            lon = float(candidate_wgs.x)
-            lat = float(candidate_wgs.y)
-
-            poly = None
-            if mapbox_token:
-                poly = _fetch_mapbox_isochrone_polygon(
-                    lon=lon,
-                    lat=lat,
-                    seconds=seconds,
-                    token=mapbox_token,
-                    cache=mapbox_cache,
-                    profile=mapbox_profile,
-                )
-            if poly is None:
-                poly = _coverage_hull_polygon(buildings, covered_set, shelter_point=candidate.geometry_2039)
-                if poly is not None:
-                    poly = gpd.GeoSeries([poly], crs="EPSG:2039").to_crs("EPSG:4326").iloc[0]
-            if poly is None:
+            full_covered_set = candidate_coverages.get(cid, set())
+            covered_indices = sorted(int(x) for x in full_covered_set)
+            if not covered_indices:
                 continue
-
-            bucket_isochrones.append(
+            coverage_entries.append(
                 {
-                    "type": "Feature",
-                    "geometry": mapping(poly),
-                    "properties": {
-                        "shelter_kind": "recommended",
-                        "shelter_id": int(cid),
-                        "candidate_id": int(cid),
-                        "candidate_source": candidate.source.value,
-                        "rank": int(rank),
-                        "lat": lat,
-                        "lon": lon,
-                        "time_bucket": bucket,
-                        "time_seconds": seconds,
-                        "covered_building_indices": covered_indices,
-                        "covered_buildings_count": len(covered_indices),
-                        "isochrone_source": "mapbox" if mapbox_token else "network_hull",
-                    },
+                    "shelter_kind": "recommended",
+                    "shelter_id": int(cid),
+                    "candidate_id": int(cid),
+                    "candidate_source": candidate.source.value,
+                    "time_bucket": bucket,
+                    "time_seconds": seconds,
+                    "covered_building_indices": covered_indices,
+                    "covered_buildings_count": len(covered_indices),
                 }
             )
 
-        shelter_isochrones_by_bucket[bucket] = bucket_isochrones
+        _write_json(
+            OUTPUT_DIR / f"shelter_coverages_{bucket}.json",
+            {
+                "schema_version": SCHEMA_VERSION,
+                "time_bucket": bucket,
+                "time_seconds": seconds,
+                "elevation_model": elevation_model,
+                "emergency_crossing_radius_m": emergency_crossing_radius_m,
+                "coverages": coverage_entries,
+            },
+        )
         results.append(
             BucketResult(
                 bucket=bucket,
@@ -951,9 +840,6 @@ def run_pipeline(
                 stop_reason=stop_reason,
             )
         )
-
-    if mapbox_token:
-        _save_mapbox_cache(mapbox_cache)
 
     for res in results:
         proposed = []
@@ -990,6 +876,7 @@ def run_pipeline(
             "time_bucket": res.bucket,
             "time_seconds": res.seconds,
             "walk_speed_mps_fallback": walk_speed_mps,
+            "emergency_crossing_radius_m": emergency_crossing_radius_m,
             "total_target_buildings": len(buildings),
             "total_candidates_evaluated": len(candidates),
             "candidate_sources_used": [s.value for s in sorted(candidate_sources, key=lambda x: x.value)],
@@ -1063,16 +950,11 @@ def run_pipeline(
             OUTPUT_DIR / f"recommended_meguniot_{res.bucket}.geojson",
             {"type": "FeatureCollection", "features": geojson_features},
         )
-        _write_json(
-            OUTPUT_DIR / f"shelter_isochrones_{res.bucket}.geojson",
-            {"type": "FeatureCollection", "features": shelter_isochrones_by_bucket[res.bucket]},
-        )
-
     summary = {
         "schema_version": SCHEMA_VERSION,
         "walk_speed_mps_fallback": walk_speed_mps,
+        "emergency_crossing_radius_m": emergency_crossing_radius_m,
         "elevation_model": elevation_model,
-        "mapbox_isochrones": bool(mapbox_token),
         "time_buckets": TIME_BUCKETS,
         "total_target_buildings": int(len(buildings)),
         "candidate_generation": {
@@ -1127,15 +1009,10 @@ def main() -> None:
         help="DEM raster path for elevation-aware walking times.",
     )
     parser.add_argument(
-        "--use-mapbox-isochrones",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Use Mapbox isochrone API when token is available.",
-    )
-    parser.add_argument(
-        "--mapbox-profile",
-        default="walking",
-        choices=["walking", "driving", "cycling"],
+        "--emergency-crossing-radius-m",
+        type=float,
+        default=DEFAULT_EMERGENCY_CROSSING_RADIUS_M,
+        help="Allow direct emergency crossing to shelters within this short radius (meters).",
     )
     args = parser.parse_args()
 
@@ -1148,8 +1025,7 @@ def main() -> None:
         node_proximity_m=args.node_proximity_m,
         public_parcels_path=args.public_parcels,
         dem_path=args.dem_path,
-        use_mapbox_isochrones=args.use_mapbox_isochrones,
-        mapbox_profile=args.mapbox_profile,
+        emergency_crossing_radius_m=args.emergency_crossing_radius_m,
     )
 
 
