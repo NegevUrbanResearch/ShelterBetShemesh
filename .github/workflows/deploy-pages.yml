@@ -31,22 +31,8 @@ jobs:
         run: |
           rm -rf pages-dist
           mkdir -p pages-dist
-          cp -R meguniot_access pages-dist/meguniot_access
+          cp -R meguniot_access/* pages-dist/
           cp -R data pages-dist/data
-          cat > pages-dist/index.html <<'EOF'
-          <!doctype html>
-          <html lang="en">
-            <head>
-              <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <title>Redirecting…</title>
-              <meta http-equiv="refresh" content="0; url=./meguniot_access/index.html" />
-            </head>
-            <body>
-              <a href="./meguniot_access/index.html">Open site</a>
-            </body>
-          </html>
-          EOF
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

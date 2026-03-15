@@ -250,7 +250,7 @@ const I18N = {
   },
 };
 
-const DATA_BASE = "../data";
+const DATA_BASE = window.location.pathname.includes("/meguniot_access/") ? "../data" : "./data";
 const NETWORK_BASE = `${DATA_BASE}/meguniot_network`;
 const LAYER_DEFAULTS = {
   meguniot: true,
