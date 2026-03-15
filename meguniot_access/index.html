@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="lang-he-ui">
       <div id="map"></div>
 
       <header class="topbar">
@@ -29,7 +29,7 @@
           <div id="topLangSwitchWrap" class="lang-switch-wrap">
             <span id="topLangLabelEn">EN</span>
             <label class="lang-toggle">
-              <input id="languageToggle" type="checkbox" />
+              <input id="languageToggle" type="checkbox" checked />
               <span class="lang-toggle-slider"></span>
             </label>
             <span id="topLangLabelHe">עברית</span>
@@ -150,6 +150,14 @@
               <div class="guide-tabs" role="tablist" aria-label="לשוניות מדריך">
                 <button id="guideTabUsage" class="btn btn-ghost active-tab" role="tab">שימוש</button>
                 <button id="guideTabMethods" class="btn btn-ghost" role="tab">איך זה עובד</button>
+              </div>
+              <div id="modalLangSwitchWrap" class="lang-switch-wrap">
+                <span id="modalLangLabelEn">EN</span>
+                <label class="lang-toggle">
+                  <input id="languageToggleModal" type="checkbox" checked />
+                  <span class="lang-toggle-slider"></span>
+                </label>
+                <span id="modalLangLabelHe">עברית</span>
               </div>
             </div>
           </div>

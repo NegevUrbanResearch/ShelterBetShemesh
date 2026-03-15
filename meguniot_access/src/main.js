@@ -302,8 +302,14 @@ const guideCard = document.querySelector(".guide-card");
 const guideTitle = document.getElementById("guideTitle");
 const guideContent = document.getElementById("guideContent");
 const languageToggle = document.getElementById("languageToggle");
+const languageToggleModal = document.getElementById("languageToggleModal");
+const languageToggles = [languageToggle, languageToggleModal].filter(Boolean);
 const langLabelEn = document.getElementById("topLangLabelEn");
 const langLabelHe = document.getElementById("topLangLabelHe");
+const langLabelEnModal = document.getElementById("modalLangLabelEn");
+const langLabelHeModal = document.getElementById("modalLangLabelHe");
+const langLabelEnEls = [langLabelEn, langLabelEnModal].filter(Boolean);
+const langLabelHeEls = [langLabelHe, langLabelHeModal].filter(Boolean);
 const guideTabUsage = document.getElementById("guideTabUsage");
 const guideTabMethods = document.getElementById("guideTabMethods");
 
@@ -1162,9 +1168,15 @@ function setGuideLanguage(lang) {
   document.documentElement.dir = "ltr";
   appRoot?.classList.toggle("lang-he-ui", lang === "he");
   guideCard.classList.toggle("lang-he", lang === "he");
-  languageToggle.checked = lang === "he";
-  langLabelEn.classList.toggle("active-lang-label", lang === "en");
-  langLabelHe.classList.toggle("active-lang-label", lang === "he");
+  for (const toggle of languageToggles) {
+    toggle.checked = lang === "he";
+  }
+  for (const label of langLabelEnEls) {
+    label.classList.toggle("active-lang-label", lang === "en");
+  }
+  for (const label of langLabelHeEls) {
+    label.classList.toggle("active-lang-label", lang === "he");
+  }
   guideTabUsage.textContent = t("guideUsageTab");
   guideTabMethods.textContent = t("guideMethodsTab");
   guideTabUsage.setAttribute("aria-label", t("guideUsageTabAria"));
@@ -1372,9 +1384,11 @@ function wireEvents() {
   guideModal.addEventListener("click", (e) => {
     if (e.target === guideModal) guideModal.classList.add("hidden");
   });
-  languageToggle.addEventListener("change", () => {
-    setGuideLanguage(languageToggle.checked ? "he" : "en");
-  });
+  for (const toggle of languageToggles) {
+    toggle.addEventListener("change", () => {
+      setGuideLanguage(toggle.checked ? "he" : "en");
+    });
+  }
   guideTabUsage.addEventListener("click", () => setGuideTab("usage"));
   guideTabMethods.addEventListener("click", () => setGuideTab("methods"));
 }
