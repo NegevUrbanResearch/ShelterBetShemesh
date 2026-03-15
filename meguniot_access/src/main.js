@@ -9,6 +9,38 @@ const PLACEMENT_OPTIONS = [
   { key: "exact", label: "Exact placement" },
   { key: "cluster", label: "Cluster placement" },
 ];
+const BASE_MAP_OPTIONS = [
+  {
+    key: "streets",
+    label: "Streets (OpenStreetMap)",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    options: {
+      attribution: "&copy; OpenStreetMap contributors",
+      maxZoom: 19,
+    },
+  },
+  {
+    key: "satellite",
+    label: "Satellite (Esri World Imagery)",
+    url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    options: {
+      attribution:
+        "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+      maxZoom: 19,
+    },
+  },
+  {
+    key: "light",
+    label: "Light (Carto Positron)",
+    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    options: {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: "abcd",
+      maxZoom: 20,
+    },
+  },
+];
 const FIXED_BUCKET_KEY = "5min";
 
 const DATA_BASE = "../data";
@@ -41,6 +73,7 @@ const metricGraphBtn = document.getElementById("metricGraphBtn");
 const metricEuclideanBtn = document.getElementById("metricEuclideanBtn");
 const modeExactBtn = document.getElementById("modeExactBtn");
 const modeClusterBtn = document.getElementById("modeClusterBtn");
+const baseMapSelect = document.getElementById("baseMapSelect");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -79,12 +112,18 @@ for (const bucket of BUCKET_OPTIONS) {
 }
 bucketSelect.value = FIXED_BUCKET_KEY;
 
+for (const basemap of BASE_MAP_OPTIONS) {
+  const opt = document.createElement("option");
+  opt.value = basemap.key;
+  opt.textContent = basemap.label;
+  baseMapSelect.appendChild(opt);
+}
+baseMapSelect.value = "streets";
+
 const map = L.map("map", { preferCanvas: true, zoomControl: false }).setView([31.745, 34.99], 13);
 L.control.zoom({ position: "bottomright" }).addTo(map);
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; OpenStreetMap contributors",
-  maxZoom: 19,
-}).addTo(map);
+const baseMapLayers = new Map();
+let currentBaseMapLayer = null;
 
 const layers = {
   existingMeguniot: L.layerGroup().addTo(map),
@@ -100,7 +139,9 @@ const layerVisibility = { ...LAYER_DEFAULTS };
 
 const dataStore = {
   miguniot: null,
+  miguniotSourceCrs: "EPSG:2039",
   miklatim: null,
+  miklatimSourceCrs: "EPSG:2039",
   buildings: null,
   buildingsSourceCrs: "EPSG:2039",
   coverage: null,
@@ -130,15 +171,11 @@ const recommendedIcon = L.icon({
   className: "recommended-icon",
 });
 
-function epsg2039ToLatLng(coord) {
-  const [lon, lat] = proj4("EPSG:2039", "EPSG:4326", coord);
-  return [lat, lon];
-}
-
-function geometryToLatLng(feature) {
+function geometryToLatLng(feature, sourceCrs = "EPSG:2039") {
   const coords = feature?.geometry?.coordinates;
   if (!coords || coords.length < 2) return null;
-  return epsg2039ToLatLng(coords);
+  const [lon, lat] = proj4(sourceCrs, "EPSG:4326", coords);
+  return [lat, lon];
 }
 
 function convertCoordinateToWgs(coord, sourceCrs = "EPSG:2039") {
@@ -371,10 +408,49 @@ function renderExistingCoverageBuildings() {
 function normalizeCrsName(rawName) {
   if (!rawName) return "EPSG:2039";
   const normalized = String(rawName).toUpperCase();
+  if (normalized.includes("EPSG::3857")) return "EPSG:3857";
+  if (normalized.includes("EPSG::2039")) return "EPSG:2039";
+  if (normalized.includes("EPSG::4326")) return "EPSG:4326";
+  if (normalized.includes("900913")) return "EPSG:3857";
   if (normalized.includes("EPSG:3857")) return "EPSG:3857";
   if (normalized.includes("EPSG:2039")) return "EPSG:2039";
   if (normalized.includes("EPSG:4326")) return "EPSG:4326";
   return "EPSG:2039";
+}
+
+function ensureBaseMapLayer(mapKey) {
+  if (baseMapLayers.has(mapKey)) return baseMapLayers.get(mapKey);
+  const spec = BASE_MAP_OPTIONS.find((option) => option.key === mapKey) || BASE_MAP_OPTIONS[0];
+  const layer = L.tileLayer(spec.url, spec.options);
+  baseMapLayers.set(spec.key, layer);
+  return layer;
+}
+
+function setBaseMap(mapKey) {
+  const spec = BASE_MAP_OPTIONS.find((option) => option.key === mapKey) || BASE_MAP_OPTIONS[0];
+  const nextLayer = ensureBaseMapLayer(spec.key);
+  if (currentBaseMapLayer && map.hasLayer(currentBaseMapLayer)) {
+    map.removeLayer(currentBaseMapLayer);
+  }
+  nextLayer.addTo(map);
+  currentBaseMapLayer = nextLayer;
+  if (baseMapSelect.value !== spec.key) baseMapSelect.value = spec.key;
+}
+
+function reportProjectionStatus() {
+  const baseProjection = "EPSG:3857";
+  const layersToAudit = [
+    ["buildings", dataStore.buildingsSourceCrs],
+    ["miguniot", dataStore.miguniotSourceCrs],
+    ["miklatim", dataStore.miklatimSourceCrs],
+  ];
+  for (const [label, sourceCrs] of layersToAudit) {
+    const status =
+      sourceCrs === baseProjection || sourceCrs === "EPSG:4326"
+        ? "aligned (converted safely to WGS84 for Leaflet)"
+        : "reprojected from local CRS; small datum-related offsets are possible";
+    console.info(`[CRS check] ${label}: source=${sourceCrs}, base=${baseProjection} -> ${status}`);
+  }
 }
 
 function toCsv(rows) {
@@ -455,7 +531,7 @@ function renderExistingShelters() {
 
   let shelterIdCounter = 0;
   for (const feature of migFeatures) {
-    const latLng = geometryToLatLng(feature);
+    const latLng = geometryToLatLng(feature, dataStore.miguniotSourceCrs);
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
@@ -476,7 +552,7 @@ function renderExistingShelters() {
   }
 
   for (const feature of mikFeatures) {
-    const latLng = geometryToLatLng(feature);
+    const latLng = geometryToLatLng(feature, dataStore.miklatimSourceCrs);
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
@@ -808,7 +884,13 @@ function setGuideTab(tab) {
 
 async function loadAllData() {
   dataStore.miguniot = await fetchJson(`${DATA_BASE}/Miguniot.geojson`);
+  dataStore.miguniotSourceCrs = normalizeCrsName(
+    dataStore.miguniot?.crs?.properties?.name || "",
+  );
   dataStore.miklatim = await fetchJson(`${DATA_BASE}/Miklatim.geojson`);
+  dataStore.miklatimSourceCrs = normalizeCrsName(
+    dataStore.miklatim?.crs?.properties?.name || "",
+  );
   dataStore.buildings = await fetchJson(`${DATA_BASE}/buildings.geojson`);
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
@@ -889,6 +971,7 @@ function wireEvents() {
   metricEuclideanBtn?.addEventListener("click", () => setDistanceMetric("euclidean"));
   modeExactBtn?.addEventListener("click", () => setPlacementMode("exact"));
   modeClusterBtn?.addEventListener("click", () => setPlacementMode("cluster"));
+  baseMapSelect?.addEventListener("change", () => setBaseMap(baseMapSelect.value));
 
   downloadCsvBtn.addEventListener("click", () => {
     const rows = recommendationsForCurrentView();
@@ -973,10 +1056,13 @@ function wireEvents() {
   guideTabMethods.addEventListener("click", () => setGuideTab("methods"));
 }
 
+setBaseMap(baseMapSelect.value || "streets");
+
 loadAllData()
   .then(() => {
     wireEvents();
     renderExistingShelters();
+    reportProjectionStatus();
     setPlacementMode("exact");
     setGuideLanguage("en");
     setGuideTab("usage");
