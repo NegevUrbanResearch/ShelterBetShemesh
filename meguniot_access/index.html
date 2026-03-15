@@ -30,47 +30,61 @@
         </div>
       </header>
 
-      <aside class="control-card glass">
-        <label>Distance metric</label>
-        <div class="mode-toggle" role="group" aria-label="Distance metric">
-          <button id="metricGraphBtn" class="btn btn-toggle" type="button">
-            Graph distance
-          </button>
-          <button id="metricEuclideanBtn" class="btn btn-toggle active-toggle" type="button">
-            Euclidean (200m)
-          </button>
-        </div>
+      <aside class="control-stack">
+        <section class="control-step-panel glass">
+          <h3 class="control-step-title"><span class="step-chip">1</span> Inspect coverage</h3>
+          <label class="heatmap-toggle-control">
+            <input type="checkbox" id="accessibilityHeatmapToggle" class="checkbox-toggle" />
+            <span class="checkbox-label">Accessibility heatmap (current coverage)</span>
+            <span class="checkbox-checkmark">✓</span>
+          </label>
+          <p id="accessibilityHeatmapHint" class="legend-hint hidden">Green = covered | Red = underserved</p>
+        </section>
 
-        <label>Placement mode</label>
-        <div class="mode-toggle" role="group" aria-label="Placement mode">
-          <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
-            Exact placement
-          </button>
-          <button id="modeClusterBtn" class="btn btn-toggle" type="button">
-            Cluster placement
-          </button>
-        </div>
+        <section class="control-step-panel glass">
+          <h3 class="control-step-title"><span class="step-chip">2</span> Set analysis mode</h3>
+          <label>Distance metric</label>
+          <div class="mode-toggle" role="group" aria-label="Distance metric">
+            <button id="metricGraphBtn" class="btn btn-toggle" type="button">
+              Graph distance
+            </button>
+            <button id="metricEuclideanBtn" class="btn btn-toggle active-toggle" type="button">
+              Euclidean (200m)
+            </button>
+          </div>
+          <label>Placement mode</label>
+          <div class="mode-toggle" role="group" aria-label="Placement mode">
+            <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
+              Exact placement
+            </button>
+            <button id="modeClusterBtn" class="btn btn-toggle" type="button">
+              Cluster placement
+            </button>
+          </div>
+          <div id="bucketControls">
+            <label for="bucketSelect">Time bucket</label>
+            <select id="bucketSelect"></select>
+          </div>
+        </section>
 
-        <div id="basemapControls">
-          <label for="baseMapSelect">Base map</label>
-          <select id="baseMapSelect"></select>
-        </div>
+        <section class="control-step-panel glass">
+          <h3 class="control-step-title"><span class="step-chip">3</span> Add shelters</h3>
+          <label for="countRange">Recommended shelters</label>
+          <input id="countRange" type="range" min="0" max="0" value="0" />
+          <div id="countValue" class="count-badge">0</div>
+          <div class="downloads">
+            <button id="downloadCsv" class="btn">Download CSV</button>
+            <button id="downloadGeojson" class="btn">Download GeoJSON</button>
+          </div>
+        </section>
 
-        <div id="bucketControls">
-          <label for="bucketSelect">Time bucket</label>
-          <select id="bucketSelect"></select>
-        </div>
-
-        <label for="countRange">Recommended shelters</label>
-        <input id="countRange" type="range" min="0" max="0" value="0" />
-        <div id="countValue" class="count-badge">0</div>
-
-        <div class="downloads">
-          <button id="downloadCsv" class="btn">Download CSV</button>
-          <button id="downloadGeojson" class="btn">Download GeoJSON</button>
-        </div>
-
-        <section id="stats" class="stats"></section>
+        <section id="coverageDisplayControls" class="control-step-panel glass">
+          <h3 class="control-step-title"><span class="step-chip">4</span> Inspect change</h3>
+          <p id="coverageInspectHint" class="coverage-inspect-hint">
+            Click shelter markers on the map to inspect local coverage.
+          </p>
+          <section id="stats" class="stats"></section>
+        </section>
       </aside>
 
       <aside id="mapLegend" class="legend-card glass">
@@ -103,6 +117,10 @@
         </div>
         <details class="legend-layers" open>
           <summary>Layers</summary>
+          <div class="legend-basemap-control">
+            <label for="baseMapSelect">Base map</label>
+            <select id="baseMapSelect"></select>
+          </div>
           <label><input type="checkbox" id="layerMeguniot" checked /> Existing meguniot</label>
           <label><input type="checkbox" id="layerMiklatim" checked /> Existing miklatim</label>
           <label><input type="checkbox" id="layerRecommended" checked /> Recommended meguniot</label>
@@ -110,12 +128,6 @@
           <label><input type="checkbox" id="layerUncoveredBuildings" checked /> Uncovered buildings</label>
           <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> Covered buildings</label>
           <label><input type="checkbox" id="layerCovered" checked /> Covered by selected shelter</label>
-        </details>
-        <details id="coverageDisplayControls" class="legend-layers" open>
-          <summary>Coverage display</summary>
-          <label><input type="radio" name="coverageMode" id="coverageModeFull" checked /> All reachable buildings</label>
-          <label><input type="radio" name="coverageMode" id="coverageModeMarginal" /> Newly covered only</label>
-          <p class="legend-hint">Shift-click shelters to compare multiple at once</p>
         </details>
       </aside>
 

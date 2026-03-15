@@ -42,6 +42,7 @@ const BASE_MAP_OPTIONS = [
   },
 ];
 const FIXED_BUCKET_KEY = "5min";
+const ACCESSIBILITY_GRID_CELL_SIZE_PX = 8;
 
 const DATA_BASE = "../data";
 const NETWORK_BASE = `${DATA_BASE}/meguniot_network`;
@@ -53,11 +54,12 @@ const LAYER_DEFAULTS = {
   uncoveredBuildings: true,
   coveredBuildingsBase: true,
   covered: true,
+  accessibilityHeatmap: false,
 };
 
 proj4.defs(
   "EPSG:2039",
-  "+proj=tmerc +lat_0=31.7343936111111 +lon_0=35.2045169444444 +k=1.0000067 +x_0=219529.584 +y_0=626907.39 +ellps=GRS80 +units=m +no_defs",
+  "+proj=tmerc +lat_0=31.7343936111111 +lon_0=35.2045169444444 +k=1.0000067 +x_0=219529.584 +y_0=626907.39 +ellps=GRS80 +towgs84=-24.0024,-17.1032,-17.8444,-0.33077,-1.85269,1.66969,5.4248 +units=m +no_defs +type=crs",
 );
 
 const bucketSelect = document.getElementById("bucketSelect");
@@ -82,9 +84,9 @@ const layerPost1992Buildings = document.getElementById("layerPost1992Buildings")
 const layerUncoveredBuildings = document.getElementById("layerUncoveredBuildings");
 const layerCoveredBuildingsBase = document.getElementById("layerCoveredBuildingsBase");
 const layerCovered = document.getElementById("layerCovered");
-
-const coverageModeFull = document.getElementById("coverageModeFull");
-const coverageModeMarginal = document.getElementById("coverageModeMarginal");
+const accessibilityHeatmapToggle = document.getElementById("accessibilityHeatmapToggle");
+const accessibilityHeatmapHint = document.getElementById("accessibilityHeatmapHint");
+const coverageInspectHint = document.getElementById("coverageInspectHint");
 
 const openGuideBtn = document.getElementById("openGuideBtn");
 const closeGuideBtn = document.getElementById("closeGuideBtn");
@@ -100,9 +102,9 @@ const guideTabMethods = document.getElementById("guideTabMethods");
 
 let currentLanguage = "en";
 let currentGuideTab = "usage";
-let coverageDisplayMode = "full";
 let currentDistanceMetric = "euclidean";
 let currentPlacementMode = "exact";
+let accessibilityHeatmapEnabled = false;
 
 for (const bucket of BUCKET_OPTIONS) {
   const opt = document.createElement("option");
@@ -133,6 +135,7 @@ const layers = {
   uncoveredBuildings: L.layerGroup().addTo(map),
   coveredBuildingsBase: L.layerGroup().addTo(map),
   coveredBuildings: L.layerGroup().addTo(map),
+  accessibilityHeatmap: L.layerGroup(),
 };
 
 const layerVisibility = { ...LAYER_DEFAULTS };
@@ -257,6 +260,34 @@ function createBuildingLayer(feature, style, radius = 3) {
   });
 }
 
+function getCoveragePointLatLng(coverage, idx) {
+  if (Number.isFinite(coverage?.lat) && Number.isFinite(coverage?.lon)) {
+    return L.latLng(coverage.lat, coverage.lon);
+  }
+  const buildingFeature = buildingFeatureByIndex.get(Number(idx));
+  if (!buildingFeature) return null;
+  const bounds = L.geoJSON(buildingFeature).getBounds();
+  return bounds.isValid() ? bounds.getCenter() : null;
+}
+
+function getAccessibilityGridColor(score) {
+  const clamp01 = (value) => Math.max(0, Math.min(1, value));
+  const lerp = (a, b, t) => Math.round(a + (b - a) * t);
+  const red = [200, 20, 20];
+  const greenMid = [20, 140, 20];
+  const greenBright = [20, 185, 20];
+  if (score <= 0) {
+    const t = clamp01(score + 1); // -1..0 -> 0..1
+    return [lerp(red[0], greenMid[0], t), lerp(red[1], greenMid[1], t), lerp(red[2], greenMid[2], t)];
+  }
+  const t = clamp01(score); // 0..1
+  return [
+    lerp(greenMid[0], greenBright[0], t),
+    lerp(greenMid[1], greenBright[1], t),
+    lerp(greenMid[2], greenBright[2], t),
+  ];
+}
+
 function csvCell(value) {
   const raw = value === null || value === undefined ? "" : String(value);
   return `"${raw.replace(/"/g, '""')}"`;
@@ -319,7 +350,7 @@ function updateSliderBounds() {
   const maxRecommendations = bucketData.proposed_meguniot.length;
   countRange.max = String(maxRecommendations);
   if (!countRange.dataset.initialized) {
-    countRange.value = String(maxRecommendations);
+    countRange.value = "0";
     countRange.dataset.initialized = "true";
   }
   if (Number(countRange.value) > maxRecommendations) {
@@ -329,6 +360,19 @@ function updateSliderBounds() {
     const modeLabel = currentPlacementMode === "cluster" ? "cluster areas" : "shelters";
     countLabel.textContent = `Recommended ${modeLabel} (max ${maxRecommendations})`;
   }
+}
+
+function resetAddedSheltersToZero() {
+  countRange.value = "0";
+  countValue.textContent = "0";
+}
+
+function setAccessibilityHeatmap(enabled) {
+  accessibilityHeatmapEnabled = enabled;
+  layerVisibility.accessibilityHeatmap = enabled;
+  if (accessibilityHeatmapToggle) accessibilityHeatmapToggle.checked = enabled;
+  accessibilityHeatmapHint?.classList.toggle("hidden", !enabled);
+  coverageInspectHint?.classList.toggle("hidden", enabled);
 }
 
 function buildBuildingFeatureIndex() {
@@ -402,6 +446,46 @@ function renderExistingCoverageBuildings() {
     const layer = createBuildingLayer(featureForRender, post1992Style, 2.3);
     layer.bindPopup("<strong>Building built in/after 1992</strong><br>Shown as not requiring new shelter coverage in this analysis");
     layer.addTo(layers.post1992Buildings);
+  }
+}
+
+function renderAccessibilityHeatmap() {
+  layers.accessibilityHeatmap.clearLayers();
+  if (!accessibilityHeatmapEnabled) return;
+  const zoom = map.getZoom();
+  const cellSize = ACCESSIBILITY_GRID_CELL_SIZE_PX;
+  const buckets = new Map();
+  const bucket = getActiveBucketKey();
+
+  for (const [idx, coverage] of coverageByIndex.entries()) {
+    const covered = Boolean(coverage?.[`covered_${bucket}`]);
+    const point = getCoveragePointLatLng(coverage, idx);
+    if (!point) continue;
+    const projected = map.project(point, zoom);
+    const cellX = Math.floor(projected.x / cellSize);
+    const cellY = Math.floor(projected.y / cellSize);
+    const key = `${cellX}:${cellY}`;
+    const existing = buckets.get(key) || { cellX, cellY, scoreSum: 0, count: 0 };
+    existing.scoreSum += covered ? 1 : -1;
+    existing.count += 1;
+    buckets.set(key, existing);
+  }
+
+  for (const cell of buckets.values()) {
+    const score = cell.count ? cell.scoreSum / cell.count : 0;
+    const [r, g, b] = getAccessibilityGridColor(score);
+    const northWest = map.unproject(L.point(cell.cellX * cellSize, cell.cellY * cellSize), zoom);
+    const southEast = map.unproject(
+      L.point((cell.cellX + 1) * cellSize, (cell.cellY + 1) * cellSize),
+      zoom,
+    );
+    L.rectangle(L.latLngBounds(northWest, southEast), {
+      stroke: false,
+      fill: true,
+      fillColor: `rgb(${r}, ${g}, ${b})`,
+      fillOpacity: 0.86,
+      interactive: false,
+    }).addTo(layers.accessibilityHeatmap);
   }
 }
 
@@ -513,15 +597,6 @@ function getSelectedCoverageMatches() {
   return matches;
 }
 
-function getMarginalIndicesForRecommended(shelterId) {
-  const bucketData = getCurrentBucketData();
-  if (!bucketData) return null;
-  const rec = bucketData.proposed_meguniot.find(
-    (p) => Number(p.shelter_id ?? p.candidate_id ?? p.building_idx) === Number(shelterId),
-  );
-  return rec?.marginal_covered_building_indices ?? null;
-}
-
 function renderExistingShelters() {
   layers.existingMeguniot.clearLayers();
   layers.existingMiklatim.clearLayers();
@@ -536,7 +611,7 @@ function renderExistingShelters() {
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
     marker.bindPopup("<strong>Existing megunit</strong>");
-    marker.on("click", (e) =>
+    marker.on("click", () =>
       selectShelter(
         {
           kind: "existing",
@@ -545,7 +620,6 @@ function renderExistingShelters() {
           lon: latLng[1],
           label: "Existing megunit",
         },
-        e.originalEvent?.shiftKey,
       ),
     );
     marker.addTo(layers.existingMeguniot);
@@ -557,7 +631,7 @@ function renderExistingShelters() {
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
     marker.bindPopup("<strong>Existing miklat</strong>");
-    marker.on("click", (e) =>
+    marker.on("click", () =>
       selectShelter(
         {
           kind: "existing",
@@ -566,7 +640,6 @@ function renderExistingShelters() {
           lon: latLng[1],
           label: "Existing miklat",
         },
-        e.originalEvent?.shiftKey,
       ),
     );
     marker.addTo(layers.existingMiklatim);
@@ -598,7 +671,7 @@ function renderRecommended() {
           `Newly covered: ${marginalCount} buildings`,
       );
     }
-    marker.on("click", (e) =>
+    marker.on("click", () =>
       selectShelter(
         {
           kind: "recommended",
@@ -607,7 +680,6 @@ function renderRecommended() {
           lon: rec.lon,
           label: `Recommended #${rec.rank}`,
         },
-        e.originalEvent?.shiftKey,
       ),
     );
     marker.addTo(layers.recommended);
@@ -623,20 +695,11 @@ function renderSelectedShelterCoverage() {
   if (!matches.length) return;
 
   const colors = ["#2f80ff", "#ff6b2f", "#2fcc71", "#c02fff", "#ffcc2f"];
-  const useMarginal = coverageDisplayMode === "marginal";
-
   for (let mi = 0; mi < matches.length; mi++) {
     const { shelter, coverage: match } = matches[mi];
     const color = colors[mi % colors.length];
     const style = { color, weight: 2, fillColor: color, fillOpacity: 0.7, opacity: 1 };
-
-    let indices;
-    if (useMarginal && shelter.kind === "recommended") {
-      const marginal = getMarginalIndicesForRecommended(shelter.id);
-      indices = marginal ?? match.covered_building_indices ?? [];
-    } else {
-      indices = Array.isArray(match.covered_building_indices) ? match.covered_building_indices : [];
-    }
+    const indices = Array.isArray(match.covered_building_indices) ? match.covered_building_indices : [];
 
     for (const idx of indices) {
       const buildingFeature = buildingFeatureByIndex.get(Number(idx));
@@ -693,25 +756,34 @@ function flyToSelectedShelterView() {
   map.flyTo([last.lat, last.lon], Math.max(map.getZoom(), 16), { duration: 0.9 });
 }
 
-function selectShelter(shelter, addToSelection = false) {
-  if (addToSelection) {
-    const exists = selectedShelters.findIndex(
-      (s) => s.kind === shelter.kind && s.id === shelter.id,
-    );
-    if (exists >= 0) {
-      selectedShelters.splice(exists, 1);
-    } else {
-      selectedShelters.push(shelter);
-    }
-  } else {
-    selectedShelters = [shelter];
-  }
+function selectShelter(shelter) {
+  selectedShelters = [shelter];
   renderSelectedShelterCoverage();
   flyToSelectedShelterView();
   renderStats();
 }
 
 function applyLayerVisibility() {
+  if (accessibilityHeatmapEnabled) {
+    const standardLayers = [
+      layers.existingMeguniot,
+      layers.existingMiklatim,
+      layers.recommended,
+      layers.post1992Buildings,
+      layers.uncoveredBuildings,
+      layers.coveredBuildingsBase,
+      layers.coveredBuildings,
+    ];
+    for (const layer of standardLayers) {
+      map.removeLayer(layer);
+    }
+    if (!map.hasLayer(layers.accessibilityHeatmap)) {
+      map.addLayer(layers.accessibilityHeatmap);
+    }
+    return;
+  }
+
+  map.removeLayer(layers.accessibilityHeatmap);
   const bindings = [
     ["meguniot", layers.existingMeguniot],
     ["miklatim", layers.existingMiklatim],
@@ -731,6 +803,13 @@ function renderStats() {
   const bucketData = getCurrentBucketData();
   if (!bucketData) {
     statsEl.textContent = "Loading data...";
+    return;
+  }
+  if (accessibilityHeatmapEnabled) {
+    statsEl.innerHTML =
+      "Accessibility screen-grid mode is active. " +
+      "<strong>Green</strong> areas are currently covered by existing shelters, " +
+      "and <strong>red</strong> areas are underserved.";
     return;
   }
   const stats = bucketData.statistics;
@@ -766,6 +845,7 @@ async function refreshView() {
   updateSliderBounds();
   countValue.textContent = countRange.value;
   renderExistingCoverageBuildings();
+  renderAccessibilityHeatmap();
   renderRecommended();
   renderSelectedShelterCoverage();
   renderStats();
@@ -785,28 +865,24 @@ function renderGuideContent() {
     <div class="guide-block">
       <h3>How to Use</h3>
       <ul>
-        <li>Choose a placement mode: <strong>Exact placement</strong> for precise points or <strong>Cluster placement</strong> for area-level guidance.</li>
-        <li><strong>Exact placement</strong> now uses a single fixed threshold of <strong>5-minute walking distance</strong>.</li>
-        <li><strong>Cluster placement</strong> hides accessibility controls while keeping all buildings visible for context.</li>
-        <li>Set how many suggested shelters you want to view using the slider.</li>
-        <li>Click any marker to inspect the recommendation details and location.</li>
-        <li>Use the <strong>Layers</strong> section in the legend to hide or show map information.</li>
+        <li><strong>1.</strong> Choose <strong>Euclidean</strong> or <strong>Graph distance</strong> to define how accessibility is measured.</li>
+        <li><strong>2.</strong> Choose <strong>Exact placement</strong> or <strong>Cluster placement</strong> to set recommendation style.</li>
+        <li><strong>3.</strong> Add recommended shelters with the slider to test different intervention sizes.</li>
+        <li><strong>4.</strong> Inspect updated statistics, then click shelters on the map to explore local coverage change.</li>
+        <li><strong>5.</strong> Use legend <strong>Layers</strong> to manage map visibility and base map context.</li>
       </ul>
-      <p><strong>Tip:</strong> Use cluster mode to identify where to plan, then switch to exact mode for specific candidate points.</p>
     </div>
   `;
   const usageHe = `
     <div class="guide-block" dir="rtl">
       <h3>איך משתמשים</h3>
       <ul>
-        <li>בוחרים מצב מיקום: <strong>מיקום מדויק</strong> לנקודות ספציפיות או <strong>מיקום באשכולות</strong> להכוונה אזורית.</li>
-        <li><strong>מיקום מדויק</strong> פועל כעת עם סף קבוע של <strong>5 דקות הליכה</strong>.</li>
-        <li><strong>מיקום באשכולות</strong> מסתיר את בקרות הנגישות אך שומר על תצוגת כל המבנים להקשר.</li>
-        <li>מגדירים בסליידר כמה מיקומים מומלצים יוצגו על המפה.</li>
-        <li>לוחצים על סמן כדי לראות פרטי המלצה ומיקום.</li>
-        <li>משתמשים באזור <strong>Layers</strong> שבמקרא כדי להסתיר או להציג שכבות כשיש עומס מידע.</li>
+        <li><strong>1.</strong> בוחרים <strong>Euclidean</strong> או <strong>Graph distance</strong> כדי לקבוע איך מודדים נגישות.</li>
+        <li><strong>2.</strong> בוחרים <strong>מיקום מדויק</strong> או <strong>מיקום באשכולות</strong> לפי סוג ההמלצה הרצוי.</li>
+        <li><strong>3.</strong> מוסיפים מיגוניות מומלצות באמצעות הסליידר כדי לבדוק תרחישי התערבות שונים.</li>
+        <li><strong>4.</strong> בודקים את הסטטיסטיקה המתעדכנת, ואז לוחצים על מיגוניות במפה כדי לחקור שינויי כיסוי מקומיים.</li>
+        <li><strong>5.</strong> משתמשים באזור <strong>Layers</strong> שבמקרא כדי לשלוט בתצוגת שכבות ובמפת הבסיס.</li>
       </ul>
-      <p><strong>טיפ:</strong> השתמשו במצב אשכולות לזיהוי אזורי תעדוף, ואז עברו למיקום מדויק לבחינת נקודות ספציפיות.</p>
     </div>
   `;
 
@@ -814,32 +890,22 @@ function renderGuideContent() {
     <div class="guide-block">
       <h3>Methodology</h3>
       <ul>
-        <li>Coverage is estimated along <strong>real walking streets</strong> with a densified network graph that adds entry points every 25m along long road segments.</li>
-        <li>Each building is projected onto its nearest road edge, capturing actual door-to-street walking time.</li>
-        <li>The analysis combines existing shelters and now treats <strong>all residential buildings built before 1992</strong> as requiring nearby shelter access.</li>
-        <li><strong>Cluster placement mode</strong> runs 150 KMeans models and keeps the best 150 compact fits to point at <strong>general areas</strong> where shelters should be considered.</li>
-        <li><strong>Exact placement mode</strong> outputs <strong>specific candidate points</strong> and evaluates them against a fixed 5-minute walking threshold.</li>
-        <li>Exact point outputs are useful for prioritization but are not perfectly accurate: road-network geometry, missing paths, and routing assumptions can shift local results.</li>
-        <li><strong>Total reachable</strong> shows all buildings a shelter can reach; <strong>newly covered</strong> shows only buildings not already served by a higher-ranked shelter.</li>
-        <li>Use the <em>Coverage display</em> toggle to switch between these views. Shift-click shelters to compare coverage of multiple shelters at once.</li>
+        <li><strong>1.</strong> Building and shelter layers are harmonized to a shared map coordinate system.</li>
+        <li><strong>2.</strong> Existing accessibility is computed per building under graph or euclidean distance logic.</li>
+        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points or cluster guidance.</li>
+        <li><strong>4.</strong> Statistics and map layers update interactively as you change mode and shelter count.</li>
       </ul>
-      <p>Goal: help prioritize locations that reduce uncovered buildings under strict response times.</p>
     </div>
   `;
   const methodsHe = `
     <div class="guide-block" dir="rtl">
       <h3>מתודולוגיה</h3>
       <ul>
-        <li>הכיסוי מחושב לפי <strong>הליכה ברחובות אמיתיים</strong> עם רשת צפופה שמוסיפה נקודות כניסה כל 25 מטר לאורך קטעי כביש ארוכים.</li>
-        <li>כל בניין מחובר לקטע הכביש הקרוב אליו, כך שזמן ההליכה מהדלת לרחוב נלקח בחשבון.</li>
-        <li>הניתוח משלב מקלטים קיימים ומתייחס כעת אל <strong>כל בנייני המגורים שנבנו לפני 1992</strong> כמבנים שדורשים גישה קרובה למיגון.</li>
-        <li><strong>מצב מיקום באשכולות</strong> מריץ 150 מודלי KMeans ובוחר את 150 ההתאמות הקומפקטיות הטובות ביותר כדי להצביע על <strong>אזור כללי</strong> למיקום מקלטים.</li>
-        <li><strong>מצב מיקום מדויק</strong> מציג <strong>נקודות ספציפיות</strong> ונבחן מול סף קבוע של 5 דקות הליכה.</li>
-        <li>התוצאות במצב המדויק שימושיות לתעדוף אך אינן מדויקות לחלוטין: אי-ודאות ברשת הדרכים ובהנחות הניתוב יכולה להשפיע מקומית על הכיסוי.</li>
-        <li><strong>סה"כ נגישים</strong> מראה את כל הבניינים שמקלט יכול להגיע אליהם; <strong>מכוסים חדשים</strong> מראה רק בניינים שלא כבר מכוסים על ידי מקלט בדירוג גבוה יותר.</li>
-        <li>השתמשו ב-Shift+לחיצה כדי להשוות כיסוי של מספר מקלטים בו-זמנית.</li>
+        <li><strong>1.</strong> שכבות המבנים והמיגון מיושרות למערכת קואורדינטות משותפת במפה.</li>
+        <li><strong>2.</strong> הנגישות הקיימת מחושבת לכל בניין לפי לוגיקת Graph או Euclidean.</li>
+        <li><strong>3.</strong> מועמדים למיגון מדורגים לפי תוספת כיסוי ומוצגים כמיקומים מדויקים או אשכולות.</li>
+        <li><strong>4.</strong> הסטטיסטיקה והשכבות מתעדכנות אינטראקטיבית כאשר משנים מצב ניתוח או מספר מיגוניות.</li>
       </ul>
-      <p>המטרה: לסייע בתעדוף מיקומים שמצמצמים מבנים לא מכוסים בזמני תגובה קצרים.</p>
     </div>
   `;
 
@@ -928,6 +994,7 @@ async function loadAllData() {
 
 function setDistanceMetric(metricKey) {
   if (!DISTANCE_METRIC_OPTIONS.find((m) => m.key === metricKey)) return;
+  if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
   currentDistanceMetric = metricKey;
   dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric] || null;
   coverageByIndex.clear();
@@ -945,17 +1012,13 @@ function setDistanceMetric(metricKey) {
 
 function setPlacementMode(modeKey) {
   if (!PLACEMENT_OPTIONS.find((m) => m.key === modeKey)) return;
+  if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
   currentPlacementMode = modeKey;
   modeExactBtn?.classList.toggle("active-toggle", modeKey === "exact");
   modeClusterBtn?.classList.toggle("active-toggle", modeKey === "cluster");
   bucketControls?.classList.add("hidden-control");
-  coverageDisplayControls?.classList.toggle("hidden-control", modeKey === "cluster");
   if (bucketSelect) {
     bucketSelect.disabled = true;
-  }
-  if (modeKey === "cluster" && coverageModeFull) {
-    coverageModeFull.checked = true;
-    coverageDisplayMode = "full";
   }
   clearSelection();
   void refreshView();
@@ -963,17 +1026,27 @@ function setPlacementMode(modeKey) {
 
 function wireEvents() {
   bucketSelect.addEventListener("change", () => {
+    if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
     clearSelection();
     void refreshView();
   });
-  countRange.addEventListener("input", () => void refreshView());
+  countRange.addEventListener("input", () => {
+    if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
+    void refreshView();
+  });
   metricGraphBtn?.addEventListener("click", () => setDistanceMetric("graph"));
   metricEuclideanBtn?.addEventListener("click", () => setDistanceMetric("euclidean"));
   modeExactBtn?.addEventListener("click", () => setPlacementMode("exact"));
   modeClusterBtn?.addEventListener("click", () => setPlacementMode("cluster"));
   baseMapSelect?.addEventListener("change", () => setBaseMap(baseMapSelect.value));
+  map.on("zoomend moveend", () => {
+    if (!accessibilityHeatmapEnabled) return;
+    renderAccessibilityHeatmap();
+    applyLayerVisibility();
+  });
 
   downloadCsvBtn.addEventListener("click", () => {
+    if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
     const rows = recommendationsForCurrentView();
     const activeBucket = getActiveBucketKey();
     const label = BUCKET_OPTIONS.find((b) => b.key === activeBucket)?.label || "bucket";
@@ -986,6 +1059,7 @@ function wireEvents() {
   });
 
   downloadGeojsonBtn.addEventListener("click", () => {
+    if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
     const rows = recommendationsForCurrentView();
     const features = rows.map((r) => ({
       type: "Feature",
@@ -1032,16 +1106,22 @@ function wireEvents() {
       applyLayerVisibility();
     });
   }
+  if (accessibilityHeatmapToggle) {
+    accessibilityHeatmapToggle.checked = accessibilityHeatmapEnabled;
+  }
+  setAccessibilityHeatmap(accessibilityHeatmapEnabled);
 
-  coverageModeFull.addEventListener("change", () => {
-    coverageDisplayMode = "full";
-    renderSelectedShelterCoverage();
+  accessibilityHeatmapToggle?.addEventListener("change", () => {
+    const enabled = accessibilityHeatmapToggle.checked;
+    setAccessibilityHeatmap(enabled);
+    if (enabled) resetAddedSheltersToZero();
+    clearSelection();
+    renderAccessibilityHeatmap();
     renderStats();
-  });
-  coverageModeMarginal.addEventListener("change", () => {
-    coverageDisplayMode = "marginal";
-    renderSelectedShelterCoverage();
-    renderStats();
+    applyLayerVisibility();
+    if (!enabled) {
+      void refreshView();
+    }
   });
 
   openGuideBtn.addEventListener("click", () => guideModal.classList.remove("hidden"));
