@@ -1,18 +1,15 @@
-const BUCKET_OPTIONS = [
-  { label: "5-minute", key: "5min", seconds: 300 },
-];
+const BUCKET_OPTIONS = [{ key: "5min", seconds: 300 }];
 const DISTANCE_METRIC_OPTIONS = [
-  { key: "graph", label: "Graph distance" },
-  { key: "euclidean", label: "Euclidean (200m)" },
+  { key: "graph" },
+  { key: "euclidean" },
 ];
 const PLACEMENT_OPTIONS = [
-  { key: "exact", label: "Exact placement" },
-  { key: "cluster", label: "Cluster placement" },
+  { key: "exact" },
+  { key: "cluster" },
 ];
 const BASE_MAP_OPTIONS = [
   {
     key: "streets",
-    label: "Streets (OpenStreetMap)",
     url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     options: {
       attribution: "&copy; OpenStreetMap contributors",
@@ -21,7 +18,6 @@ const BASE_MAP_OPTIONS = [
   },
   {
     key: "satellite",
-    label: "Satellite (Esri World Imagery)",
     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     options: {
       attribution:
@@ -31,7 +27,6 @@ const BASE_MAP_OPTIONS = [
   },
   {
     key: "light",
-    label: "Light (Carto Positron)",
     url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
     options: {
       attribution:
@@ -43,6 +38,217 @@ const BASE_MAP_OPTIONS = [
 ];
 const FIXED_BUCKET_KEY = "5min";
 const ACCESSIBILITY_GRID_CELL_SIZE_PX = 8;
+const I18N = {
+  en: {
+    appTitle: "Access to Shelter - Beit Shemesh",
+    appSubtitle: "Municipal shelter accessibility planning",
+    infoAriaLabel: "Info",
+    closeHelpAriaLabel: "Close help",
+    guideTabsAriaLabel: "Guide sections",
+    step1Title: '<span class="step-chip">1</span> Inspect coverage',
+    step2Title: '<span class="step-chip">2</span> Set analysis mode',
+    step3Title: '<span class="step-chip">3</span> Add shelters',
+    step4Title: '<span class="step-chip">4</span> Inspect change',
+    heatmapToggleLabel: "Accessibility heatmap (current coverage)",
+    accessibilityHeatmapHint: "Green = covered | Red = underserved",
+    distanceMetricLabel: "Distance metric",
+    placementModeLabel: "Placement mode",
+    timeBucketLabel: "Time bucket",
+    downloadCsv: "Download CSV",
+    downloadGeojson: "Download GeoJSON",
+    coverageInspectHint: "Click shelter markers on the map to inspect local coverage.",
+    legendTitle: "Map legend",
+    legendExisting: "Existing shelters (meguniot + miklatim)",
+    legendRecommended: "Recommended shelters",
+    legendPost1992: "Buildings built in/after 1992",
+    legendUncovered: "Uncovered buildings (existing conditions)",
+    legendCoveredBase: "Buildings covered by existing shelters",
+    legendCoveredSelected: "Covered by selected shelter",
+    layersSummary: "Layers",
+    baseMapLabel: "Base map",
+    layerMeguniotLabel: "Existing meguniot",
+    layerMiklatimLabel: "Existing miklatim",
+    layerRecommendedLabel: "Recommended meguniot",
+    layerPost1992BuildingsLabel: "Buildings built in/after 1992",
+    layerUncoveredBuildingsLabel: "Uncovered buildings",
+    layerCoveredBuildingsBaseLabel: "Covered buildings",
+    layerCoveredLabel: "Covered by selected shelter",
+    metricGraphBtn: "Graph distance",
+    metricEuclideanBtn: "Euclidean (200m)",
+    modeExactBtn: "Exact placement",
+    modeClusterBtn: "Cluster placement",
+    countRangeLabel: "Recommended shelters",
+    countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
+      `Recommended ${modeLabel} (max ${maxRecommendations})`,
+    clusterAreas: "cluster areas",
+    shelters: "shelters",
+    bucketLabel_5min: "5-minute",
+    baseMap_streets: "Streets (OpenStreetMap)",
+    baseMap_satellite: "Satellite (Esri World Imagery)",
+    baseMap_light: "Light (Carto Positron)",
+    loadingData: "Loading data...",
+    accessibilityStats:
+      "Accessibility screen-grid mode is active. <strong>Green</strong> areas are currently covered by existing shelters, and <strong>red</strong> areas are underserved.",
+    metricLabelEuclidean: "euclidean straight-line (200m)",
+    metricLabelGraph: "graph walking",
+    clusterStats: (shownLength, metricLabel) =>
+      `Cluster placement mode is showing <strong>${shownLength}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.`,
+    exactModeLabel: (metricLabel) => `exact placement mode (${metricLabel})`,
+    coveragePhraseEuclidean: "within 200m straight-line distance",
+    coveragePhraseGraph: (minuteLabel) => `within ${minuteLabel} walking distance`,
+    exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
+      `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. You have added <strong>${shownLength}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. There remain <strong>${remainingUncovered}</strong> uncovered buildings.`,
+    buildingPopupCovered: (idx) => `<strong>Building #${idx}</strong><br>Covered by existing shelters`,
+    buildingPopupUncovered: (idx) => `<strong>Building #${idx}</strong><br>Uncovered by existing shelters`,
+    buildingPost1992Popup:
+      "<strong>Building built in/after 1992</strong><br>Shown as not requiring new shelter coverage in this analysis",
+    existingMegunitPopup: "<strong>Existing megunit</strong>",
+    existingMegunitLabel: "Existing megunit",
+    existingMiklatPopup: "<strong>Existing miklat</strong>",
+    existingMiklatLabel: "Existing miklat",
+    recommendedLabel: (rank) => `Recommended #${rank}`,
+    modeLabelCluster: "Cluster area",
+    modeLabelExact: "Exact point",
+    clusterPopup: (rank, modeLabel, source) =>
+      `<strong>Cluster #${rank}</strong><br>Mode: ${modeLabel}<br>Source: ${source}<br>General recommended area`,
+    recommendedPopup: (rank, modeLabel, source, fullCount, marginalCount) =>
+      `<strong>Recommended #${rank}</strong><br>Mode: ${modeLabel}<br>Source: ${source}<br>Total reachable: ${fullCount} buildings<br>Newly covered: ${marginalCount} buildings`,
+    guideUsageTab: "Usage",
+    guideMethodsTab: "Methods",
+    guideUsageTabAria: "Usage tab",
+    guideMethodsTabAria: "Methods tab",
+    guideTitleUsage: "Access to Shelter - Beit Shemesh",
+    guideTitleMethods: "Methods",
+    guideUsageHtml: `
+    <div class="guide-block">
+      <h3>How to Use</h3>
+      <ul>
+        <li><strong>1.</strong> Choose <strong>Euclidean</strong> or <strong>Graph distance</strong> to define how accessibility is measured.</li>
+        <li><strong>2.</strong> Choose <strong>Exact placement</strong> or <strong>Cluster placement</strong> to set recommendation style.</li>
+        <li><strong>3.</strong> Add recommended shelters with the slider to test different intervention sizes.</li>
+        <li><strong>4.</strong> Inspect updated statistics, then click shelters on the map to explore local coverage change.</li>
+        <li><strong>5.</strong> Use legend <strong>Layers</strong> to manage map visibility and base map context.</li>
+      </ul>
+    </div>
+  `,
+    guideMethodsHtml: `
+    <div class="guide-block">
+      <h3>Methodology</h3>
+      <ul>
+        <li><strong>1.</strong> Building and shelter layers are harmonized to a shared map coordinate system.</li>
+        <li><strong>2.</strong> Existing accessibility is computed per building under graph or euclidean distance logic.</li>
+        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points or cluster guidance.</li>
+        <li><strong>4.</strong> Statistics and map layers update interactively as you change mode and shelter count.</li>
+      </ul>
+    </div>
+  `,
+    errorLoadingData: (message) => `Error loading data: ${message}`,
+  },
+  he: {
+    appTitle: "עיר מקלט - בית שמש",
+    appSubtitle: "תכנון נגישות למרחבים מוגנים בעיר",
+    infoAriaLabel: "מידע",
+    closeHelpAriaLabel: "סגירת עזרה",
+    guideTabsAriaLabel: "לשוניות מדריך",
+    step1Title: '<span class="step-chip">1</span> בדיקת כיסוי',
+    step2Title: '<span class="step-chip">2</span> בחירת מצב ניתוח',
+    step3Title: '<span class="step-chip">3</span> הוספת מיגוניות',
+    step4Title: '<span class="step-chip">4</span> בדיקת שינוי',
+    heatmapToggleLabel: "מפת חום לנגישות (כיסוי נוכחי)",
+    accessibilityHeatmapHint: "ירוק = מכוסה | אדום = חסר מענה",
+    distanceMetricLabel: "מדד מרחק",
+    placementModeLabel: "מצב מיקום",
+    timeBucketLabel: "חלון זמן",
+    downloadCsv: "הורדת CSV",
+    downloadGeojson: "הורדת GeoJSON",
+    coverageInspectHint: "לחצו על סמני מיגוניות במפה כדי לבדוק כיסוי מקומי.",
+    legendTitle: "מקרא מפה",
+    legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
+    legendRecommended: "מיגוניות מומלצות",
+    legendPost1992: "מבנים שנבנו מ-1992 ואילך",
+    legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
+    legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
+    legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
+    layersSummary: "שכבות",
+    baseMapLabel: "מפת בסיס",
+    layerMeguniotLabel: "מיגוניות קיימות",
+    layerMiklatimLabel: "מקלטים קיימים",
+    layerRecommendedLabel: "מיגוניות מומלצות",
+    layerPost1992BuildingsLabel: "מבנים שנבנו מ-1992 ואילך",
+    layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
+    layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
+    layerCoveredLabel: "מכוסים על ידי מיגונית שנבחרה",
+    metricGraphBtn: "מרחק גרפי",
+    metricEuclideanBtn: "אוקלידי (200 מ')",
+    modeExactBtn: "מיקום מדויק",
+    modeClusterBtn: "מיקום באשכולות",
+    countRangeLabel: "מיגוניות מומלצות",
+    countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
+    clusterAreas: "אזורי אשכול",
+    shelters: "מיגוניות",
+    bucketLabel_5min: "5 דקות",
+    baseMap_streets: "רחובות (OpenStreetMap)",
+    baseMap_satellite: "לוויין (Esri World Imagery)",
+    baseMap_light: "בהיר (Carto Positron)",
+    loadingData: "טוען נתונים...",
+    accessibilityStats:
+      "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> מכוסים כיום על ידי מיגון קיים, ואזורים <strong>אדומים</strong> חסרי מענה.",
+    metricLabelEuclidean: "מרחק אוקלידי בקו אווירי (200 מ')",
+    metricLabelGraph: "מרחק הליכה ברשת הדרכים",
+    clusterStats: (shownLength, metricLabel) =>
+      `מצב מיקום באשכולות מציג <strong>${shownLength}</strong> מרכזי אשכול מומלצים מתוך <strong>150 התאמות KMeans מובילות</strong>. מדד מרחק: <strong>${metricLabel}</strong>. הסמנים מייצגים אזורים כלליים מומלצים למיקום מיגוניות, ולא כיסוי מדויק לפי מרחק נגישות.`,
+    exactModeLabel: (metricLabel) => `מצב מיקום מדויק (${metricLabel})`,
+    coveragePhraseEuclidean: "בטווח של 200 מ' בקו אווירי",
+    coveragePhraseGraph: (minuteLabel) => `בטווח הליכה של ${minuteLabel}`,
+    exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
+      `ב<strong>${modeLabel}</strong> יש <strong>${uncoveredNow}</strong> מבני מגורים ללא מיגון <strong>${coveragePhrase}</strong>. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים <strong>${coveragePhrase}</strong>. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
+    buildingPopupCovered: (idx) => `<strong>מבנה #${idx}</strong><br>מכוסה על ידי מיגון קיים`,
+    buildingPopupUncovered: (idx) => `<strong>מבנה #${idx}</strong><br>ללא כיסוי על ידי מיגון קיים`,
+    buildingPost1992Popup:
+      "<strong>מבנה שנבנה מ-1992 ואילך</strong><br>מוצג כלא נדרש לכיסוי מיגון חדש בניתוח זה",
+    existingMegunitPopup: "<strong>מיגונית קיימת</strong>",
+    existingMegunitLabel: "מיגונית קיימת",
+    existingMiklatPopup: "<strong>מקלט קיים</strong>",
+    existingMiklatLabel: "מקלט קיים",
+    recommendedLabel: (rank) => `מומלץ #${rank}`,
+    modeLabelCluster: "אזור אשכול",
+    modeLabelExact: "נקודה מדויקת",
+    clusterPopup: (rank, modeLabel, source) =>
+      `<strong>אשכול #${rank}</strong><br>מצב: ${modeLabel}<br>מקור: ${source}<br>אזור כללי מומלץ`,
+    recommendedPopup: (rank, modeLabel, source, fullCount, marginalCount) =>
+      `<strong>מיקום מומלץ #${rank}</strong><br>מצב: ${modeLabel}<br>מקור: ${source}<br>סך מבנים נגישים: ${fullCount}<br>כיסוי חדש: ${marginalCount} מבנים`,
+    guideUsageTab: "שימוש",
+    guideMethodsTab: "איך זה עובד",
+    guideUsageTabAria: "לשונית שימוש",
+    guideMethodsTabAria: "לשונית מתודולוגיה",
+    guideTitleUsage: "עיר מקלט - בית שמש",
+    guideTitleMethods: "איך זה עובד",
+    guideUsageHtml: `
+    <div class="guide-block" dir="rtl">
+      <h3>איך משתמשים</h3>
+      <ul>
+        <li><strong>1.</strong> בוחרים <strong>אוקלידי</strong> או <strong>מרחק גרפי</strong> כדי לקבוע איך מודדים נגישות.</li>
+        <li><strong>2.</strong> בוחרים <strong>מיקום מדויק</strong> או <strong>מיקום באשכולות</strong> לפי סוג ההמלצה הרצוי.</li>
+        <li><strong>3.</strong> מוסיפים מיגוניות מומלצות באמצעות הסליידר כדי לבדוק תרחישי התערבות שונים.</li>
+        <li><strong>4.</strong> בודקים את הסטטיסטיקה המתעדכנת, ואז לוחצים על מיגוניות במפה כדי לחקור שינויי כיסוי מקומיים.</li>
+        <li><strong>5.</strong> משתמשים באזור <strong>שכבות</strong> שבמקרא כדי לשלוט בתצוגה ובמפת הבסיס.</li>
+      </ul>
+    </div>
+  `,
+    guideMethodsHtml: `
+    <div class="guide-block" dir="rtl">
+      <h3>מתודולוגיה</h3>
+      <ul>
+        <li><strong>1.</strong> שכבות המבנים והמיגון מיושרות למערכת קואורדינטות משותפת במפה.</li>
+        <li><strong>2.</strong> הנגישות הקיימת מחושבת לכל בניין לפי לוגיקת מרחק גרפי או אוקלידי.</li>
+        <li><strong>3.</strong> מועמדים למיגון מדורגים לפי תוספת כיסוי ומוצגים כמיקומים מדויקים או כהנחיית אשכולות.</li>
+        <li><strong>4.</strong> הסטטיסטיקה והשכבות מתעדכנות אינטראקטיבית כאשר משנים מצב ניתוח וכמות מיגוניות.</li>
+      </ul>
+    </div>
+  `,
+    errorLoadingData: (message) => `שגיאה בטעינת נתונים: ${message}`,
+  },
+};
 
 const DATA_BASE = "../data";
 const NETWORK_BASE = `${DATA_BASE}/meguniot_network`;
@@ -95,21 +301,114 @@ const guideCard = document.querySelector(".guide-card");
 const guideTitle = document.getElementById("guideTitle");
 const guideContent = document.getElementById("guideContent");
 const languageToggle = document.getElementById("languageToggle");
-const langLabelEn = document.getElementById("langLabelEn");
-const langLabelHe = document.getElementById("langLabelHe");
+const langLabelEn = document.getElementById("topLangLabelEn");
+const langLabelHe = document.getElementById("topLangLabelHe");
 const guideTabUsage = document.getElementById("guideTabUsage");
 const guideTabMethods = document.getElementById("guideTabMethods");
 
-let currentLanguage = "en";
+let currentLanguage = "he";
 let currentGuideTab = "usage";
 let currentDistanceMetric = "euclidean";
 let currentPlacementMode = "exact";
 let accessibilityHeatmapEnabled = false;
 
+function t(key, ...args) {
+  const value = I18N[currentLanguage]?.[key];
+  if (typeof value === "function") return value(...args);
+  return value ?? key;
+}
+
+function getBucketLabel(bucketKey) {
+  return t(`bucketLabel_${bucketKey}`);
+}
+
+function getBaseMapLabel(mapKey) {
+  return t(`baseMap_${mapKey}`);
+}
+
+function applyStaticTranslations() {
+  const textMap = {
+    appTitle: "appTitle",
+    appSubtitle: "appSubtitle",
+    step1Title: "step1Title",
+    step2Title: "step2Title",
+    step3Title: "step3Title",
+    step4Title: "step4Title",
+    heatmapToggleLabel: "heatmapToggleLabel",
+    accessibilityHeatmapHint: "accessibilityHeatmapHint",
+    distanceMetricLabel: "distanceMetricLabel",
+    placementModeLabel: "placementModeLabel",
+    timeBucketLabel: "timeBucketLabel",
+    downloadCsv: "downloadCsv",
+    downloadGeojson: "downloadGeojson",
+    coverageInspectHint: "coverageInspectHint",
+    legendTitle: "legendTitle",
+    legendExisting: "legendExisting",
+    legendRecommended: "legendRecommended",
+    legendPost1992: "legendPost1992",
+    legendUncovered: "legendUncovered",
+    legendCoveredBase: "legendCoveredBase",
+    legendCoveredSelected: "legendCoveredSelected",
+    layersSummary: "layersSummary",
+    baseMapLabel: "baseMapLabel",
+    layerMeguniotLabel: "layerMeguniotLabel",
+    layerMiklatimLabel: "layerMiklatimLabel",
+    layerRecommendedLabel: "layerRecommendedLabel",
+    layerPost1992BuildingsLabel: "layerPost1992BuildingsLabel",
+    layerUncoveredBuildingsLabel: "layerUncoveredBuildingsLabel",
+    layerCoveredBuildingsBaseLabel: "layerCoveredBuildingsBaseLabel",
+    layerCoveredLabel: "layerCoveredLabel",
+    countRangeLabel: "countRangeLabel",
+  };
+  for (const [id, key] of Object.entries(textMap)) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (id.startsWith("step")) {
+      el.innerHTML = t(key);
+    } else {
+      el.textContent = t(key);
+    }
+  }
+
+  metricGraphBtn.textContent = t("metricGraphBtn");
+  metricEuclideanBtn.textContent = t("metricEuclideanBtn");
+  modeExactBtn.textContent = t("modeExactBtn");
+  modeClusterBtn.textContent = t("modeClusterBtn");
+
+  openGuideBtn.setAttribute("aria-label", t("infoAriaLabel"));
+  closeGuideBtn.setAttribute("aria-label", t("closeHelpAriaLabel"));
+  document.querySelector(".guide-tabs")?.setAttribute("aria-label", t("guideTabsAriaLabel"));
+  document.querySelectorAll('.mode-toggle[role="group"]')?.[0]?.setAttribute("aria-label", t("distanceMetricLabel"));
+  document.querySelectorAll('.mode-toggle[role="group"]')?.[1]?.setAttribute("aria-label", t("placementModeLabel"));
+}
+
+function repopulateLocalizedOptions() {
+  const selectedBucket = bucketSelect.value;
+  const selectedBaseMap = baseMapSelect.value;
+
+  bucketSelect.innerHTML = "";
+  for (const bucket of BUCKET_OPTIONS) {
+    const opt = document.createElement("option");
+    opt.value = bucket.key;
+    opt.textContent = getBucketLabel(bucket.key);
+    bucketSelect.appendChild(opt);
+  }
+  bucketSelect.value = selectedBucket || FIXED_BUCKET_KEY;
+
+  baseMapSelect.innerHTML = "";
+  for (const basemap of BASE_MAP_OPTIONS) {
+    const opt = document.createElement("option");
+    opt.value = basemap.key;
+    opt.textContent = getBaseMapLabel(basemap.key);
+    baseMapSelect.appendChild(opt);
+  }
+  baseMapSelect.value = selectedBaseMap || "streets";
+}
+
 for (const bucket of BUCKET_OPTIONS) {
   const opt = document.createElement("option");
   opt.value = bucket.key;
-  opt.textContent = bucket.label;
+  opt.textContent = getBucketLabel(bucket.key);
   bucketSelect.appendChild(opt);
 }
 bucketSelect.value = FIXED_BUCKET_KEY;
@@ -117,7 +416,7 @@ bucketSelect.value = FIXED_BUCKET_KEY;
 for (const basemap of BASE_MAP_OPTIONS) {
   const opt = document.createElement("option");
   opt.value = basemap.key;
-  opt.textContent = basemap.label;
+  opt.textContent = getBaseMapLabel(basemap.key);
   baseMapSelect.appendChild(opt);
 }
 baseMapSelect.value = "streets";
@@ -357,8 +656,8 @@ function updateSliderBounds() {
     countRange.value = String(maxRecommendations);
   }
   if (countLabel) {
-    const modeLabel = currentPlacementMode === "cluster" ? "cluster areas" : "shelters";
-    countLabel.textContent = `Recommended ${modeLabel} (max ${maxRecommendations})`;
+    const modeLabel = currentPlacementMode === "cluster" ? t("clusterAreas") : t("shelters");
+    countLabel.textContent = t("countRangeLabelDynamic", modeLabel, maxRecommendations);
   }
 }
 
@@ -427,10 +726,7 @@ function renderExistingCoverageBuildings() {
     if (!feature) continue;
     const covered = Boolean(coverage?.[`covered_${bucket}`]);
     const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
-    layer.bindPopup(
-      `<strong>Building #${idx}</strong><br>` +
-        `${covered ? "Covered by existing shelters" : "Uncovered by existing shelters"}`,
-    );
+    layer.bindPopup(covered ? t("buildingPopupCovered", idx) : t("buildingPopupUncovered", idx));
     layer.addTo(covered ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
   }
 
@@ -444,7 +740,7 @@ function renderExistingCoverageBuildings() {
     if (!geometry) continue;
     const featureForRender = { type: "Feature", geometry, properties: feature?.properties || {} };
     const layer = createBuildingLayer(featureForRender, post1992Style, 2.3);
-    layer.bindPopup("<strong>Building built in/after 1992</strong><br>Shown as not requiring new shelter coverage in this analysis");
+    layer.bindPopup(t("buildingPost1992Popup"));
     layer.addTo(layers.post1992Buildings);
   }
 }
@@ -610,7 +906,7 @@ function renderExistingShelters() {
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
-    marker.bindPopup("<strong>Existing megunit</strong>");
+    marker.bindPopup(t("existingMegunitPopup"));
     marker.on("click", () =>
       selectShelter(
         {
@@ -618,7 +914,7 @@ function renderExistingShelters() {
           id: shelterId,
           lat: latLng[0],
           lon: latLng[1],
-          label: "Existing megunit",
+          label: t("existingMegunitLabel"),
         },
       ),
     );
@@ -630,7 +926,7 @@ function renderExistingShelters() {
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
-    marker.bindPopup("<strong>Existing miklat</strong>");
+    marker.bindPopup(t("existingMiklatPopup"));
     marker.on("click", () =>
       selectShelter(
         {
@@ -638,7 +934,7 @@ function renderExistingShelters() {
           id: shelterId,
           lat: latLng[0],
           lon: latLng[1],
-          label: "Existing miklat",
+          label: t("existingMiklatLabel"),
         },
       ),
     );
@@ -649,26 +945,17 @@ function renderExistingShelters() {
 function renderRecommended() {
   layers.recommended.clearLayers();
   const rows = recommendationsForCurrentView();
-  const modeLabel = currentPlacementMode === "cluster" ? "Cluster area" : "Exact point";
+  const modeLabel = currentPlacementMode === "cluster" ? t("modeLabelCluster") : t("modeLabelExact");
   for (const rec of rows) {
     const shelterId = rec.shelter_id ?? rec.candidate_id ?? rec.building_idx;
     const fullCount = (rec.covered_building_indices || []).length;
     const marginalCount = rec.newly_covered_buildings ?? fullCount;
     const marker = L.marker([rec.lat, rec.lon], { icon: recommendedIcon });
     if (isClusterMode()) {
-      marker.bindPopup(
-        `<strong>Cluster #${rec.rank}</strong><br>` +
-          `Mode: ${modeLabel}<br>` +
-          `Source: ${rec.candidate_source || "cluster_ensemble_kmeans"}<br>` +
-          `General recommended area`,
-      );
+      marker.bindPopup(t("clusterPopup", rec.rank, modeLabel, rec.candidate_source || "cluster_ensemble_kmeans"));
     } else {
       marker.bindPopup(
-        `<strong>Recommended #${rec.rank}</strong><br>` +
-          `Mode: ${modeLabel}<br>` +
-          `Source: ${rec.candidate_source || "building"}<br>` +
-          `Total reachable: ${fullCount} buildings<br>` +
-          `Newly covered: ${marginalCount} buildings`,
+        t("recommendedPopup", rec.rank, modeLabel, rec.candidate_source || "building", fullCount, marginalCount),
       );
     }
     marker.on("click", () =>
@@ -678,7 +965,7 @@ function renderRecommended() {
           id: shelterId,
           lat: rec.lat,
           lon: rec.lon,
-          label: `Recommended #${rec.rank}`,
+          label: t("recommendedLabel", rec.rank),
         },
       ),
     );
@@ -802,42 +1089,42 @@ function applyLayerVisibility() {
 function renderStats() {
   const bucketData = getCurrentBucketData();
   if (!bucketData) {
-    statsEl.textContent = "Loading data...";
+    statsEl.textContent = t("loadingData");
     return;
   }
   if (accessibilityHeatmapEnabled) {
-    statsEl.innerHTML =
-      "Accessibility screen-grid mode is active. " +
-      "<strong>Green</strong> areas are currently covered by existing shelters, " +
-      "and <strong>red</strong> areas are underserved.";
+    statsEl.innerHTML = t("accessibilityStats");
     return;
   }
   const stats = bucketData.statistics;
   const shown = recommendationsForCurrentView();
-  const minuteLabel =
-    BUCKET_OPTIONS.find((b) => b.key === getActiveBucketKey())?.label || getActiveBucketKey();
-  const metricLabel = currentDistanceMetric === "euclidean" ? "euclidean straight-line (200m)" : "graph walking";
+  const minuteLabel = getBucketLabel(getActiveBucketKey());
+  const metricLabel =
+    currentDistanceMetric === "euclidean" ? t("metricLabelEuclidean") : t("metricLabelGraph");
 
   if (isClusterMode()) {
-    statsEl.innerHTML =
-      `Cluster placement mode is showing <strong>${shown.length}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. ` +
-      `Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.`;
+    statsEl.innerHTML = t("clusterStats", shown.length, metricLabel);
     return;
   }
 
   const marginalCoverage = shown.reduce((sum, row) => sum + row.newly_covered_buildings, 0);
   const uncoveredNow = Number(stats.currently_uncovered) || 0;
   const remainingUncovered = Math.max(0, uncoveredNow - marginalCoverage);
-  const modeLabel = `exact placement mode (${metricLabel})`;
+  const modeLabel = t("exactModeLabel", metricLabel);
   const coveragePhrase =
     currentDistanceMetric === "euclidean"
-      ? "within 200m straight-line distance"
-      : `within ${minuteLabel} walking distance`;
+      ? t("coveragePhraseEuclidean")
+      : t("coveragePhraseGraph", minuteLabel);
 
-  statsEl.innerHTML =
-    `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. ` +
-    `You have added <strong>${shown.length}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. ` +
-    `There remain <strong>${remainingUncovered}</strong> uncovered buildings.`;
+  statsEl.innerHTML = t(
+    "exactStats",
+    modeLabel,
+    uncoveredNow,
+    coveragePhrase,
+    shown.length,
+    marginalCoverage,
+    remainingUncovered,
+  );
 }
 
 async function refreshView() {
@@ -861,81 +1148,35 @@ async function fetchJson(path) {
 }
 
 function renderGuideContent() {
-  const usageEn = `
-    <div class="guide-block">
-      <h3>How to Use</h3>
-      <ul>
-        <li><strong>1.</strong> Choose <strong>Euclidean</strong> or <strong>Graph distance</strong> to define how accessibility is measured.</li>
-        <li><strong>2.</strong> Choose <strong>Exact placement</strong> or <strong>Cluster placement</strong> to set recommendation style.</li>
-        <li><strong>3.</strong> Add recommended shelters with the slider to test different intervention sizes.</li>
-        <li><strong>4.</strong> Inspect updated statistics, then click shelters on the map to explore local coverage change.</li>
-        <li><strong>5.</strong> Use legend <strong>Layers</strong> to manage map visibility and base map context.</li>
-      </ul>
-    </div>
-  `;
-  const usageHe = `
-    <div class="guide-block" dir="rtl">
-      <h3>איך משתמשים</h3>
-      <ul>
-        <li><strong>1.</strong> בוחרים <strong>Euclidean</strong> או <strong>Graph distance</strong> כדי לקבוע איך מודדים נגישות.</li>
-        <li><strong>2.</strong> בוחרים <strong>מיקום מדויק</strong> או <strong>מיקום באשכולות</strong> לפי סוג ההמלצה הרצוי.</li>
-        <li><strong>3.</strong> מוסיפים מיגוניות מומלצות באמצעות הסליידר כדי לבדוק תרחישי התערבות שונים.</li>
-        <li><strong>4.</strong> בודקים את הסטטיסטיקה המתעדכנת, ואז לוחצים על מיגוניות במפה כדי לחקור שינויי כיסוי מקומיים.</li>
-        <li><strong>5.</strong> משתמשים באזור <strong>Layers</strong> שבמקרא כדי לשלוט בתצוגת שכבות ובמפת הבסיס.</li>
-      </ul>
-    </div>
-  `;
-
-  const methodsEn = `
-    <div class="guide-block">
-      <h3>Methodology</h3>
-      <ul>
-        <li><strong>1.</strong> Building and shelter layers are harmonized to a shared map coordinate system.</li>
-        <li><strong>2.</strong> Existing accessibility is computed per building under graph or euclidean distance logic.</li>
-        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points or cluster guidance.</li>
-        <li><strong>4.</strong> Statistics and map layers update interactively as you change mode and shelter count.</li>
-      </ul>
-    </div>
-  `;
-  const methodsHe = `
-    <div class="guide-block" dir="rtl">
-      <h3>מתודולוגיה</h3>
-      <ul>
-        <li><strong>1.</strong> שכבות המבנים והמיגון מיושרות למערכת קואורדינטות משותפת במפה.</li>
-        <li><strong>2.</strong> הנגישות הקיימת מחושבת לכל בניין לפי לוגיקת Graph או Euclidean.</li>
-        <li><strong>3.</strong> מועמדים למיגון מדורגים לפי תוספת כיסוי ומוצגים כמיקומים מדויקים או אשכולות.</li>
-        <li><strong>4.</strong> הסטטיסטיקה והשכבות מתעדכנות אינטראקטיבית כאשר משנים מצב ניתוח או מספר מיגוניות.</li>
-      </ul>
-    </div>
-  `;
-
-  const contentByTabAndLang = {
-    usage: { en: usageEn, he: usageHe },
-    methods: { en: methodsEn, he: methodsHe },
-  };
   guideContent.classList.toggle("methods-body", currentGuideTab === "methods");
   guideContent.setAttribute("dir", currentLanguage === "he" ? "rtl" : "ltr");
-  guideContent.innerHTML = contentByTabAndLang[currentGuideTab][currentLanguage];
+  guideContent.innerHTML = currentGuideTab === "usage" ? t("guideUsageHtml") : t("guideMethodsHtml");
   guideTitle.textContent =
-    currentGuideTab === "usage"
-      ? currentLanguage === "he"
-        ? "עיר מקלט - בית שמש"
-        : "Access to Shelter - Beit Shemesh"
-      : currentLanguage === "he"
-        ? "איך זה עובד"
-        : "Methods";
+    currentGuideTab === "usage" ? t("guideTitleUsage") : t("guideTitleMethods");
 }
 
 function setGuideLanguage(lang) {
   currentLanguage = lang;
+  document.documentElement.lang = lang;
+  document.documentElement.dir = "ltr";
   guideCard.classList.toggle("lang-he", lang === "he");
   languageToggle.checked = lang === "he";
   langLabelEn.classList.toggle("active-lang-label", lang === "en");
   langLabelHe.classList.toggle("active-lang-label", lang === "he");
-  guideTabUsage.textContent = lang === "he" ? "שימוש" : "Usage";
-  guideTabMethods.textContent = lang === "he" ? "איך זה עובד" : "Methods";
-  guideTabUsage.setAttribute("aria-label", lang === "he" ? "לשונית שימוש" : "Usage tab");
-  guideTabMethods.setAttribute("aria-label", lang === "he" ? "לשונית מתודולוגיה" : "Methods tab");
+  guideTabUsage.textContent = t("guideUsageTab");
+  guideTabMethods.textContent = t("guideMethodsTab");
+  guideTabUsage.setAttribute("aria-label", t("guideUsageTabAria"));
+  guideTabMethods.setAttribute("aria-label", t("guideMethodsTabAria"));
+  applyStaticTranslations();
+  repopulateLocalizedOptions();
+  updateSliderBounds();
+  renderExistingShelters();
+  renderExistingCoverageBuildings();
+  renderAccessibilityHeatmap();
+  renderRecommended();
+  renderSelectedShelterCoverage();
+  renderStats();
+  applyLayerVisibility();
   renderGuideContent();
 }
 
@@ -1049,7 +1290,7 @@ function wireEvents() {
     if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
     const rows = recommendationsForCurrentView();
     const activeBucket = getActiveBucketKey();
-    const label = BUCKET_OPTIONS.find((b) => b.key === activeBucket)?.label || "bucket";
+    const label = activeBucket;
     const suffix = isClusterMode() ? "clusters" : label;
     downloadBlob(
       toCsv(rows),
@@ -1081,7 +1322,7 @@ function wireEvents() {
           },
     }));
     const activeBucket = getActiveBucketKey();
-    const label = BUCKET_OPTIONS.find((b) => b.key === activeBucket)?.label || "bucket";
+    const label = activeBucket;
     const suffix = isClusterMode() ? "clusters" : label;
     downloadBlob(
       JSON.stringify({ type: "FeatureCollection", features }, null, 2),
@@ -1140,15 +1381,16 @@ setBaseMap(baseMapSelect.value || "streets");
 
 loadAllData()
   .then(() => {
+    applyStaticTranslations();
     wireEvents();
     renderExistingShelters();
     reportProjectionStatus();
     setPlacementMode("exact");
-    setGuideLanguage("en");
+    setGuideLanguage("he");
     setGuideTab("usage");
     guideModal.classList.remove("hidden");
   })
   .catch((err) => {
     console.error(err);
-    statsEl.textContent = `Error loading data: ${err.message}`;
+    statsEl.textContent = t("errorLoadingData", err.message);
   });

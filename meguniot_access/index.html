@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="he">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,113 +21,121 @@
         <div class="brand">
           <img src="./assets/nur-favicon.svg" alt="NUR" class="nur-logo" />
           <div>
-            <h1>Access to Shelter - Beit Shemesh</h1>
-            <p>עיר מקלט - בית שמש</p>
+            <h1 id="appTitle">עיר מקלט - בית שמש</h1>
+            <p id="appSubtitle">גישה למרחבים מוגנים</p>
           </div>
         </div>
         <div class="topbar-actions">
-          <button id="openGuideBtn" class="btn btn-ghost btn-icon-circle" aria-label="Info">i</button>
+          <div id="topLangSwitchWrap" class="lang-switch-wrap">
+            <span id="topLangLabelEn">EN</span>
+            <label class="lang-toggle">
+              <input id="languageToggle" type="checkbox" />
+              <span class="lang-toggle-slider"></span>
+            </label>
+            <span id="topLangLabelHe">עברית</span>
+          </div>
+          <button id="openGuideBtn" class="btn btn-ghost btn-icon-circle" aria-label="מידע">i</button>
         </div>
       </header>
 
       <aside class="control-stack">
         <section class="control-step-panel glass">
-          <h3 class="control-step-title"><span class="step-chip">1</span> Inspect coverage</h3>
+          <h3 id="step1Title" class="control-step-title"><span class="step-chip">1</span> בדיקת כיסוי</h3>
           <label class="heatmap-toggle-control">
             <input type="checkbox" id="accessibilityHeatmapToggle" class="checkbox-toggle" />
-            <span class="checkbox-label">Accessibility heatmap (current coverage)</span>
+            <span id="heatmapToggleLabel" class="checkbox-label">מפת חום לנגישות (כיסוי נוכחי)</span>
             <span class="checkbox-checkmark">✓</span>
           </label>
-          <p id="accessibilityHeatmapHint" class="legend-hint hidden">Green = covered | Red = underserved</p>
+          <p id="accessibilityHeatmapHint" class="legend-hint hidden">ירוק = מכוסה | אדום = חסר מענה</p>
         </section>
 
         <section class="control-step-panel glass">
-          <h3 class="control-step-title"><span class="step-chip">2</span> Set analysis mode</h3>
-          <label>Distance metric</label>
-          <div class="mode-toggle" role="group" aria-label="Distance metric">
+          <h3 id="step2Title" class="control-step-title"><span class="step-chip">2</span> בחירת מצב ניתוח</h3>
+          <label id="distanceMetricLabel">מדד מרחק</label>
+          <div class="mode-toggle" role="group" aria-label="מדד מרחק">
             <button id="metricGraphBtn" class="btn btn-toggle" type="button">
-              Graph distance
+              מרחק גרפי
             </button>
             <button id="metricEuclideanBtn" class="btn btn-toggle active-toggle" type="button">
-              Euclidean (200m)
+              אוקלידי (200 מ')
             </button>
           </div>
-          <label>Placement mode</label>
-          <div class="mode-toggle" role="group" aria-label="Placement mode">
+          <label id="placementModeLabel">מצב מיקום</label>
+          <div class="mode-toggle" role="group" aria-label="מצב מיקום">
             <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
-              Exact placement
+              מיקום מדויק
             </button>
             <button id="modeClusterBtn" class="btn btn-toggle" type="button">
-              Cluster placement
+              מיקום באשכולות
             </button>
           </div>
           <div id="bucketControls">
-            <label for="bucketSelect">Time bucket</label>
+            <label id="timeBucketLabel" for="bucketSelect">חלון זמן</label>
             <select id="bucketSelect"></select>
           </div>
         </section>
 
         <section class="control-step-panel glass">
-          <h3 class="control-step-title"><span class="step-chip">3</span> Add shelters</h3>
-          <label for="countRange">Recommended shelters</label>
+          <h3 id="step3Title" class="control-step-title"><span class="step-chip">3</span> הוספת מיגוניות</h3>
+          <label id="countRangeLabel" for="countRange">מיגוניות מומלצות</label>
           <input id="countRange" type="range" min="0" max="0" value="0" />
           <div id="countValue" class="count-badge">0</div>
           <div class="downloads">
-            <button id="downloadCsv" class="btn">Download CSV</button>
-            <button id="downloadGeojson" class="btn">Download GeoJSON</button>
+            <button id="downloadCsv" class="btn">הורדת CSV</button>
+            <button id="downloadGeojson" class="btn">הורדת GeoJSON</button>
           </div>
         </section>
 
         <section id="coverageDisplayControls" class="control-step-panel glass">
-          <h3 class="control-step-title"><span class="step-chip">4</span> Inspect change</h3>
+          <h3 id="step4Title" class="control-step-title"><span class="step-chip">4</span> בדיקת שינוי</h3>
           <p id="coverageInspectHint" class="coverage-inspect-hint">
-            Click shelter markers on the map to inspect local coverage.
+            לחצו על סמני מיגוניות במפה כדי לבדוק כיסוי מקומי.
           </p>
           <section id="stats" class="stats"></section>
         </section>
       </aside>
 
       <aside id="mapLegend" class="legend-card glass">
-        <h2 class="legend-title">Map legend</h2>
+        <h2 id="legendTitle" class="legend-title">מקרא מפה</h2>
         <div class="legend-items">
           <div class="legend-row">
             <img src="./assets/existing.svg" alt="" class="legend-marker" />
-            <span>Existing shelters (meguniot + miklatim)</span>
+            <span id="legendExisting">מיגון קיים (מיגוניות + מקלטים)</span>
           </div>
           <div class="legend-row">
             <img src="./assets/proposed.svg" alt="" class="legend-marker legend-marker-small" />
-            <span>Recommended shelters</span>
+            <span id="legendRecommended">מיגוניות מומלצות</span>
           </div>
           <div class="legend-row">
             <span class="legend-swatch legend-swatch-post-1992"></span>
-            <span>Buildings built in/after 1992</span>
+            <span id="legendPost1992">מבנים שנבנו מ-1992 ואילך</span>
           </div>
           <div class="legend-row">
             <span class="legend-swatch legend-swatch-uncovered"></span>
-            <span>Uncovered buildings (existing conditions)</span>
+            <span id="legendUncovered">מבנים ללא כיסוי (מצב קיים)</span>
           </div>
           <div class="legend-row">
             <span class="legend-swatch legend-swatch-covered-base"></span>
-            <span>Buildings covered by existing shelters</span>
+            <span id="legendCoveredBase">מבנים מכוסים על ידי מיגון קיים</span>
           </div>
           <div class="legend-row">
             <span class="legend-dot legend-dot-covered"></span>
-            <span>Covered by selected shelter</span>
+            <span id="legendCoveredSelected">מכוסים על ידי מיגונית שנבחרה</span>
           </div>
         </div>
         <details class="legend-layers" open>
-          <summary>Layers</summary>
+          <summary id="layersSummary">שכבות</summary>
           <div class="legend-basemap-control">
-            <label for="baseMapSelect">Base map</label>
+            <label id="baseMapLabel" for="baseMapSelect">מפת בסיס</label>
             <select id="baseMapSelect"></select>
           </div>
-          <label><input type="checkbox" id="layerMeguniot" checked /> Existing meguniot</label>
-          <label><input type="checkbox" id="layerMiklatim" checked /> Existing miklatim</label>
-          <label><input type="checkbox" id="layerRecommended" checked /> Recommended meguniot</label>
-          <label><input type="checkbox" id="layerPost1992Buildings" checked /> Buildings built in/after 1992</label>
-          <label><input type="checkbox" id="layerUncoveredBuildings" checked /> Uncovered buildings</label>
-          <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> Covered buildings</label>
-          <label><input type="checkbox" id="layerCovered" checked /> Covered by selected shelter</label>
+          <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
+          <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
+          <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
+          <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
+          <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
+          <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>
+          <label><input type="checkbox" id="layerCovered" checked /> <span id="layerCoveredLabel">מכוסים על ידי מיגונית שנבחרה</span></label>
         </details>
       </aside>
 
@@ -135,21 +143,13 @@
         <div class="modal-card guide-card glass">
           <div class="modal-head guide-head">
             <div class="guide-head-row">
-              <h2 id="guideTitle">Access to Shelter - Beit Shemesh</h2>
-              <button id="closeGuideBtn" class="btn btn-close" aria-label="Close help">✕</button>
+              <h2 id="guideTitle">עיר מקלט - בית שמש</h2>
+              <button id="closeGuideBtn" class="btn btn-close" aria-label="סגירת עזרה">✕</button>
             </div>
             <div class="guide-toolbar">
-              <div class="guide-tabs" role="tablist" aria-label="Guide sections">
-                <button id="guideTabUsage" class="btn btn-ghost active-tab" role="tab">Usage</button>
-                <button id="guideTabMethods" class="btn btn-ghost" role="tab">Methods</button>
-              </div>
-              <div id="langSwitchWrap" class="lang-switch-wrap">
-                <span id="langLabelEn">EN</span>
-                <label class="lang-toggle">
-                  <input id="languageToggle" type="checkbox" />
-                  <span class="lang-toggle-slider"></span>
-                </label>
-                <span id="langLabelHe">עברית</span>
+              <div class="guide-tabs" role="tablist" aria-label="לשוניות מדריך">
+                <button id="guideTabUsage" class="btn btn-ghost active-tab" role="tab">שימוש</button>
+                <button id="guideTabMethods" class="btn btn-ghost" role="tab">איך זה עובד</button>
               </div>
             </div>
           </div>
