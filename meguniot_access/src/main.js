@@ -68,7 +68,7 @@ const guideTabMethods = document.getElementById("guideTabMethods");
 let currentLanguage = "en";
 let currentGuideTab = "usage";
 let coverageDisplayMode = "full";
-let currentDistanceMetric = "graph";
+let currentDistanceMetric = "euclidean";
 let currentPlacementMode = "exact";
 
 for (const bucket of BUCKET_OPTIONS) {
@@ -664,15 +664,9 @@ function renderStats() {
   const metricLabel = currentDistanceMetric === "euclidean" ? "euclidean straight-line (200m)" : "graph walking";
 
   if (isClusterMode()) {
-    let selectionNote = "";
-    if (selectedShelters.length > 0) {
-      const names = selectedShelters.map((s) => s.label).join(", ");
-      selectionNote = `<br><em>Selected clusters: ${names}</em>`;
-    }
     statsEl.innerHTML =
       `Cluster placement mode is showing <strong>${shown.length}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. ` +
-      `Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.` +
-      selectionNote;
+      `Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.`;
     return;
   }
 
@@ -685,18 +679,10 @@ function renderStats() {
       ? "within 200m straight-line distance"
       : `within ${minuteLabel} walking distance`;
 
-  let selectionNote = "";
-  if (selectedShelters.length > 0) {
-    const names = selectedShelters.map((s) => s.label).join(", ");
-    const modeLabel = coverageDisplayMode === "marginal" ? "newly covered" : "all reachable";
-    selectionNote = `<br><em>Selected: ${names} (showing ${modeLabel} buildings)</em>`;
-  }
-
   statsEl.innerHTML =
     `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. ` +
     `You have added <strong>${shown.length}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. ` +
-    `There remain <strong>${remainingUncovered}</strong> uncovered buildings.` +
-    selectionNote;
+    `There remain <strong>${remainingUncovered}</strong> uncovered buildings.`;
 }
 
 async function refreshView() {
