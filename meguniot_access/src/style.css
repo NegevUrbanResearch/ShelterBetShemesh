@@ -286,6 +286,58 @@ select {
   gap: 10px;
 }
 
+#app.lang-he-ui .control-stack {
+  left: auto;
+  right: 14px;
+  direction: rtl;
+}
+
+#app.lang-he-ui .legend-card {
+  right: auto;
+  left: 14px;
+  direction: rtl;
+  text-align: right;
+}
+
+#app.lang-he-ui .control-step-title {
+  display: block;
+  position: relative;
+  text-align: right;
+  padding-right: 30px;
+  min-height: 22px;
+}
+
+#app.lang-he-ui .control-step-title .step-chip {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#app.lang-he-ui .control-step-title .step-title-text {
+  display: block;
+}
+
+#app.lang-he-ui .control-step-panel label,
+#app.lang-he-ui .coverage-inspect-hint,
+#app.lang-he-ui .stats,
+#app.lang-he-ui .legend-layers label {
+  text-align: right;
+}
+
+#app.lang-he-ui .heatmap-toggle-control {
+  flex-direction: row-reverse;
+}
+
+#app.lang-he-ui .checkbox-label {
+  text-align: right;
+}
+
+#app.lang-he-ui .legend-layers summary::before {
+  margin-right: 0;
+  margin-left: 6px;
+}
+
 .legend-title {
   margin: 0;
   font-size: 13px;
@@ -653,6 +705,10 @@ select {
     top: calc(var(--topbar-height) + 8px);
     max-height: 46vh;
     overflow: auto;
+  }
+  #app.lang-he-ui .control-stack {
+    left: auto;
+    right: 14px;
   }
   .legend-card {
     max-height: 52vh;

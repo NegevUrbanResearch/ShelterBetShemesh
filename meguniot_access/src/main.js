@@ -45,10 +45,10 @@ const I18N = {
     infoAriaLabel: "Info",
     closeHelpAriaLabel: "Close help",
     guideTabsAriaLabel: "Guide sections",
-    step1Title: '<span class="step-chip">1</span> Inspect coverage',
-    step2Title: '<span class="step-chip">2</span> Set analysis mode',
-    step3Title: '<span class="step-chip">3</span> Add shelters',
-    step4Title: '<span class="step-chip">4</span> Inspect change',
+    step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
+    step2Title: '<span class="step-chip">2</span><span class="step-title-text">Set analysis mode</span>',
+    step3Title: '<span class="step-chip">3</span><span class="step-title-text">Add shelters</span>',
+    step4Title: '<span class="step-chip">4</span><span class="step-title-text">Inspect change</span>',
     heatmapToggleLabel: "Accessibility heatmap (current coverage)",
     accessibilityHeatmapHint: "Green = covered | Red = underserved",
     distanceMetricLabel: "Distance metric",
@@ -150,10 +150,10 @@ const I18N = {
     infoAriaLabel: "מידע",
     closeHelpAriaLabel: "סגירת עזרה",
     guideTabsAriaLabel: "לשוניות מדריך",
-    step1Title: '<span class="step-chip">1</span> בדיקת כיסוי',
-    step2Title: '<span class="step-chip">2</span> בחירת מצב ניתוח',
-    step3Title: '<span class="step-chip">3</span> הוספת מיגוניות',
-    step4Title: '<span class="step-chip">4</span> בדיקת שינוי',
+    step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
+    step2Title: '<span class="step-chip">2</span><span class="step-title-text">בחירת מצב ניתוח</span>',
+    step3Title: '<span class="step-chip">3</span><span class="step-title-text">הוספת מיגוניות</span>',
+    step4Title: '<span class="step-chip">4</span><span class="step-title-text">בדיקת שינוי</span>',
     heatmapToggleLabel: "מפת חום לנגישות (כיסוי נוכחי)",
     accessibilityHeatmapHint: "ירוק = מכוסה | אדום = חסר מענה",
     distanceMetricLabel: "מדד מרחק",
@@ -269,6 +269,7 @@ proj4.defs(
 );
 
 const bucketSelect = document.getElementById("bucketSelect");
+const appRoot = document.getElementById("app");
 const bucketControls = document.getElementById("bucketControls");
 const coverageDisplayControls = document.getElementById("coverageDisplayControls");
 const countRange = document.getElementById("countRange");
@@ -1159,6 +1160,7 @@ function setGuideLanguage(lang) {
   currentLanguage = lang;
   document.documentElement.lang = lang;
   document.documentElement.dir = "ltr";
+  appRoot?.classList.toggle("lang-he-ui", lang === "he");
   guideCard.classList.toggle("lang-he", lang === "he");
   languageToggle.checked = lang === "he";
   langLabelEn.classList.toggle("active-lang-label", lang === "en");
