@@ -1,13 +1,25 @@
 {
-  "schema_version": "3.0.0",
+  "schema_version": "5.0.0",
   "time_buckets": [
-    "1min",
-    "2min",
-    "3min"
+    "5min"
+  ],
+  "distance_metrics": [
+    "graph",
+    "euclidean"
+  ],
+  "placement_types": [
+    "exact",
+    "cluster"
   ],
   "notes": [
     "Optimization uses walk_time (seconds), not flat distance.",
     "elevation_model.mode is dem_tobler when DEM is supplied.",
-    "candidate_source documents where each proposed shelter came from."
+    "candidate_source documents where each proposed shelter came from.",
+    "Graph is densified with intermediate nodes at densify_interval_m.",
+    "Buildings/shelters connected via projected access edges, not nearest-node.",
+    "Optimizer supports weighted coverage and local-swap improvement.",
+    "Exact mode recommends precise graph-linked points.",
+    "Cluster mode recommends area-level cluster centers from a KMeans ensemble.",
+    "Euclidean distance metric uses straight-line accessibility with a fixed 200m threshold."
   ]
 }

@@ -31,8 +31,30 @@
       </header>
 
       <aside class="control-card glass">
-        <label for="bucketSelect">Time bucket</label>
-        <select id="bucketSelect"></select>
+        <label>Distance metric</label>
+        <div class="mode-toggle" role="group" aria-label="Distance metric">
+          <button id="metricGraphBtn" class="btn btn-toggle active-toggle" type="button">
+            Graph distance
+          </button>
+          <button id="metricEuclideanBtn" class="btn btn-toggle" type="button">
+            Euclidean (200m)
+          </button>
+        </div>
+
+        <label>Placement mode</label>
+        <div class="mode-toggle" role="group" aria-label="Placement mode">
+          <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
+            Exact placement
+          </button>
+          <button id="modeClusterBtn" class="btn btn-toggle" type="button">
+            Cluster placement
+          </button>
+        </div>
+
+        <div id="bucketControls">
+          <label for="bucketSelect">Time bucket</label>
+          <select id="bucketSelect"></select>
+        </div>
 
         <label for="countRange">Recommended shelters</label>
         <input id="countRange" type="range" min="0" max="0" value="0" />
@@ -58,12 +80,16 @@
             <span>Recommended shelters</span>
           </div>
           <div class="legend-row">
+            <span class="legend-swatch legend-swatch-post-1992"></span>
+            <span>Buildings built in/after 1992</span>
+          </div>
+          <div class="legend-row">
             <span class="legend-swatch legend-swatch-uncovered"></span>
             <span>Uncovered buildings (existing conditions)</span>
           </div>
           <div class="legend-row">
             <span class="legend-swatch legend-swatch-covered-base"></span>
-            <span>Covered buildings (existing conditions)</span>
+            <span>Buildings covered by existing shelters</span>
           </div>
           <div class="legend-row">
             <span class="legend-dot legend-dot-covered"></span>
@@ -75,9 +101,16 @@
           <label><input type="checkbox" id="layerMeguniot" checked /> Existing meguniot</label>
           <label><input type="checkbox" id="layerMiklatim" checked /> Existing miklatim</label>
           <label><input type="checkbox" id="layerRecommended" checked /> Recommended meguniot</label>
+          <label><input type="checkbox" id="layerPost1992Buildings" checked /> Buildings built in/after 1992</label>
           <label><input type="checkbox" id="layerUncoveredBuildings" checked /> Uncovered buildings</label>
           <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> Covered buildings</label>
           <label><input type="checkbox" id="layerCovered" checked /> Covered by selected shelter</label>
+        </details>
+        <details id="coverageDisplayControls" class="legend-layers" open>
+          <summary>Coverage display</summary>
+          <label><input type="radio" name="coverageMode" id="coverageModeFull" checked /> All reachable buildings</label>
+          <label><input type="radio" name="coverageMode" id="coverageModeMarginal" /> Newly covered only</label>
+          <p class="legend-hint">Shift-click shelters to compare multiple at once</p>
         </details>
       </aside>
 

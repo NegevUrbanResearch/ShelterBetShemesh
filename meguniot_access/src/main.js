@@ -1,8 +1,15 @@
 const BUCKET_OPTIONS = [
-  { label: "1m", key: "1min", seconds: 60 },
-  { label: "2m", key: "2min", seconds: 120 },
-  { label: "3m", key: "3min", seconds: 180 },
+  { label: "5-minute", key: "5min", seconds: 300 },
 ];
+const DISTANCE_METRIC_OPTIONS = [
+  { key: "graph", label: "Graph distance" },
+  { key: "euclidean", label: "Euclidean (200m)" },
+];
+const PLACEMENT_OPTIONS = [
+  { key: "exact", label: "Exact placement" },
+  { key: "cluster", label: "Cluster placement" },
+];
+const FIXED_BUCKET_KEY = "5min";
 
 const DATA_BASE = "../data";
 const NETWORK_BASE = `${DATA_BASE}/meguniot_network`;
@@ -10,6 +17,7 @@ const LAYER_DEFAULTS = {
   meguniot: true,
   miklatim: true,
   recommended: true,
+  post1992Buildings: true,
   uncoveredBuildings: true,
   coveredBuildingsBase: true,
   covered: true,
@@ -21,19 +29,29 @@ proj4.defs(
 );
 
 const bucketSelect = document.getElementById("bucketSelect");
+const bucketControls = document.getElementById("bucketControls");
+const coverageDisplayControls = document.getElementById("coverageDisplayControls");
 const countRange = document.getElementById("countRange");
 const countValue = document.getElementById("countValue");
 const countLabel = document.querySelector('label[for="countRange"]');
 const statsEl = document.getElementById("stats");
 const downloadCsvBtn = document.getElementById("downloadCsv");
 const downloadGeojsonBtn = document.getElementById("downloadGeojson");
+const metricGraphBtn = document.getElementById("metricGraphBtn");
+const metricEuclideanBtn = document.getElementById("metricEuclideanBtn");
+const modeExactBtn = document.getElementById("modeExactBtn");
+const modeClusterBtn = document.getElementById("modeClusterBtn");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
 const layerRecommended = document.getElementById("layerRecommended");
+const layerPost1992Buildings = document.getElementById("layerPost1992Buildings");
 const layerUncoveredBuildings = document.getElementById("layerUncoveredBuildings");
 const layerCoveredBuildingsBase = document.getElementById("layerCoveredBuildingsBase");
 const layerCovered = document.getElementById("layerCovered");
+
+const coverageModeFull = document.getElementById("coverageModeFull");
+const coverageModeMarginal = document.getElementById("coverageModeMarginal");
 
 const openGuideBtn = document.getElementById("openGuideBtn");
 const closeGuideBtn = document.getElementById("closeGuideBtn");
@@ -49,6 +67,9 @@ const guideTabMethods = document.getElementById("guideTabMethods");
 
 let currentLanguage = "en";
 let currentGuideTab = "usage";
+let coverageDisplayMode = "full";
+let currentDistanceMetric = "graph";
+let currentPlacementMode = "exact";
 
 for (const bucket of BUCKET_OPTIONS) {
   const opt = document.createElement("option");
@@ -56,7 +77,7 @@ for (const bucket of BUCKET_OPTIONS) {
   opt.textContent = bucket.label;
   bucketSelect.appendChild(opt);
 }
-bucketSelect.value = "1min";
+bucketSelect.value = FIXED_BUCKET_KEY;
 
 const map = L.map("map", { preferCanvas: true, zoomControl: false }).setView([31.745, 34.99], 13);
 L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -69,10 +90,10 @@ const layers = {
   existingMeguniot: L.layerGroup().addTo(map),
   existingMiklatim: L.layerGroup().addTo(map),
   recommended: L.layerGroup().addTo(map),
+  post1992Buildings: L.layerGroup().addTo(map),
   uncoveredBuildings: L.layerGroup().addTo(map),
   coveredBuildingsBase: L.layerGroup().addTo(map),
   coveredBuildings: L.layerGroup().addTo(map),
-  selectedShelter: L.layerGroup().addTo(map),
 };
 
 const layerVisibility = { ...LAYER_DEFAULTS };
@@ -83,11 +104,12 @@ const dataStore = {
   buildings: null,
   buildingsSourceCrs: "EPSG:2039",
   coverage: null,
-  optimalByBucket: {},
-  shelterCoveragesByBucket: {},
+  coverageByMetric: {},
+  optimalByMetricModeBucket: {},
+  shelterCoveragesByMetricModeBucket: {},
 };
 
-let selectedShelter = null;
+let selectedShelters = [];
 const coverageByIndex = new Map();
 const coverageById = new Map();
 const buildingFeatureByIndex = new Map();
@@ -157,6 +179,32 @@ function getFeatureNumericId(feature, keys) {
   return getFirstNumericProperty(feature?.properties, keys);
 }
 
+function toBoolish(value) {
+  if (value === null || value === undefined || value === "") return false;
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value >= 1;
+  const normalized = String(value).trim().toLowerCase();
+  return ["1", "true", "t", "yes", "y", "ken", "כן"].includes(normalized);
+}
+
+function isBuiltAfter1992(feature) {
+  const props = feature?.properties || {};
+  const before1992Raw =
+    props.Before_1992 ?? props.before_1992 ?? props.before1992 ?? props.lifney_1992;
+  if (before1992Raw !== null && before1992Raw !== undefined && before1992Raw !== "") {
+    return !toBoolish(before1992Raw);
+  }
+  const year = getFirstNumericProperty(props, [
+    "BuildYear",
+    "build_year",
+    "year_built",
+    "year",
+    "shnat_bnia",
+    "shnat_bnaya",
+  ]);
+  return Number.isFinite(year) ? year >= 1992 : false;
+}
+
 function createBuildingLayer(feature, style, radius = 3) {
   return L.geoJSON(feature, {
     style: () => style,
@@ -189,16 +237,31 @@ function downloadBlob(content, filename, mimeType) {
   URL.revokeObjectURL(url);
 }
 
-function getCurrentBucketData() {
-  const bucketKey = bucketSelect.value;
-  return dataStore.optimalByBucket[bucketKey];
+function isClusterMode() {
+  return currentPlacementMode === "cluster";
 }
 
-async function ensureBucketAuxData(bucketKey) {
-  if (!dataStore.shelterCoveragesByBucket[bucketKey]) {
-    dataStore.shelterCoveragesByBucket[bucketKey] = await fetchJson(
-      `${NETWORK_BASE}/shelter_coverages_${bucketKey}.json`,
+function getActiveBucketKey() {
+  return FIXED_BUCKET_KEY;
+}
+
+function getCurrentBucketData() {
+  const bucketKey = getActiveBucketKey();
+  return dataStore.optimalByMetricModeBucket?.[currentDistanceMetric]?.[currentPlacementMode]?.[bucketKey];
+}
+
+async function ensureBucketAuxData(bucketKey = getActiveBucketKey()) {
+  if (!dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric]?.[currentPlacementMode]?.[bucketKey]) {
+    const payload = await fetchJson(
+      `${NETWORK_BASE}/shelter_coverages_${currentDistanceMetric}_${currentPlacementMode}_${bucketKey}.json`,
     );
+    if (!dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric]) {
+      dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric] = {};
+    }
+    if (!dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric][currentPlacementMode]) {
+      dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric][currentPlacementMode] = {};
+    }
+    dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric][currentPlacementMode][bucketKey] = payload;
   }
 }
 
@@ -226,7 +289,8 @@ function updateSliderBounds() {
     countRange.value = String(maxRecommendations);
   }
   if (countLabel) {
-    countLabel.textContent = `Recommended shelters (max ${maxRecommendations})`;
+    const modeLabel = currentPlacementMode === "cluster" ? "cluster areas" : "shelters";
+    countLabel.textContent = `Recommended ${modeLabel} (max ${maxRecommendations})`;
   }
 }
 
@@ -251,9 +315,17 @@ function buildBuildingFeatureIndex() {
 }
 
 function renderExistingCoverageBuildings() {
+  layers.post1992Buildings.clearLayers();
   layers.uncoveredBuildings.clearLayers();
   layers.coveredBuildingsBase.clearLayers();
-  const bucket = bucketSelect.value;
+  const bucket = getActiveBucketKey();
+  const post1992Style = {
+    color: "#2ecc71",
+    weight: 1.2,
+    fillColor: "#35d27f",
+    fillOpacity: 0.24,
+    opacity: 0.94,
+  };
   const uncoveredStyle = {
     color: "#ff4d4f",
     weight: 1.4,
@@ -262,10 +334,10 @@ function renderExistingCoverageBuildings() {
     opacity: 0.95,
   };
   const coveredStyle = {
-    color: "#2ecc71",
+    color: "#f2c94c",
     weight: 1.2,
-    fillColor: "#34d27c",
-    fillOpacity: 0.22,
+    fillColor: "#f5d96b",
+    fillOpacity: 0.3,
     opacity: 0.92,
   };
 
@@ -280,6 +352,20 @@ function renderExistingCoverageBuildings() {
     );
     layer.addTo(covered ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
   }
+
+  const sourceFeatures = Array.isArray(dataStore.buildings?.features) ? dataStore.buildings.features : [];
+  const idKeys = ["building_idx", "OBJECTID", "objectid", "id", "ID"];
+  for (const feature of sourceFeatures) {
+    const featureId = getFeatureNumericId(feature, idKeys);
+    if (featureId !== null && coverageById.has(Number(featureId))) continue;
+    if (!isBuiltAfter1992(feature)) continue;
+    const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
+    if (!geometry) continue;
+    const featureForRender = { type: "Feature", geometry, properties: feature?.properties || {} };
+    const layer = createBuildingLayer(featureForRender, post1992Style, 2.3);
+    layer.bindPopup("<strong>Building built in/after 1992</strong><br>Shown as not requiring new shelter coverage in this analysis");
+    layer.addTo(layers.post1992Buildings);
+  }
 }
 
 function normalizeCrsName(rawName) {
@@ -292,27 +378,38 @@ function normalizeCrsName(rawName) {
 }
 
 function toCsv(rows) {
-  const headers = [
-    "rank",
-    "time_bucket",
-    "time_seconds",
-    "lat",
-    "lon",
-    "coordinates",
-    "newly_covered_buildings",
-    "newly_covered_people_est",
-  ];
+  const headers = isClusterMode()
+    ? ["rank", "lat", "lon", "coordinates", "candidate_source", "placement_mode"]
+    : [
+        "rank",
+        "time_bucket",
+        "time_seconds",
+        "lat",
+        "lon",
+        "coordinates",
+        "newly_covered_buildings",
+        "newly_covered_people_est",
+      ];
   const body = rows.map((row) =>
-    [
-      row.rank,
-      row.time_bucket,
-      row.time_seconds,
-      row.lat,
-      row.lon,
-      row.coordinates,
-      row.newly_covered_buildings,
-      row.newly_covered_people_est,
-    ]
+    (isClusterMode()
+      ? [
+          row.rank,
+          row.lat,
+          row.lon,
+          row.coordinates,
+          row.candidate_source,
+          row.placement_mode || "cluster",
+        ]
+      : [
+          row.rank,
+          row.time_bucket,
+          row.time_seconds,
+          row.lat,
+          row.lon,
+          row.coordinates,
+          row.newly_covered_buildings,
+          row.newly_covered_people_est,
+        ])
       .map(csvCell)
       .join(","),
   );
@@ -320,9 +417,33 @@ function toCsv(rows) {
 }
 
 function clearSelection() {
-  selectedShelter = null;
+  selectedShelters = [];
   layers.coveredBuildings.clearLayers();
-  layers.selectedShelter.clearLayers();
+}
+
+function getSelectedCoverageMatches() {
+  if (!selectedShelters.length) return [];
+  const bucket = getActiveBucketKey();
+  const payload =
+    dataStore.shelterCoveragesByMetricModeBucket?.[currentDistanceMetric]?.[currentPlacementMode]?.[bucket];
+  const allCoverages = Array.isArray(payload?.coverages) ? payload.coverages : [];
+  const matches = [];
+  for (const sel of selectedShelters) {
+    const match = allCoverages.find(
+      (c) => c?.shelter_kind === sel.kind && Number(c?.shelter_id) === Number(sel.id),
+    );
+    if (match) matches.push({ shelter: sel, coverage: match });
+  }
+  return matches;
+}
+
+function getMarginalIndicesForRecommended(shelterId) {
+  const bucketData = getCurrentBucketData();
+  if (!bucketData) return null;
+  const rec = bucketData.proposed_meguniot.find(
+    (p) => Number(p.shelter_id ?? p.candidate_id ?? p.building_idx) === Number(shelterId),
+  );
+  return rec?.marginal_covered_building_indices ?? null;
 }
 
 function renderExistingShelters() {
@@ -339,14 +460,17 @@ function renderExistingShelters() {
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
     marker.bindPopup("<strong>Existing megunit</strong>");
-    marker.on("click", () =>
-      selectShelter({
-        kind: "existing",
-        id: shelterId,
-        lat: latLng[0],
-        lon: latLng[1],
-        label: "Existing megunit",
-      }),
+    marker.on("click", (e) =>
+      selectShelter(
+        {
+          kind: "existing",
+          id: shelterId,
+          lat: latLng[0],
+          lon: latLng[1],
+          label: "Existing megunit",
+        },
+        e.originalEvent?.shiftKey,
+      ),
     );
     marker.addTo(layers.existingMeguniot);
   }
@@ -357,14 +481,17 @@ function renderExistingShelters() {
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
     marker.bindPopup("<strong>Existing miklat</strong>");
-    marker.on("click", () =>
-      selectShelter({
-        kind: "existing",
-        id: shelterId,
-        lat: latLng[0],
-        lon: latLng[1],
-        label: "Existing miklat",
-      }),
+    marker.on("click", (e) =>
+      selectShelter(
+        {
+          kind: "existing",
+          id: shelterId,
+          lat: latLng[0],
+          lon: latLng[1],
+          label: "Existing miklat",
+        },
+        e.originalEvent?.shiftKey,
+      ),
     );
     marker.addTo(layers.existingMiklatim);
   }
@@ -373,22 +500,39 @@ function renderExistingShelters() {
 function renderRecommended() {
   layers.recommended.clearLayers();
   const rows = recommendationsForCurrentView();
+  const modeLabel = currentPlacementMode === "cluster" ? "Cluster area" : "Exact point";
   for (const rec of rows) {
     const shelterId = rec.shelter_id ?? rec.candidate_id ?? rec.building_idx;
+    const fullCount = (rec.covered_building_indices || []).length;
+    const marginalCount = rec.newly_covered_buildings ?? fullCount;
     const marker = L.marker([rec.lat, rec.lon], { icon: recommendedIcon });
-    marker.bindPopup(
-      `<strong>Recommended #${rec.rank}</strong><br>` +
-        `Source: ${rec.candidate_source || "building"}<br>` +
-        `Covers: ${rec.covered_building_indices.length} buildings`,
-    );
-    marker.on("click", () =>
-      selectShelter({
-        kind: "recommended",
-        id: shelterId,
-        lat: rec.lat,
-        lon: rec.lon,
-        label: `Recommended #${rec.rank}`,
-      }),
+    if (isClusterMode()) {
+      marker.bindPopup(
+        `<strong>Cluster #${rec.rank}</strong><br>` +
+          `Mode: ${modeLabel}<br>` +
+          `Source: ${rec.candidate_source || "cluster_ensemble_kmeans"}<br>` +
+          `General recommended area`,
+      );
+    } else {
+      marker.bindPopup(
+        `<strong>Recommended #${rec.rank}</strong><br>` +
+          `Mode: ${modeLabel}<br>` +
+          `Source: ${rec.candidate_source || "building"}<br>` +
+          `Total reachable: ${fullCount} buildings<br>` +
+          `Newly covered: ${marginalCount} buildings`,
+      );
+    }
+    marker.on("click", (e) =>
+      selectShelter(
+        {
+          kind: "recommended",
+          id: shelterId,
+          lat: rec.lat,
+          lon: rec.lon,
+          label: `Recommended #${rec.rank}`,
+        },
+        e.originalEvent?.shiftKey,
+      ),
     );
     marker.addTo(layers.recommended);
   }
@@ -397,58 +541,97 @@ function renderRecommended() {
 
 function renderSelectedShelterCoverage() {
   layers.coveredBuildings.clearLayers();
-  layers.selectedShelter.clearLayers();
-  if (!selectedShelter) return;
+  if (!selectedShelters.length) return;
 
-  const bucket = bucketSelect.value;
-  const payload = dataStore.shelterCoveragesByBucket[bucket];
-  const allCoverages = Array.isArray(payload?.coverages) ? payload.coverages : [];
-  const match = allCoverages.find(
-    (c) =>
-      c?.shelter_kind === selectedShelter.kind &&
-      Number(c?.shelter_id) === Number(selectedShelter.id),
-  );
-  if (!match) return;
+  const matches = getSelectedCoverageMatches();
+  if (!matches.length) return;
 
-  const coveredIndices = Array.isArray(match.covered_building_indices)
-    ? match.covered_building_indices
-    : [];
-  const selectedCoveredStyle = {
-    color: "#2f80ff",
-    weight: 2,
-    fillColor: "#2f80ff",
-    fillOpacity: 0.7,
-    opacity: 1,
-  };
-  for (const idx of coveredIndices) {
-    const buildingFeature = buildingFeatureByIndex.get(Number(idx));
-    if (buildingFeature) {
-      createBuildingLayer(buildingFeature, selectedCoveredStyle, 4).addTo(layers.coveredBuildings);
-      continue;
+  const colors = ["#2f80ff", "#ff6b2f", "#2fcc71", "#c02fff", "#ffcc2f"];
+  const useMarginal = coverageDisplayMode === "marginal";
+
+  for (let mi = 0; mi < matches.length; mi++) {
+    const { shelter, coverage: match } = matches[mi];
+    const color = colors[mi % colors.length];
+    const style = { color, weight: 2, fillColor: color, fillOpacity: 0.7, opacity: 1 };
+
+    let indices;
+    if (useMarginal && shelter.kind === "recommended") {
+      const marginal = getMarginalIndicesForRecommended(shelter.id);
+      indices = marginal ?? match.covered_building_indices ?? [];
+    } else {
+      indices = Array.isArray(match.covered_building_indices) ? match.covered_building_indices : [];
     }
-    const b = coverageByIndex.get(Number(idx));
-    if (!b) continue;
-    L.circleMarker([b.lat, b.lon], {
-      radius: 4,
-      color: selectedCoveredStyle.color,
-      fillColor: selectedCoveredStyle.fillColor,
-      fillOpacity: selectedCoveredStyle.fillOpacity,
-      weight: selectedCoveredStyle.weight,
-    }).addTo(layers.coveredBuildings);
-  }
 
-  L.circleMarker([selectedShelter.lat, selectedShelter.lon], {
-    radius: 9,
-    color: "#ffffff",
-    fillColor: "#ffffff",
-    fillOpacity: 0.16,
-    weight: 2,
-  }).addTo(layers.selectedShelter);
+    for (const idx of indices) {
+      const buildingFeature = buildingFeatureByIndex.get(Number(idx));
+      if (buildingFeature) {
+        createBuildingLayer(buildingFeature, style, 4).addTo(layers.coveredBuildings);
+        continue;
+      }
+      const b = coverageByIndex.get(Number(idx));
+      if (!b) continue;
+      L.circleMarker([b.lat, b.lon], {
+        radius: 4,
+        color: style.color,
+        fillColor: style.fillColor,
+        fillOpacity: style.fillOpacity,
+        weight: style.weight,
+      }).addTo(layers.coveredBuildings);
+    }
+  }
 }
 
-function selectShelter(shelter) {
-  selectedShelter = shelter;
+function flyToSelectedShelterView() {
+  if (!selectedShelters.length) return;
+  const last = selectedShelters[selectedShelters.length - 1];
+  const matches = getSelectedCoverageMatches();
+  if (!matches.length) {
+    map.flyTo([last.lat, last.lon], Math.max(map.getZoom(), 16), { duration: 0.9 });
+    return;
+  }
+
+  const bounds = L.latLngBounds([]);
+  for (const sel of selectedShelters) {
+    bounds.extend([sel.lat, sel.lon]);
+  }
+  for (const { coverage: match } of matches) {
+    const coveredIndices = Array.isArray(match.covered_building_indices)
+      ? match.covered_building_indices
+      : [];
+    for (const idx of coveredIndices) {
+      const buildingFeature = buildingFeatureByIndex.get(Number(idx));
+      if (buildingFeature) {
+        const featureBounds = L.geoJSON(buildingFeature).getBounds();
+        if (featureBounds.isValid()) bounds.extend(featureBounds);
+        continue;
+      }
+      const b = coverageByIndex.get(Number(idx));
+      if (b) bounds.extend([b.lat, b.lon]);
+    }
+  }
+
+  if (bounds.isValid()) {
+    map.flyToBounds(bounds.pad(0.24), { duration: 1.0, maxZoom: 17 });
+    return;
+  }
+  map.flyTo([last.lat, last.lon], Math.max(map.getZoom(), 16), { duration: 0.9 });
+}
+
+function selectShelter(shelter, addToSelection = false) {
+  if (addToSelection) {
+    const exists = selectedShelters.findIndex(
+      (s) => s.kind === shelter.kind && s.id === shelter.id,
+    );
+    if (exists >= 0) {
+      selectedShelters.splice(exists, 1);
+    } else {
+      selectedShelters.push(shelter);
+    }
+  } else {
+    selectedShelters = [shelter];
+  }
   renderSelectedShelterCoverage();
+  flyToSelectedShelterView();
   renderStats();
 }
 
@@ -457,6 +640,7 @@ function applyLayerVisibility() {
     ["meguniot", layers.existingMeguniot],
     ["miklatim", layers.existingMiklatim],
     ["recommended", layers.recommended],
+    ["post1992Buildings", layers.post1992Buildings],
     ["uncoveredBuildings", layers.uncoveredBuildings],
     ["coveredBuildingsBase", layers.coveredBuildingsBase],
     ["covered", layers.coveredBuildings],
@@ -475,27 +659,48 @@ function renderStats() {
   }
   const stats = bucketData.statistics;
   const shown = recommendationsForCurrentView();
-  const shownCoverage = shown.reduce((sum, row) => sum + row.newly_covered_buildings, 0);
+  const minuteLabel =
+    BUCKET_OPTIONS.find((b) => b.key === getActiveBucketKey())?.label || getActiveBucketKey();
+  const metricLabel = currentDistanceMetric === "euclidean" ? "euclidean straight-line (200m)" : "graph walking";
+
+  if (isClusterMode()) {
+    let selectionNote = "";
+    if (selectedShelters.length > 0) {
+      const names = selectedShelters.map((s) => s.label).join(", ");
+      selectionNote = `<br><em>Selected clusters: ${names}</em>`;
+    }
+    statsEl.innerHTML =
+      `Cluster placement mode is showing <strong>${shown.length}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. ` +
+      `Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.` +
+      selectionNote;
+    return;
+  }
+
+  const marginalCoverage = shown.reduce((sum, row) => sum + row.newly_covered_buildings, 0);
   const uncoveredNow = Number(stats.currently_uncovered) || 0;
-  const shownImprovementPct = uncoveredNow > 0 ? (shownCoverage / uncoveredNow) * 100 : 0;
-  const fullImprovementPct =
-    uncoveredNow > 0 ? (Number(stats.additional_covered_by_proposed || 0) / uncoveredNow) * 100 : 0;
-  const selectedNote = selectedShelter
-    ? `You selected <strong>${selectedShelter.label}</strong>. Buildings it covers within the selected time are highlighted in blue on the map.`
-    : "Click any shelter to instantly see which nearby buildings it can cover within the selected time.";
+  const remainingUncovered = Math.max(0, uncoveredNow - marginalCoverage);
+  const modeLabel = `exact placement mode (${metricLabel})`;
+  const coveragePhrase =
+    currentDistanceMetric === "euclidean"
+      ? "within 200m straight-line distance"
+      : `within ${minuteLabel} walking distance`;
+
+  let selectionNote = "";
+  if (selectedShelters.length > 0) {
+    const names = selectedShelters.map((s) => s.label).join(", ");
+    const modeLabel = coverageDisplayMode === "marginal" ? "newly covered" : "all reachable";
+    selectionNote = `<br><em>Selected: ${names} (showing ${modeLabel} buildings)</em>`;
+  }
 
   statsEl.innerHTML =
-    `At <strong>${BUCKET_OPTIONS.find((b) => b.key === bucketSelect.value)?.label || bucketSelect.value}</strong> travel time, ` +
-    `there are currently <strong>${stats.currently_uncovered}</strong> uncovered buildings.<br>` +
-    `You are viewing <strong>${shown.length}</strong> suggested shelters, which could help cover about <strong>${shownCoverage}</strong> additional buildings.<br>` +
-    `Coverage improvement (current selection): <strong>${shownImprovementPct.toFixed(1)}%</strong> of currently uncovered buildings.<br>` +
-    `Coverage improvement (all suggested): <strong>${fullImprovementPct.toFixed(1)}%</strong>.<br>` +
-    `If all suggested shelters for this time are placed, uncovered buildings drop to <strong>${stats.final_uncovered}</strong>.<br><br>` +
-    selectedNote;
+    `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. ` +
+    `You have added <strong>${shown.length}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. ` +
+    `There remain <strong>${remainingUncovered}</strong> uncovered buildings.` +
+    selectionNote;
 }
 
 async function refreshView() {
-  await ensureBucketAuxData(bucketSelect.value);
+  await ensureBucketAuxData(getActiveBucketKey());
   updateSliderBounds();
   countValue.textContent = countRange.value;
   renderExistingCoverageBuildings();
@@ -516,53 +721,61 @@ async function fetchJson(path) {
 function renderGuideContent() {
   const usageEn = `
     <div class="guide-block">
-      <p class="guide-kicker">Quick start</p>
       <h3>How to Use</h3>
       <ul>
-        <li>Choose a travel-time target (1 to 3 minutes).</li>
+        <li>Choose a placement mode: <strong>Exact placement</strong> for precise points or <strong>Cluster placement</strong> for area-level guidance.</li>
+        <li><strong>Exact placement</strong> now uses a single fixed threshold of <strong>5-minute walking distance</strong>.</li>
+        <li><strong>Cluster placement</strong> hides accessibility controls while keeping all buildings visible for context.</li>
         <li>Set how many suggested shelters you want to view using the slider.</li>
-        <li>Click any shelter marker to highlight the buildings it can cover within that time.</li>
+        <li>Click any marker to inspect the recommendation details and location.</li>
         <li>Use the <strong>Layers</strong> section in the legend to hide or show map information.</li>
       </ul>
-      <p><strong>Tip:</strong> Start with 1 minute to focus on the most urgent uncovered buildings.</p>
+      <p><strong>Tip:</strong> Use cluster mode to identify where to plan, then switch to exact mode for specific candidate points.</p>
     </div>
   `;
   const usageHe = `
     <div class="guide-block" dir="rtl">
-      <p class="guide-kicker">התחלה מהירה</p>
       <h3>איך משתמשים</h3>
       <ul>
-        <li>בוחרים יעד זמן הגעה (מ-1 עד 3 דקות).</li>
+        <li>בוחרים מצב מיקום: <strong>מיקום מדויק</strong> לנקודות ספציפיות או <strong>מיקום באשכולות</strong> להכוונה אזורית.</li>
+        <li><strong>מיקום מדויק</strong> פועל כעת עם סף קבוע של <strong>5 דקות הליכה</strong>.</li>
+        <li><strong>מיקום באשכולות</strong> מסתיר את בקרות הנגישות אך שומר על תצוגת כל המבנים להקשר.</li>
         <li>מגדירים בסליידר כמה מיקומים מומלצים יוצגו על המפה.</li>
-        <li>לוחצים על סמן של מקלט/מיגונית כדי לראות אילו בניינים הוא מכסה בזמן שנבחר.</li>
+        <li>לוחצים על סמן כדי לראות פרטי המלצה ומיקום.</li>
         <li>משתמשים באזור <strong>Layers</strong> שבמקרא כדי להסתיר או להציג שכבות כשיש עומס מידע.</li>
       </ul>
-      <p><strong>טיפ:</strong> כדאי להתחיל ביעד של דקה כדי לזהות מהר אזורים דחופים.</p>
+      <p><strong>טיפ:</strong> השתמשו במצב אשכולות לזיהוי אזורי תעדוף, ואז עברו למיקום מדויק לבחינת נקודות ספציפיות.</p>
     </div>
   `;
 
   const methodsEn = `
     <div class="guide-block">
-      <p class="guide-kicker">Method overview</p>
-      <h3>Methods</h3>
+      <h3>Methodology</h3>
       <ul>
-        <li>Coverage is estimated along <strong>real walking streets</strong>, not straight-line distance.</li>
-        <li>The analysis combines existing shelters and focuses on residential buildings likely to need nearby protection.</li>
-        <li>Suggested shelter points are ranked by how many currently uncovered buildings they can newly cover.</li>
-        <li>Per-shelter coverage is precomputed, so clicking a shelter simply highlights the buildings it can reach within the selected time.</li>
+        <li>Coverage is estimated along <strong>real walking streets</strong> with a densified network graph that adds entry points every 25m along long road segments.</li>
+        <li>Each building is projected onto its nearest road edge, capturing actual door-to-street walking time.</li>
+        <li>The analysis combines existing shelters and now treats <strong>all residential buildings built before 1992</strong> as requiring nearby shelter access.</li>
+        <li><strong>Cluster placement mode</strong> runs 150 KMeans models and keeps the best 150 compact fits to point at <strong>general areas</strong> where shelters should be considered.</li>
+        <li><strong>Exact placement mode</strong> outputs <strong>specific candidate points</strong> and evaluates them against a fixed 5-minute walking threshold.</li>
+        <li>Exact point outputs are useful for prioritization but are not perfectly accurate: road-network geometry, missing paths, and routing assumptions can shift local results.</li>
+        <li><strong>Total reachable</strong> shows all buildings a shelter can reach; <strong>newly covered</strong> shows only buildings not already served by a higher-ranked shelter.</li>
+        <li>Use the <em>Coverage display</em> toggle to switch between these views. Shift-click shelters to compare coverage of multiple shelters at once.</li>
       </ul>
       <p>Goal: help prioritize locations that reduce uncovered buildings under strict response times.</p>
     </div>
   `;
   const methodsHe = `
     <div class="guide-block" dir="rtl">
-      <p class="guide-kicker">סקירת מתודולוגיה</p>
       <h3>מתודולוגיה</h3>
       <ul>
-        <li>הכיסוי מחושב לפי <strong>הליכה ברחובות אמיתיים</strong>, ולא לפי קו אווירי.</li>
-        <li>הניתוח משלב מקלטים קיימים ומתמקד בבנייני מגורים שסביר שנדרשת להם הגנה קרובה.</li>
-        <li>המיקומים המומלצים מדורגים לפי מספר המבנים הלא-מכוסים שהם יכולים לכסות מחדש.</li>
-        <li>הכיסוי של כל מקלט/מיגונית מחושב מראש, כך שלחיצה על סמן רק מדגישה את הבניינים שהוא יכול לכסות בזמן הנבחר.</li>
+        <li>הכיסוי מחושב לפי <strong>הליכה ברחובות אמיתיים</strong> עם רשת צפופה שמוסיפה נקודות כניסה כל 25 מטר לאורך קטעי כביש ארוכים.</li>
+        <li>כל בניין מחובר לקטע הכביש הקרוב אליו, כך שזמן ההליכה מהדלת לרחוב נלקח בחשבון.</li>
+        <li>הניתוח משלב מקלטים קיימים ומתייחס כעת אל <strong>כל בנייני המגורים שנבנו לפני 1992</strong> כמבנים שדורשים גישה קרובה למיגון.</li>
+        <li><strong>מצב מיקום באשכולות</strong> מריץ 150 מודלי KMeans ובוחר את 150 ההתאמות הקומפקטיות הטובות ביותר כדי להצביע על <strong>אזור כללי</strong> למיקום מקלטים.</li>
+        <li><strong>מצב מיקום מדויק</strong> מציג <strong>נקודות ספציפיות</strong> ונבחן מול סף קבוע של 5 דקות הליכה.</li>
+        <li>התוצאות במצב המדויק שימושיות לתעדוף אך אינן מדויקות לחלוטין: אי-ודאות ברשת הדרכים ובהנחות הניתוב יכולה להשפיע מקומית על הכיסוי.</li>
+        <li><strong>סה"כ נגישים</strong> מראה את כל הבניינים שמקלט יכול להגיע אליהם; <strong>מכוסים חדשים</strong> מראה רק בניינים שלא כבר מכוסים על ידי מקלט בדירוג גבוה יותר.</li>
+        <li>השתמשו ב-Shift+לחיצה כדי להשוות כיסוי של מספר מקלטים בו-זמנית.</li>
       </ul>
       <p>המטרה: לסייע בתעדוף מיקומים שמצמצמים מבנים לא מכוסים בזמני תגובה קצרים.</p>
     </div>
@@ -614,7 +827,13 @@ async function loadAllData() {
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
   );
-  dataStore.coverage = await fetchJson(`${NETWORK_BASE}/building_coverage_network.json`);
+  dataStore.coverageByMetric = {};
+  for (const metric of DISTANCE_METRIC_OPTIONS) {
+    dataStore.coverageByMetric[metric.key] = await fetchJson(
+      `${NETWORK_BASE}/building_coverage_network_${metric.key}.json`,
+    );
+  }
+  dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric];
 
   coverageByIndex.clear();
   coverageById.clear();
@@ -624,10 +843,54 @@ async function loadAllData() {
   }
   buildBuildingFeatureIndex();
 
-  for (const bucket of BUCKET_OPTIONS) {
-    const key = bucket.key;
-    dataStore.optimalByBucket[key] = await fetchJson(`${NETWORK_BASE}/optimal_meguniot_${key}.json`);
+  dataStore.optimalByMetricModeBucket = {};
+  for (const metric of DISTANCE_METRIC_OPTIONS) {
+    dataStore.optimalByMetricModeBucket[metric.key] = {};
+    for (const mode of PLACEMENT_OPTIONS) {
+      dataStore.optimalByMetricModeBucket[metric.key][mode.key] = {};
+      for (const bucket of BUCKET_OPTIONS) {
+        const key = bucket.key;
+        dataStore.optimalByMetricModeBucket[metric.key][mode.key][key] = await fetchJson(
+          `${NETWORK_BASE}/optimal_meguniot_${metric.key}_${mode.key}_${key}.json`,
+        );
+      }
+    }
   }
+}
+
+function setDistanceMetric(metricKey) {
+  if (!DISTANCE_METRIC_OPTIONS.find((m) => m.key === metricKey)) return;
+  currentDistanceMetric = metricKey;
+  dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric] || null;
+  coverageByIndex.clear();
+  coverageById.clear();
+  for (const b of dataStore.coverage?.buildings || []) {
+    coverageByIndex.set(Number(b.building_idx), b);
+    coverageById.set(Number(b.id), b);
+  }
+  buildBuildingFeatureIndex();
+  metricGraphBtn?.classList.toggle("active-toggle", metricKey === "graph");
+  metricEuclideanBtn?.classList.toggle("active-toggle", metricKey === "euclidean");
+  clearSelection();
+  void refreshView();
+}
+
+function setPlacementMode(modeKey) {
+  if (!PLACEMENT_OPTIONS.find((m) => m.key === modeKey)) return;
+  currentPlacementMode = modeKey;
+  modeExactBtn?.classList.toggle("active-toggle", modeKey === "exact");
+  modeClusterBtn?.classList.toggle("active-toggle", modeKey === "cluster");
+  bucketControls?.classList.add("hidden-control");
+  coverageDisplayControls?.classList.toggle("hidden-control", modeKey === "cluster");
+  if (bucketSelect) {
+    bucketSelect.disabled = true;
+  }
+  if (modeKey === "cluster" && coverageModeFull) {
+    coverageModeFull.checked = true;
+    coverageDisplayMode = "full";
+  }
+  clearSelection();
+  void refreshView();
 }
 
 function wireEvents() {
@@ -636,11 +899,21 @@ function wireEvents() {
     void refreshView();
   });
   countRange.addEventListener("input", () => void refreshView());
+  metricGraphBtn?.addEventListener("click", () => setDistanceMetric("graph"));
+  metricEuclideanBtn?.addEventListener("click", () => setDistanceMetric("euclidean"));
+  modeExactBtn?.addEventListener("click", () => setPlacementMode("exact"));
+  modeClusterBtn?.addEventListener("click", () => setPlacementMode("cluster"));
 
   downloadCsvBtn.addEventListener("click", () => {
     const rows = recommendationsForCurrentView();
-    const label = BUCKET_OPTIONS.find((b) => b.key === bucketSelect.value)?.label || "bucket";
-    downloadBlob(toCsv(rows), `recommended_meguniot_${label}.csv`, "text/csv;charset=utf-8");
+    const activeBucket = getActiveBucketKey();
+    const label = BUCKET_OPTIONS.find((b) => b.key === activeBucket)?.label || "bucket";
+    const suffix = isClusterMode() ? "clusters" : label;
+    downloadBlob(
+      toCsv(rows),
+      `recommended_meguniot_${currentDistanceMetric}_${currentPlacementMode}_${suffix}.csv`,
+      "text/csv;charset=utf-8",
+    );
   });
 
   downloadGeojsonBtn.addEventListener("click", () => {
@@ -648,19 +921,28 @@ function wireEvents() {
     const features = rows.map((r) => ({
       type: "Feature",
       geometry: { type: "Point", coordinates: [r.lon, r.lat] },
-      properties: {
-        rank: r.rank,
-        time_bucket: r.time_bucket,
-        time_seconds: r.time_seconds,
-        coordinates: r.coordinates,
-        newly_covered_buildings: r.newly_covered_buildings,
-        newly_covered_people_est: r.newly_covered_people_est,
-      },
+      properties: isClusterMode()
+        ? {
+            rank: r.rank,
+            placement_mode: "cluster",
+            candidate_source: r.candidate_source,
+            coordinates: r.coordinates,
+          }
+        : {
+            rank: r.rank,
+            time_bucket: r.time_bucket,
+            time_seconds: r.time_seconds,
+            coordinates: r.coordinates,
+            newly_covered_buildings: r.newly_covered_buildings,
+            newly_covered_people_est: r.newly_covered_people_est,
+          },
     }));
-    const label = BUCKET_OPTIONS.find((b) => b.key === bucketSelect.value)?.label || "bucket";
+    const activeBucket = getActiveBucketKey();
+    const label = BUCKET_OPTIONS.find((b) => b.key === activeBucket)?.label || "bucket";
+    const suffix = isClusterMode() ? "clusters" : label;
     downloadBlob(
       JSON.stringify({ type: "FeatureCollection", features }, null, 2),
-      `recommended_meguniot_${label}.geojson`,
+      `recommended_meguniot_${currentDistanceMetric}_${currentPlacementMode}_${suffix}.geojson`,
       "application/geo+json;charset=utf-8",
     );
   });
@@ -669,6 +951,7 @@ function wireEvents() {
     [layerMeguniot, "meguniot"],
     [layerMiklatim, "miklatim"],
     [layerRecommended, "recommended"],
+    [layerPost1992Buildings, "post1992Buildings"],
     [layerUncoveredBuildings, "uncoveredBuildings"],
     [layerCoveredBuildingsBase, "coveredBuildingsBase"],
     [layerCovered, "covered"],
@@ -680,6 +963,17 @@ function wireEvents() {
       applyLayerVisibility();
     });
   }
+
+  coverageModeFull.addEventListener("change", () => {
+    coverageDisplayMode = "full";
+    renderSelectedShelterCoverage();
+    renderStats();
+  });
+  coverageModeMarginal.addEventListener("change", () => {
+    coverageDisplayMode = "marginal";
+    renderSelectedShelterCoverage();
+    renderStats();
+  });
 
   openGuideBtn.addEventListener("click", () => guideModal.classList.remove("hidden"));
   closeGuideBtn.addEventListener("click", () => guideModal.classList.add("hidden"));
@@ -697,7 +991,7 @@ loadAllData()
   .then(() => {
     wireEvents();
     renderExistingShelters();
-    void refreshView();
+    setPlacementMode("exact");
     setGuideLanguage("en");
     setGuideTab("usage");
     guideModal.classList.remove("hidden");

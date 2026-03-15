@@ -2,14 +2,14 @@
 
 Bet Shemesh meguniot placement project with:
 
-- A precompute-heavy backend (`scripts/run_meguniot_backend.py`) based on OSMnx walking network distance.
+- A precompute-heavy backend (`scripts/run_meguniot_backend.py`) supporting both graph walking distance and euclidean straight-line distance.
 - A lightweight frontend (`meguniot_access/`) for map exploration and recommendation downloads.
 
 ## Project structure
 
 - `scripts/run_meguniot_backend.py` - backend pipeline and optimization.
 - `data/meguniot_network/` - generated backend outputs consumed by frontend.
-- `meguniot_access/` - simple map UI with time bucket and recommendation count controls.
+- `meguniot_access/` - simple map UI with distance metric + placement controls and recommendation count controls.
 - `MEGUNIOT_PROJECT_PLAN.md` - planning doc and status.
 
 ## Backend scope
@@ -24,8 +24,13 @@ The backend currently:
   - `data/Miguniot.geojson`
   - `data/Miklatim.geojson`
 - Builds/loads an OSMnx walk graph in EPSG:2039.
-- Computes existing network coverage for buckets:
-  - `1min`, `2min`, `3min`
+- Computes existing coverage for a fixed `5min` bucket.
+- Supports two distance metrics:
+  - `graph` (walking network with routing and access edges)
+  - `euclidean` (straight-line 200m accessibility, no graph routing in coverage scoring)
+- Supports two placement types for each metric:
+  - `exact`
+  - `cluster`
 - Supports elevation-aware travel impedance when a DEM is provided (`--dem-path`).
 - Supports short direct emergency crossing for near-across-street access
   (`--emergency-crossing-radius-m`, default `22` meters).
@@ -51,8 +56,9 @@ The frontend currently supports:
   - Recommended meguniot
   - Buildings covered by selected shelter
 - Controls:
-  - Time bucket selector (`1m`, `2m`, `3m`)
-  - Recommendation count slider (`0..300`)
+  - Distance metric selector (`graph`, `euclidean`)
+  - Placement selector (`exact`, `cluster`)
+  - Recommendation count slider
 - Downloads:
   - CSV (`lat`, `lon`, combined `coordinates`, coverage metrics)
   - GeoJSON `FeatureCollection`

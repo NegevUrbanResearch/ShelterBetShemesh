@@ -103,6 +103,31 @@ body,
   color: var(--ink-dim);
 }
 
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+#bucketControls {
+  display: grid;
+  gap: 6px;
+}
+
+#bucketControls.hidden-control {
+  display: none;
+}
+
+.btn-toggle {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.btn-toggle.active-toggle {
+  background: rgba(80, 129, 255, 0.48);
+  border-color: rgba(180, 213, 255, 0.95);
+}
+
 select,
 input[type="range"] {
   width: 100%;
@@ -226,9 +251,14 @@ select {
   border-color: #ff4d4f;
 }
 
-.legend-swatch-covered-base {
-  background: rgba(46, 204, 113, 0.28);
+.legend-swatch-post-1992 {
+  background: rgba(46, 204, 113, 0.3);
   border-color: #2ecc71;
+}
+
+.legend-swatch-covered-base {
+  background: rgba(242, 201, 76, 0.34);
+  border-color: #f2c94c;
 }
 
 .legend-dot {
@@ -272,6 +302,14 @@ select {
 
 .legend-layers[open] summary::before {
   content: "▾";
+}
+
+.legend-hint {
+  font-size: 11px;
+  color: #8ab4f8;
+  margin: 2px 0 0;
+  padding: 0;
+  opacity: 0.75;
 }
 
 .legend-layers label {
