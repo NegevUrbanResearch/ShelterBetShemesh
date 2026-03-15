@@ -5,6 +5,8 @@ Bet Shemesh meguniot placement project with:
 - A precompute-heavy backend (`scripts/run_meguniot_backend.py`) supporting both graph walking distance and euclidean straight-line distance.
 - A lightweight frontend (`meguniot_access/`) for map exploration and recommendation downloads.
 
+Live site: [https://negevurbanresearch.github.io/ShelterBetShemesh/](https://negevurbanresearch.github.io/ShelterBetShemesh/)
+
 ## Project structure
 
 - `scripts/run_meguniot_backend.py` - backend pipeline and optimization.

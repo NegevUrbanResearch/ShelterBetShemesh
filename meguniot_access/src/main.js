@@ -1162,7 +1162,7 @@ function renderGuideContent() {
     currentGuideTab === "usage" ? t("guideTitleUsage") : t("guideTitleMethods");
 }
 
-function setGuideLanguage(lang) {
+function setGuideLanguage(lang, { refreshMap = true } = {}) {
   currentLanguage = lang;
   document.documentElement.lang = lang;
   document.documentElement.dir = "ltr";
@@ -1184,13 +1184,15 @@ function setGuideLanguage(lang) {
   applyStaticTranslations();
   repopulateLocalizedOptions();
   updateSliderBounds();
-  renderExistingShelters();
-  renderExistingCoverageBuildings();
-  renderAccessibilityHeatmap();
-  renderRecommended();
-  renderSelectedShelterCoverage();
-  renderStats();
-  applyLayerVisibility();
+  if (refreshMap) {
+    renderExistingShelters();
+    renderExistingCoverageBuildings();
+    renderAccessibilityHeatmap();
+    renderRecommended();
+    renderSelectedShelterCoverage();
+    renderStats();
+    applyLayerVisibility();
+  }
   renderGuideContent();
 }
 
@@ -1394,17 +1396,16 @@ function wireEvents() {
 }
 
 setBaseMap(baseMapSelect.value || "streets");
+setGuideLanguage("he", { refreshMap: false });
+setGuideTab("usage");
 
 loadAllData()
   .then(() => {
-    applyStaticTranslations();
     wireEvents();
     renderExistingShelters();
     reportProjectionStatus();
     setPlacementMode("exact");
-    setGuideLanguage("he");
-    setGuideTab("usage");
-    guideModal.classList.remove("hidden");
+    setGuideLanguage(currentLanguage);
   })
   .catch((err) => {
     console.error(err);
