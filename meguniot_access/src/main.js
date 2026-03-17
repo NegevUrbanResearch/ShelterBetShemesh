@@ -49,8 +49,8 @@ const I18N = {
     step2Title: '<span class="step-chip">2</span><span class="step-title-text">Analysis setup</span>',
     step3Title: '<span class="step-chip">3</span><span class="step-title-text">Add shelters</span>',
     step4Title: '<span class="step-chip">4</span><span class="step-title-text">Local impact</span>',
-    heatmapToggleLabel: "Accessibility heatmap (current coverage)",
-    accessibilityHeatmapHint: "Green = covered | Red = underserved",
+    heatmapToggleLabel: "Accessibility heatmap (distance to nearest shelter)",
+    accessibilityHeatmapHint: "Green = closer | Red = farther",
     distanceMetricLabel: "Distance",
     placementModeLabel: "Placement",
     timeBucketLabel: "Time bucket",
@@ -93,7 +93,7 @@ const I18N = {
     baseMap_light: "Light (Carto Positron)",
     loadingData: "Loading data...",
     accessibilityStats:
-      "Accessibility screen-grid mode is active. <strong>Green</strong> areas are currently covered by existing shelters, and <strong>red</strong> areas are underserved.",
+      "Accessibility screen-grid mode is active. <strong>Green</strong> areas are closer to an existing shelter, while <strong>red</strong> areas are farther away.",
     metricLabelEuclidean: "euclidean straight-line (200m)",
     metricLabelGraph: "graph walking",
     clusterStats: (shownLength, metricLabel) =>
@@ -161,8 +161,8 @@ const I18N = {
     step2Title: '<span class="step-chip">2</span><span class="step-title-text">הגדרות ניתוח</span>',
     step3Title: '<span class="step-chip">3</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">4</span><span class="step-title-text">השפעה מקומית</span>',
-    heatmapToggleLabel: "מפת חום לנגישות (כיסוי נוכחי)",
-    accessibilityHeatmapHint: "ירוק = מכוסה | אדום = חסר מענה",
+    heatmapToggleLabel: "מפת חום לנגישות (מרחק למיגון הקרוב ביותר)",
+    accessibilityHeatmapHint: "ירוק = קרוב יותר | אדום = רחוק יותר",
     distanceMetricLabel: "מרחק",
     placementModeLabel: "מיקום",
     timeBucketLabel: "חלון זמן",
@@ -204,7 +204,7 @@ const I18N = {
     baseMap_light: "בהיר (Carto Positron)",
     loadingData: "טוען נתונים...",
     accessibilityStats:
-      "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> מכוסים כיום על ידי מיגון קיים, ואזורים <strong>אדומים</strong> חסרי מענה.",
+      "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> קרובים יותר למיגון קיים, ואזורים <strong>אדומים</strong> רחוקים יותר.",
     metricLabelEuclidean: "מרחק אוקלידי בקו אווירי (200 מ')",
     metricLabelGraph: "מרחק הליכה ברשת הדרכים",
     clusterStats: (shownLength, metricLabel) =>
@@ -611,18 +611,38 @@ function getAccessibilityGridColor(score) {
   const clamp01 = (value) => Math.max(0, Math.min(1, value));
   const lerp = (a, b, t) => Math.round(a + (b - a) * t);
   const red = [200, 20, 20];
-  const greenMid = [20, 140, 20];
-  const greenBright = [20, 185, 20];
-  if (score <= 0) {
-    const t = clamp01(score + 1); // -1..0 -> 0..1
-    return [lerp(red[0], greenMid[0], t), lerp(red[1], greenMid[1], t), lerp(red[2], greenMid[2], t)];
+  const yellow = [239, 178, 0];
+  const green = [20, 165, 65];
+  const t = clamp01(score);
+  if (t < 0.5) {
+    const p = t / 0.5;
+    return [lerp(red[0], yellow[0], p), lerp(red[1], yellow[1], p), lerp(red[2], yellow[2], p)];
   }
-  const t = clamp01(score); // 0..1
-  return [
-    lerp(greenMid[0], greenBright[0], t),
-    lerp(greenMid[1], greenBright[1], t),
-    lerp(greenMid[2], greenBright[2], t),
-  ];
+  const p = (t - 0.5) / 0.5;
+  return [lerp(yellow[0], green[0], p), lerp(yellow[1], green[1], p), lerp(yellow[2], green[2], p)];
+}
+
+function percentile(sortedValues, percentileValue) {
+  if (!sortedValues.length) return null;
+  const boundedPercentile = Math.max(0, Math.min(1, percentileValue));
+  const pos = (sortedValues.length - 1) * boundedPercentile;
+  const lower = Math.floor(pos);
+  const upper = Math.ceil(pos);
+  if (lower === upper) return sortedValues[lower];
+  const fraction = pos - lower;
+  return sortedValues[lower] * (1 - fraction) + sortedValues[upper] * fraction;
+}
+
+function getDistanceNormalizationMaxMeters() {
+  const distances = [];
+  for (const coverage of coverageByIndex.values()) {
+    const distance = Number(coverage?.nearest_shelter_distance_m);
+    if (Number.isFinite(distance) && distance >= 0) distances.push(distance);
+  }
+  if (!distances.length) return 1;
+  distances.sort((a, b) => a - b);
+  const p90 = percentile(distances, 0.9);
+  return Number.isFinite(p90) && p90 > 0 ? p90 : distances[distances.length - 1] || 1;
 }
 
 function csvCell(value) {
@@ -813,10 +833,13 @@ function renderAccessibilityHeatmap() {
   const zoom = map.getZoom();
   const cellSize = ACCESSIBILITY_GRID_CELL_SIZE_PX;
   const buckets = new Map();
-  const bucket = getActiveBucketKey();
+  const distanceMaxMeters = getDistanceNormalizationMaxMeters();
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
-    const covered = Boolean(coverage?.[`covered_${bucket}`]);
+    const distanceMeters = Number(coverage?.nearest_shelter_distance_m);
+    if (!Number.isFinite(distanceMeters) || distanceMeters < 0) continue;
+    const normalizedDistance = Math.max(0, Math.min(1, distanceMeters / distanceMaxMeters));
+    const score = 1 - normalizedDistance; // 1 = close (green), 0 = far (red)
     const point = getCoveragePointLatLng(coverage, idx);
     if (!point) continue;
     const projected = map.project(point, zoom);
@@ -824,7 +847,7 @@ function renderAccessibilityHeatmap() {
     const cellY = Math.floor(projected.y / cellSize);
     const key = `${cellX}:${cellY}`;
     const existing = buckets.get(key) || { cellX, cellY, scoreSum: 0, count: 0 };
-    existing.scoreSum += covered ? 1 : -1;
+    existing.scoreSum += score;
     existing.count += 1;
     buckets.set(key, existing);
   }
