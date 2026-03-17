@@ -473,7 +473,7 @@ function repopulateLocalizedOptions() {
     opt.textContent = getBaseMapLabel(basemap.key);
     baseMapSelect.appendChild(opt);
   }
-  baseMapSelect.value = selectedBaseMap || "streets";
+  baseMapSelect.value = selectedBaseMap || "satellite";
 }
 
 for (const bucket of BUCKET_OPTIONS) {
@@ -490,7 +490,7 @@ for (const basemap of BASE_MAP_OPTIONS) {
   opt.textContent = getBaseMapLabel(basemap.key);
   baseMapSelect.appendChild(opt);
 }
-baseMapSelect.value = "streets";
+baseMapSelect.value = "satellite";
 
 const map = L.map("map", { preferCanvas: true, zoomControl: false }).setView([31.745, 34.99], 13);
 L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -1901,7 +1901,7 @@ function wireEvents() {
   wireDrawerToggles();
 }
 
-setBaseMap(baseMapSelect.value || "streets");
+setBaseMap(baseMapSelect.value || "satellite");
 setGuideLanguage("he", { refreshMap: false });
 setGuideTab("usage");
 
