@@ -46,17 +46,17 @@ const I18N = {
     closeHelpAriaLabel: "Close help",
     guideTabsAriaLabel: "Guide sections",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
-    step2Title: '<span class="step-chip">2</span><span class="step-title-text">Set analysis mode</span>',
+    step2Title: '<span class="step-chip">2</span><span class="step-title-text">Analysis setup</span>',
     step3Title: '<span class="step-chip">3</span><span class="step-title-text">Add shelters</span>',
-    step4Title: '<span class="step-chip">4</span><span class="step-title-text">Inspect change</span>',
+    step4Title: '<span class="step-chip">4</span><span class="step-title-text">Local impact</span>',
     heatmapToggleLabel: "Accessibility heatmap (current coverage)",
     accessibilityHeatmapHint: "Green = covered | Red = underserved",
-    distanceMetricLabel: "Distance metric",
-    placementModeLabel: "Placement mode",
+    distanceMetricLabel: "Distance",
+    placementModeLabel: "Placement",
     timeBucketLabel: "Time bucket",
     downloadCsv: "Download CSV",
     downloadGeojson: "Download GeoJSON",
-    coverageInspectHint: "Click shelter markers on the map to inspect local coverage.",
+    coverageInspectHint: "Click a shelter marker to see local impact.",
     legendTitle: "Map legend",
     legendExisting: "Existing shelters (meguniot + miklatim)",
     legendRecommended: "Recommended shelters",
@@ -65,7 +65,7 @@ const I18N = {
     legendCoveredBase: "Buildings covered by existing shelters",
     legendCoveredSelected: "Covered by selected shelter",
     legendTopography: "Topography contour lines",
-    legendTopographyScaleTitle: "Topography:",
+    legendTopographyScaleTitle: "",
     legendTopographyScaleLow: "Low",
     legendTopographyScaleHigh: "High",
     layersSummary: "Layers",
@@ -78,10 +78,10 @@ const I18N = {
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
     layerCoveredLabel: "Covered by selected shelter",
-    metricGraphBtn: "Graph distance",
-    metricEuclideanBtn: "Euclidean (200m)",
-    modeExactBtn: "Exact placement",
-    modeClusterBtn: "Cluster placement",
+    metricGraphBtn: "גרפי",
+    metricEuclideanBtn: "אוקלידי",
+    modeExactBtn: "מדויק",
+    modeClusterBtn: "אשכול",
     countRangeLabel: "Recommended shelters",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
       `Recommended ${modeLabel} (max ${maxRecommendations})`,
@@ -158,17 +158,17 @@ const I18N = {
     closeHelpAriaLabel: "סגירת עזרה",
     guideTabsAriaLabel: "לשוניות מדריך",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
-    step2Title: '<span class="step-chip">2</span><span class="step-title-text">בחירת מצב ניתוח</span>',
+    step2Title: '<span class="step-chip">2</span><span class="step-title-text">הגדרות ניתוח</span>',
     step3Title: '<span class="step-chip">3</span><span class="step-title-text">הוספת מיגוניות</span>',
-    step4Title: '<span class="step-chip">4</span><span class="step-title-text">בדיקת שינוי</span>',
+    step4Title: '<span class="step-chip">4</span><span class="step-title-text">השפעה מקומית</span>',
     heatmapToggleLabel: "מפת חום לנגישות (כיסוי נוכחי)",
     accessibilityHeatmapHint: "ירוק = מכוסה | אדום = חסר מענה",
-    distanceMetricLabel: "מדד מרחק",
-    placementModeLabel: "מצב מיקום",
+    distanceMetricLabel: "מרחק",
+    placementModeLabel: "מיקום",
     timeBucketLabel: "חלון זמן",
     downloadCsv: "הורדת CSV",
     downloadGeojson: "הורדת GeoJSON",
-    coverageInspectHint: "לחצו על סמני מיגוניות במפה כדי לבדוק כיסוי מקומי.",
+    coverageInspectHint: "לחצו על מיגונית במפה כדי לראות השפעה מקומית.",
     legendTitle: "מקרא מפה",
     legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
     legendRecommended: "מיגוניות מומלצות",
@@ -177,7 +177,7 @@ const I18N = {
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
     legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
     legendTopography: "קווי גובה טופוגרפיים",
-    legendTopographyScaleTitle: "טופוגרפיה:",
+    legendTopographyScaleTitle: "",
     legendTopographyScaleLow: "נמוך",
     legendTopographyScaleHigh: "גבוה",
     layersSummary: "שכבות",
@@ -190,10 +190,10 @@ const I18N = {
     layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
     layerCoveredLabel: "מכוסים על ידי מיגונית שנבחרה",
-    metricGraphBtn: "מרחק גרפי",
-    metricEuclideanBtn: "אוקלידי (200 מ')",
-    modeExactBtn: "מיקום מדויק",
-    modeClusterBtn: "מיקום באשכולות",
+    metricGraphBtn: "Graph",
+    metricEuclideanBtn: "Euclidean",
+    modeExactBtn: "Exact",
+    modeClusterBtn: "Cluster",
     countRangeLabel: "מיגוניות מומלצות",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
     clusterAreas: "אזורי אשכול",
@@ -710,6 +710,30 @@ function setAccessibilityHeatmap(enabled) {
   if (accessibilityHeatmapToggle) accessibilityHeatmapToggle.checked = enabled;
   accessibilityHeatmapHint?.classList.toggle("hidden", !enabled);
   coverageInspectHint?.classList.toggle("hidden", enabled);
+}
+
+function setDrawerOpen(panel, open) {
+  if (!panel) return;
+  const toggle = panel.querySelector(":scope > .drawer-toggle");
+  const content = panel.querySelector(":scope > .drawer-content");
+  if (!toggle || !content) return;
+  panel.classList.toggle("is-open", open);
+  content.classList.toggle("is-open", open);
+  toggle.setAttribute("aria-expanded", String(open));
+}
+
+function wireDrawerToggles() {
+  const drawerPanels = document.querySelectorAll(".drawer-panel");
+  for (const panel of drawerPanels) {
+    const toggle = panel.querySelector(":scope > .drawer-toggle");
+    if (!toggle) continue;
+    const startsOpen = panel.classList.contains("is-open");
+    setDrawerOpen(panel, startsOpen);
+    toggle.addEventListener("click", () => {
+      const isOpen = panel.classList.contains("is-open");
+      setDrawerOpen(panel, !isOpen);
+    });
+  }
 }
 
 function buildBuildingFeatureIndex() {
@@ -1625,6 +1649,7 @@ function wireEvents() {
   }
   guideTabUsage.addEventListener("click", () => setGuideTab("usage"));
   guideTabMethods.addEventListener("click", () => setGuideTab("methods"));
+  wireDrawerToggles();
 }
 
 setBaseMap(baseMapSelect.value || "streets");

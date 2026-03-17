@@ -40,115 +40,156 @@
       </header>
 
       <aside class="control-stack">
-        <section class="control-step-panel glass">
-          <h3 id="step1Title" class="control-step-title"><span class="step-chip">1</span> בדיקת כיסוי</h3>
-          <label class="heatmap-toggle-control">
-            <input type="checkbox" id="accessibilityHeatmapToggle" class="checkbox-toggle" />
-            <span id="heatmapToggleLabel" class="checkbox-label">מפת חום לנגישות (כיסוי נוכחי)</span>
-            <span class="checkbox-checkmark">✓</span>
-          </label>
-          <p id="accessibilityHeatmapHint" class="legend-hint hidden">ירוק = מכוסה | אדום = חסר מענה</p>
-        </section>
-
-        <section class="control-step-panel glass">
-          <h3 id="step2Title" class="control-step-title"><span class="step-chip">2</span> בחירת מצב ניתוח</h3>
-          <label id="distanceMetricLabel">מדד מרחק</label>
-          <div class="mode-toggle" role="group" aria-label="מדד מרחק">
-            <button id="metricGraphBtn" class="btn btn-toggle" type="button">
-              מרחק גרפי
-            </button>
-            <button id="metricEuclideanBtn" class="btn btn-toggle active-toggle" type="button">
-              אוקלידי (200 מ')
-            </button>
-          </div>
-          <label id="placementModeLabel">מצב מיקום</label>
-          <div class="mode-toggle" role="group" aria-label="מצב מיקום">
-            <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
-              מיקום מדויק
-            </button>
-            <button id="modeClusterBtn" class="btn btn-toggle" type="button">
-              מיקום באשכולות
-            </button>
-          </div>
-          <div id="bucketControls">
-            <label id="timeBucketLabel" for="bucketSelect">חלון זמן</label>
-            <select id="bucketSelect"></select>
+        <section class="control-step-panel glass drawer-panel is-open">
+          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step1Content">
+            <h3 id="step1Title" class="control-step-title"><span class="step-chip">1</span> בדיקת כיסוי</h3>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="step1Content" class="drawer-content is-open">
+            <label class="heatmap-toggle-control">
+              <input type="checkbox" id="accessibilityHeatmapToggle" class="checkbox-toggle" />
+              <span id="heatmapToggleLabel" class="checkbox-label">מפת חום לנגישות (כיסוי נוכחי)</span>
+              <span class="checkbox-checkmark">✓</span>
+            </label>
+            <p id="accessibilityHeatmapHint" class="legend-hint hidden">ירוק = מכוסה | אדום = חסר מענה</p>
           </div>
         </section>
 
-        <section class="control-step-panel glass">
-          <h3 id="step3Title" class="control-step-title"><span class="step-chip">3</span> הוספת מיגוניות</h3>
-          <label id="countRangeLabel" for="countRange">מיגוניות מומלצות</label>
-          <input id="countRange" type="range" min="0" max="0" value="0" />
-          <div id="countValue" class="count-badge">0</div>
-          <div class="downloads">
-            <button id="downloadCsv" class="btn">הורדת CSV</button>
-            <button id="downloadGeojson" class="btn">הורדת GeoJSON</button>
+        <section id="analysisModeControls" class="control-step-panel glass drawer-panel is-open">
+          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step2Content">
+            <h3 id="step2Title" class="control-step-title"><span class="step-chip">2</span> בחירת מצב ניתוח</h3>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="step2Content" class="drawer-content is-open">
+            <div class="analysis-grid">
+              <div class="analysis-choice">
+                <label id="distanceMetricLabel">מדד מרחק</label>
+                <div class="mode-toggle" role="group" aria-label="מדד מרחק">
+                  <button id="metricGraphBtn" class="btn btn-toggle" type="button">
+                    מרחק גרפי
+                  </button>
+                  <button id="metricEuclideanBtn" class="btn btn-toggle active-toggle" type="button">
+                    אוקלידי (200 מ')
+                  </button>
+                </div>
+              </div>
+              <div class="analysis-choice analysis-choice-divider">
+                <label id="placementModeLabel">מצב מיקום</label>
+                <div class="mode-toggle" role="group" aria-label="מצב מיקום">
+                  <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
+                    מיקום מדויק
+                  </button>
+                  <button id="modeClusterBtn" class="btn btn-toggle" type="button">
+                    מיקום באשכולות
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="bucketControls">
+              <label id="timeBucketLabel" for="bucketSelect">חלון זמן</label>
+              <select id="bucketSelect"></select>
+            </div>
           </div>
         </section>
 
-        <section id="coverageDisplayControls" class="control-step-panel glass">
-          <h3 id="step4Title" class="control-step-title"><span class="step-chip">4</span> בדיקת שינוי</h3>
-          <p id="coverageInspectHint" class="coverage-inspect-hint">
-            לחצו על סמני מיגוניות במפה כדי לבדוק כיסוי מקומי.
-          </p>
-          <section id="stats" class="stats"></section>
+        <section class="control-step-panel glass drawer-panel is-open">
+          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step3Content">
+            <h3 id="step3Title" class="control-step-title"><span class="step-chip">3</span> הוספת מיגוניות</h3>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="step3Content" class="drawer-content is-open">
+            <label id="countRangeLabel" for="countRange">מיגוניות מומלצות</label>
+            <input id="countRange" type="range" min="0" max="0" value="0" />
+            <div class="count-download-row">
+              <div id="countValue" class="count-badge">0</div>
+              <div class="downloads">
+                <button id="downloadCsv" class="btn">הורדת CSV</button>
+                <button id="downloadGeojson" class="btn">הורדת GeoJSON</button>
+              </div>
+            </div>
+          </div>
         </section>
-      </aside>
 
-      <aside id="mapLegend" class="legend-card glass">
-        <h2 id="legendTitle" class="legend-title">מקרא מפה</h2>
-        <div class="legend-items">
-          <div class="legend-row">
-            <img src="./assets/existing.svg" alt="" class="legend-marker" />
-            <span id="legendExisting">מיגון קיים (מיגוניות + מקלטים)</span>
+        <section id="coverageDisplayControls" class="control-step-panel glass drawer-panel is-open">
+          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step4Content">
+            <h3 id="step4Title" class="control-step-title"><span class="step-chip">4</span> בדיקת שינוי</h3>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="step4Content" class="drawer-content is-open">
+            <p id="coverageInspectHint" class="coverage-inspect-hint">
+              לחצו על סמני מיגוניות במפה כדי לבדוק כיסוי מקומי.
+            </p>
+            <section id="stats" class="stats"></section>
           </div>
-          <div class="legend-row">
-            <img src="./assets/proposed.svg" alt="" class="legend-marker legend-marker-small" />
-            <span id="legendRecommended">מיגוניות מומלצות</span>
+        </section>
+
+        <section id="mapLegend" class="legend-drawer glass drawer-panel">
+          <button id="legendDrawerToggle" class="drawer-toggle legend-drawer-toggle" type="button" aria-expanded="false" aria-controls="legendDrawerContent">
+            <span id="legendTitle" class="legend-title">מקרא מפה</span>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="legendDrawerContent" class="drawer-content legend-drawer-content">
+            <div class="legend-items">
+              <div class="legend-row">
+                <img src="./assets/existing.svg" alt="" class="legend-marker" />
+                <span id="legendExisting">מיגון קיים (מיגוניות + מקלטים)</span>
+              </div>
+              <div class="legend-row">
+                <img src="./assets/proposed.svg" alt="" class="legend-marker legend-marker-small" />
+                <span id="legendRecommended">מיגוניות מומלצות</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-line legend-line-contour"></span>
+                <span id="legendTopography">קווי גובה טופוגרפיים</span>
+              </div>
+              <div class="legend-topography-scale" aria-hidden="true">
+                <span id="legendTopographyScaleTitle" class="legend-topography-scale-title"></span>
+                <span id="legendTopographyScaleLow" class="legend-topography-scale-label">נמוך</span>
+                <span id="legendTopographyScaleBar" class="legend-topography-scale-bar"></span>
+                <span id="legendTopographyScaleHigh" class="legend-topography-scale-label">גבוה</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-swatch legend-swatch-post-1992"></span>
+                <span id="legendPost1992">מבנים שנבנו מ-1992 ואילך</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-swatch legend-swatch-uncovered"></span>
+                <span id="legendUncovered">מבנים ללא כיסוי (מצב קיים)</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-swatch legend-swatch-covered-base"></span>
+                <span id="legendCoveredBase">מבנים מכוסים על ידי מיגון קיים</span>
+              </div>
+              <div class="legend-row">
+                <span class="legend-dot legend-dot-covered"></span>
+                <span id="legendCoveredSelected">מכוסים על ידי מיגונית שנבחרה</span>
+              </div>
+            </div>
           </div>
-          <div class="legend-row">
-            <span class="legend-line legend-line-contour"></span>
-            <span id="legendTopography">קווי גובה טופוגרפיים</span>
+        </section>
+
+        <section id="layerControlsPanel" class="legend-drawer glass drawer-panel">
+          <button id="layerControlsToggle" class="drawer-toggle legend-drawer-toggle" type="button" aria-expanded="false" aria-controls="layerControlsContent">
+            <span id="layersSummary" class="legend-title">שכבות</span>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="layerControlsContent" class="drawer-content legend-drawer-content">
+            <div class="layer-controls-list">
+              <div class="legend-basemap-control">
+                <label id="baseMapLabel" for="baseMapSelect">מפת בסיס</label>
+                <select id="baseMapSelect"></select>
+              </div>
+              <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
+              <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
+              <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
+              <label><input type="checkbox" id="layerTopography" checked /> <span id="layerTopographyLabel">טופוגרפיה (קווי גובה)</span></label>
+              <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
+              <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
+              <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>
+              <label><input type="checkbox" id="layerCovered" checked /> <span id="layerCoveredLabel">מכוסים על ידי מיגונית שנבחרה</span></label>
+            </div>
           </div>
-          <div class="legend-topography-scale" aria-hidden="true">
-            <span id="legendTopographyScaleTitle" class="legend-topography-scale-title">טופוגרפיה:</span>
-            <span id="legendTopographyScaleLow" class="legend-topography-scale-label">נמוך</span>
-            <span id="legendTopographyScaleBar" class="legend-topography-scale-bar"></span>
-            <span id="legendTopographyScaleHigh" class="legend-topography-scale-label">גבוה</span>
-          </div>
-          <div class="legend-row">
-            <span class="legend-swatch legend-swatch-post-1992"></span>
-            <span id="legendPost1992">מבנים שנבנו מ-1992 ואילך</span>
-          </div>
-          <div class="legend-row">
-            <span class="legend-swatch legend-swatch-uncovered"></span>
-            <span id="legendUncovered">מבנים ללא כיסוי (מצב קיים)</span>
-          </div>
-          <div class="legend-row">
-            <span class="legend-swatch legend-swatch-covered-base"></span>
-            <span id="legendCoveredBase">מבנים מכוסים על ידי מיגון קיים</span>
-          </div>
-          <div class="legend-row">
-            <span class="legend-dot legend-dot-covered"></span>
-            <span id="legendCoveredSelected">מכוסים על ידי מיגונית שנבחרה</span>
-          </div>
-        </div>
-        <details class="legend-layers">
-          <summary id="layersSummary">שכבות</summary>
-          <div class="legend-basemap-control">
-            <label id="baseMapLabel" for="baseMapSelect">מפת בסיס</label>
-            <select id="baseMapSelect"></select>
-          </div>
-          <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
-          <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
-          <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
-          <label><input type="checkbox" id="layerTopography" checked /> <span id="layerTopographyLabel">טופוגרפיה (קווי גובה)</span></label>
-          <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
-          <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
-          <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>
-          <label><input type="checkbox" id="layerCovered" checked /> <span id="layerCoveredLabel">מכוסים על ידי מיגונית שנבחרה</span></label>
-        </details>
+        </section>
       </aside>
 
       <div id="guideModal" class="modal">
