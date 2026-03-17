@@ -473,7 +473,7 @@ function repopulateLocalizedOptions() {
     opt.textContent = getBaseMapLabel(basemap.key);
     baseMapSelect.appendChild(opt);
   }
-  baseMapSelect.value = selectedBaseMap || "satellite";
+  baseMapSelect.value = selectedBaseMap || "light";
 }
 
 for (const bucket of BUCKET_OPTIONS) {
@@ -490,7 +490,7 @@ for (const basemap of BASE_MAP_OPTIONS) {
   opt.textContent = getBaseMapLabel(basemap.key);
   baseMapSelect.appendChild(opt);
 }
-baseMapSelect.value = "satellite";
+baseMapSelect.value = "light";
 
 const map = L.map("map", { preferCanvas: true, zoomControl: false }).setView([31.745, 34.99], 13);
 L.control.zoom({ position: "bottomright" }).addTo(map);
@@ -940,24 +940,24 @@ function renderExistingCoverageBuildings() {
   layers.coveredBuildingsBase.clearLayers();
   const bucket = getActiveBucketKey();
   const post1992Style = {
-    color: "#2ecc71",
+    color: "#1b5e20",
     weight: 1.2,
-    fillColor: "#35d27f",
-    fillOpacity: 0.24,
+    fillColor: "#2e7d32",
+    fillOpacity: 0.26,
     opacity: 0.94,
   };
   const uncoveredStyle = {
-    color: "#ff4d4f",
+    color: "#e53935",
     weight: 1.4,
-    fillColor: "#ff6b6d",
-    fillOpacity: 0.38,
+    fillColor: "#ef5350",
+    fillOpacity: 0.4,
     opacity: 0.95,
   };
   const coveredStyle = {
-    color: "#f2c94c",
+    color: "#2e7d32",
     weight: 1.2,
-    fillColor: "#f5d96b",
-    fillOpacity: 0.3,
+    fillColor: "#43a047",
+    fillOpacity: 0.32,
     opacity: 0.92,
   };
 
@@ -1022,7 +1022,7 @@ function renderAccessibilityHeatmap() {
       stroke: false,
       fill: true,
       fillColor: `rgb(${r}, ${g}, ${b})`,
-      fillOpacity: 0.86,
+      fillOpacity: 1,
       interactive: false,
     }).addTo(layers.accessibilityHeatmap);
   }
@@ -1457,11 +1457,16 @@ function renderSelectedShelterCoverage() {
   const matches = getSelectedCoverageMatches();
   if (!matches.length) return;
 
-  const colors = ["#2f80ff", "#ff6b2f", "#2fcc71", "#c02fff", "#ffcc2f"];
+  const newlyCoveredColor = "#81c784";
   for (let mi = 0; mi < matches.length; mi++) {
     const { shelter, coverage: match } = matches[mi];
-    const color = colors[mi % colors.length];
-    const style = { color, weight: 2, fillColor: color, fillOpacity: 0.7, opacity: 1 };
+    const style = {
+      color: "#66bb6a",
+      weight: 2,
+      fillColor: newlyCoveredColor,
+      fillOpacity: 0.72,
+      opacity: 1,
+    };
     const indices = Array.isArray(match.covered_building_indices) ? match.covered_building_indices : [];
 
     for (const idx of indices) {
@@ -1901,7 +1906,7 @@ function wireEvents() {
   wireDrawerToggles();
 }
 
-setBaseMap(baseMapSelect.value || "satellite");
+setBaseMap(baseMapSelect.value || "light");
 setGuideLanguage("he", { refreshMap: false });
 setGuideTab("usage");
 
