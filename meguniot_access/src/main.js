@@ -45,6 +45,9 @@ const I18N = {
     infoAriaLabel: "Info",
     closeHelpAriaLabel: "Close help",
     guideTabsAriaLabel: "Guide sections",
+    mobileControlsBtn: "Controls",
+    mobilePanelTitle: "Map controls",
+    mobileCloseAriaLabel: "Close controls",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
     step2Title: '<span class="step-chip">2</span><span class="step-title-text">Analysis setup</span>',
@@ -165,6 +168,9 @@ const I18N = {
     infoAriaLabel: "מידע",
     closeHelpAriaLabel: "סגירת עזרה",
     guideTabsAriaLabel: "לשוניות מדריך",
+    mobileControlsBtn: "פקדים",
+    mobilePanelTitle: "פקדי מפה",
+    mobileCloseAriaLabel: "סגירת פקדים",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
     step2Title: '<span class="step-chip">2</span><span class="step-title-text">הגדרות ניתוח</span>',
@@ -358,12 +364,19 @@ const langLabelEnEls = [langLabelEn, langLabelEnModal].filter(Boolean);
 const langLabelHeEls = [langLabelHe, langLabelHeModal].filter(Boolean);
 const guideTabUsage = document.getElementById("guideTabUsage");
 const guideTabMethods = document.getElementById("guideTabMethods");
+const controlStack = document.querySelector(".control-stack");
+const mobileControlsBtn = document.getElementById("mobileControlsBtn");
+const mobilePanelBackdrop = document.getElementById("mobilePanelBackdrop");
+const mobilePanelTitle = document.getElementById("mobilePanelTitle");
+const mobilePanelCloseBtn = document.getElementById("mobilePanelCloseBtn");
+const mobileViewport = window.matchMedia("(max-width: 900px)");
 
 let currentLanguage = "he";
 let currentGuideTab = "usage";
 let currentDistanceMetric = "euclidean";
 let currentPlacementMode = "exact";
 let accessibilityHeatmapEnabled = false;
+let mobilePanelConfigured = false;
 let elevationLabelPopup = null;
 let scenarioManifest = [];
 let scenarioDataCache = {};
@@ -429,6 +442,7 @@ function applyStaticTranslations() {
     assumePublicSheltersLabel: "assumePublicSheltersLabel",
     assumptionsHasShelterTitle: "assumptionsHasShelterTitle",
     assumptionsNeighborsTitle: "assumptionsNeighborsTitle",
+    mobilePanelTitle: "mobilePanelTitle",
   };
   for (const [id, key] of Object.entries(textMap)) {
     const el = document.getElementById(id);
@@ -448,6 +462,10 @@ function applyStaticTranslations() {
 
   openGuideBtn.setAttribute("aria-label", t("infoAriaLabel"));
   closeGuideBtn.setAttribute("aria-label", t("closeHelpAriaLabel"));
+  mobileControlsBtn?.setAttribute("aria-label", t("mobileControlsBtn"));
+  mobilePanelCloseBtn?.setAttribute("aria-label", t("mobileCloseAriaLabel"));
+  if (mobileControlsBtn) mobileControlsBtn.textContent = t("mobileControlsBtn");
+  if (mobilePanelTitle) mobilePanelTitle.textContent = t("mobilePanelTitle");
   document.querySelector(".guide-tabs")?.setAttribute("aria-label", t("guideTabsAriaLabel"));
   document.querySelectorAll('.mode-toggle[role="group"]')?.[0]?.setAttribute("aria-label", t("distanceMetricLabel"));
   document.querySelectorAll('.mode-toggle[role="group"]')?.[1]?.setAttribute("aria-label", t("placementModeLabel"));
@@ -1102,6 +1120,47 @@ function setDrawerOpen(panel, open) {
   panel.classList.toggle("is-open", open);
   content.classList.toggle("is-open", open);
   toggle.setAttribute("aria-expanded", String(open));
+}
+
+function isMobileViewport() {
+  return mobileViewport.matches;
+}
+
+function setMobileControlPanelOpen(open) {
+  if (!controlStack) return;
+  const shouldOpen = isMobileViewport() ? Boolean(open) : true;
+  controlStack.classList.toggle("mobile-open", shouldOpen);
+  mobilePanelBackdrop?.classList.toggle("hidden", !shouldOpen);
+  appRoot?.classList.toggle("mobile-controls-open", shouldOpen);
+  if (mobileControlsBtn) {
+    mobileControlsBtn.setAttribute("aria-expanded", String(shouldOpen));
+  }
+}
+
+function configureMobilePanelDefaults() {
+  if (mobilePanelConfigured || !controlStack) return;
+  const drawerPanels = controlStack.querySelectorAll(".drawer-panel");
+  for (const panel of drawerPanels) {
+    const toggle = panel.querySelector(":scope > .drawer-toggle");
+    const keepOpen = toggle?.getAttribute("aria-controls") === "step3Content";
+    setDrawerOpen(panel, keepOpen);
+  }
+  mobilePanelConfigured = true;
+}
+
+function syncMobileUiState() {
+  if (isMobileViewport()) {
+    mobileControlsBtn?.classList.remove("hidden-control");
+    mobilePanelBackdrop?.classList.remove("hidden-control");
+    mobilePanelCloseBtn?.parentElement?.classList.remove("hidden-control");
+    configureMobilePanelDefaults();
+    setMobileControlPanelOpen(false);
+    return;
+  }
+  mobileControlsBtn?.classList.add("hidden-control");
+  mobilePanelBackdrop?.classList.add("hidden-control");
+  mobilePanelCloseBtn?.parentElement?.classList.add("hidden-control");
+  setMobileControlPanelOpen(true);
 }
 
 function wireDrawerToggles() {
@@ -2108,6 +2167,19 @@ function wireEvents() {
   guideTabUsage.addEventListener("click", () => setGuideTab("usage"));
   guideTabMethods.addEventListener("click", () => setGuideTab("methods"));
   wireDrawerToggles();
+  syncMobileUiState();
+  mobileViewport.addEventListener("change", syncMobileUiState);
+  mobileControlsBtn?.addEventListener("click", () => {
+    const isOpen = controlStack?.classList.contains("mobile-open");
+    setMobileControlPanelOpen(!isOpen);
+  });
+  mobilePanelCloseBtn?.addEventListener("click", () => setMobileControlPanelOpen(false));
+  mobilePanelBackdrop?.addEventListener("click", () => setMobileControlPanelOpen(false));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && isMobileViewport()) {
+      setMobileControlPanelOpen(false);
+    }
+  });
 }
 
 setBaseMap(baseMapSelect.value || "light");

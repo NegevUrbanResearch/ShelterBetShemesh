@@ -106,6 +106,40 @@ body,
   gap: 8px;
 }
 
+.mobile-controls-btn {
+  position: absolute;
+  z-index: 1350;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.mobile-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1250;
+  background: rgba(2, 8, 20, 0.44);
+  backdrop-filter: blur(1px);
+}
+
+.mobile-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 2px 4px;
+}
+
+.mobile-panel-title {
+  margin: 0;
+  font-size: 13px;
+  color: #d8e6ff;
+  font-weight: 600;
+}
+
 .control-stack {
   position: absolute;
   top: calc(var(--topbar-height) + 10px);
@@ -920,32 +954,76 @@ select {
 
 @media (max-width: 900px) {
   :root {
-    --topbar-height: 114px;
+    --topbar-height: 58px;
+    --panel-label-size: 11px;
+    --panel-title-size: 12px;
   }
 
   .nur-logo {
-    width: 42px;
-    height: 42px;
+    width: 32px;
+    height: 32px;
   }
 
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+  }
+  .topbar h1 {
+    font-size: 14px;
+  }
+  .topbar p,
+  .prototype-banner {
+    display: none;
   }
   .control-stack {
-    width: calc(100vw - 28px);
-    top: calc(var(--topbar-height) + 8px);
-    max-height: 46vh;
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 8px;
+    width: auto;
+    max-height: min(74vh, 620px);
     overflow-y: auto;
+    border-radius: 14px;
+    background: rgba(7, 16, 34, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.44);
+    padding: 8px;
+    z-index: 1300;
+    transform: translateY(calc(100% + 24px));
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform 0.22s ease,
+      opacity 0.18s ease;
   }
   #app.lang-he-ui .control-stack {
-    left: auto;
-    right: 14px;
+    left: 10px;
+    right: 10px;
+  }
+  #app.mobile-controls-open .control-stack {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
   .drawer-panel.is-open > .drawer-content.legend-drawer-content {
-    max-height: 52vh;
+    max-height: 34vh;
     overflow: auto;
+  }
+  .lang-switch-wrap {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+  .btn {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  .btn-icon-circle {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 16px;
   }
   .guide-head-row {
     align-items: flex-start;
@@ -965,7 +1043,8 @@ select {
     align-self: center;
   }
   .stats {
-    font-size: 14px;
+    font-size: 11px;
+    line-height: 1.35;
   }
   #analysisModeControls .analysis-grid {
     grid-template-columns: 1fr;
@@ -994,5 +1073,18 @@ select {
   .count-download-row .downloads {
     width: 100%;
     margin-inline-start: 0;
+  }
+  .legend-row,
+  .layer-controls-list label {
+    font-size: 10.5px;
+    line-height: 1.25;
+  }
+  .legend-title {
+    font-size: 11px;
+    text-transform: none;
+  }
+  .coverage-inspect-hint,
+  .legend-hint {
+    font-size: 10px;
   }
 }
