@@ -46,11 +46,33 @@
             <span class="drawer-chevron" aria-hidden="true">▾</span>
           </button>
           <div id="step0Content" class="drawer-content is-open">
-            <div class="layer-controls-list assumptions-list">
-              <label><input type="checkbox" id="assumePost1992Sheltered" checked /> <span id="assumePost1992ShelteredLabel">מבנים מ-1992 ואילך כוללים מיגון</span></label>
-              <label><input type="checkbox" id="assumeOver3FloorsSheltered" /> <span id="assumeOver3FloorsShelteredLabel">מבנים מעל 3 קומות כוללים מיגון</span></label>
-              <label><input type="checkbox" id="assumeEducationShelters" /> <span id="assumeEducationSheltersLabel">מוסדות חינוך משמשים כמיגון</span></label>
-              <label><input type="checkbox" id="assumePublicShelters" /> <span id="assumePublicSheltersLabel">מבני ציבור משמשים כמיגון</span></label>
+            <div id="assumptionsGrid" class="assumptions-grid">
+              <section class="assumption-group">
+                <h4 id="assumptionsHasShelterTitle" class="assumption-group-title">Has Shelter</h4>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumePost1992Sheltered" class="checkbox-toggle" checked />
+                  <span id="assumePost1992ShelteredLabel" class="checkbox-label assumption-toggle-label">Built in/after 1992</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeOver3FloorsSheltered" class="checkbox-toggle" />
+                  <span id="assumeOver3FloorsShelteredLabel" class="checkbox-label assumption-toggle-label">Above 3 floors</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+              </section>
+              <section class="assumption-group assumption-group-divider">
+                <h4 id="assumptionsNeighborsTitle" class="assumption-group-title">Shelter Neighbors</h4>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeEducationShelters" class="checkbox-toggle" />
+                  <span id="assumeEducationSheltersLabel" class="checkbox-label assumption-toggle-label">Educational facilities</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumePublicShelters" class="checkbox-toggle" />
+                  <span id="assumePublicSheltersLabel" class="checkbox-label assumption-toggle-label">Public buildings</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+              </section>
             </div>
           </div>
         </section>
