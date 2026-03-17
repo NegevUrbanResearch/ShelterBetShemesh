@@ -46,6 +46,7 @@ const I18N = {
     closeHelpAriaLabel: "Close help",
     guideTabsAriaLabel: "Guide sections",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
+    step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
     step2Title: '<span class="step-chip">2</span><span class="step-title-text">Analysis setup</span>',
     step3Title: '<span class="step-chip">3</span><span class="step-title-text">Add shelters</span>',
     step4Title: '<span class="step-chip">4</span><span class="step-title-text">Local impact</span>',
@@ -83,6 +84,10 @@ const I18N = {
     modeExactBtn: "מדויק",
     modeClusterBtn: "אשכול",
     countRangeLabel: "Recommended shelters",
+    assumePost1992ShelteredLabel: "Buildings built in/after 1992 have in-building shelter",
+    assumeOver3FloorsShelteredLabel: "Buildings above 3 floors have in-building shelter",
+    assumeEducationSheltersLabel: "Educational facilities act as shelters",
+    assumePublicSheltersLabel: "Public buildings act as shelters",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
       `Recommended ${modeLabel} (max ${maxRecommendations})`,
     clusterAreas: "cluster areas",
@@ -142,6 +147,7 @@ const I18N = {
     <div class="guide-block">
       <h3>Methodology</h3>
       <ul>
+        <li><strong>0.</strong> Assumption toggles define what is treated as already sheltered and which additional facilities are counted as shelter supply.</li>
         <li><strong>1.</strong> Building and shelter layers are harmonized to a shared map coordinate system.</li>
         <li><strong>2.</strong> Existing accessibility is computed per building under graph or euclidean distance logic.</li>
         <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points or cluster guidance.</li>
@@ -158,6 +164,7 @@ const I18N = {
     closeHelpAriaLabel: "סגירת עזרה",
     guideTabsAriaLabel: "לשוניות מדריך",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
+    step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
     step2Title: '<span class="step-chip">2</span><span class="step-title-text">הגדרות ניתוח</span>',
     step3Title: '<span class="step-chip">3</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">4</span><span class="step-title-text">השפעה מקומית</span>',
@@ -195,6 +202,10 @@ const I18N = {
     modeExactBtn: "Exact",
     modeClusterBtn: "Cluster",
     countRangeLabel: "מיגוניות מומלצות",
+    assumePost1992ShelteredLabel: "מבנים שנבנו מ-1992 ואילך כוללים מיגון פנימי",
+    assumeOver3FloorsShelteredLabel: "מבנים מעל 3 קומות כוללים מיגון פנימי",
+    assumeEducationSheltersLabel: "מוסדות חינוך נספרים כמקורות מיגון",
+    assumePublicSheltersLabel: "מבני ציבור נספרים כמקורות מיגון",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
     clusterAreas: "אזורי אשכול",
     shelters: "מיגוניות",
@@ -253,6 +264,7 @@ const I18N = {
     <div class="guide-block" dir="rtl">
       <h3>מתודולוגיה</h3>
       <ul>
+        <li><strong>0.</strong> מתגי ההנחות קובעים מה נחשב כממוגן מראש ואילו מתקנים נוספים נספרים כהיצע מיגון.</li>
         <li><strong>1.</strong> שכבות המבנים והמיגון מיושרות למערכת קואורדינטות משותפת במפה.</li>
         <li><strong>2.</strong> הנגישות הקיימת מחושבת לכל בניין לפי לוגיקת מרחק גרפי או אוקלידי.</li>
         <li><strong>3.</strong> מועמדים למיגון מדורגים לפי תוספת כיסוי ומוצגים כמיקומים מדויקים או כהנחיית אשכולות.</li>
@@ -266,6 +278,13 @@ const I18N = {
 
 const DATA_BASE = window.location.pathname.includes("/meguniot_access/") ? "../data" : "./data";
 const NETWORK_BASE = `${DATA_BASE}/meguniot_network`;
+const SCENARIO_BASE = `${NETWORK_BASE}/scenarios`;
+const DEFAULT_ASSUMPTIONS = {
+  post1992Sheltered: true,
+  over3FloorsSheltered: false,
+  educationShelters: false,
+  publicShelters: false,
+};
 const LAYER_DEFAULTS = {
   meguniot: true,
   miklatim: true,
@@ -298,6 +317,10 @@ const metricEuclideanBtn = document.getElementById("metricEuclideanBtn");
 const modeExactBtn = document.getElementById("modeExactBtn");
 const modeClusterBtn = document.getElementById("modeClusterBtn");
 const baseMapSelect = document.getElementById("baseMapSelect");
+const assumePost1992Sheltered = document.getElementById("assumePost1992Sheltered");
+const assumeOver3FloorsSheltered = document.getElementById("assumeOver3FloorsSheltered");
+const assumeEducationShelters = document.getElementById("assumeEducationShelters");
+const assumePublicShelters = document.getElementById("assumePublicShelters");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -338,6 +361,10 @@ let currentDistanceMetric = "euclidean";
 let currentPlacementMode = "exact";
 let accessibilityHeatmapEnabled = false;
 let elevationLabelPopup = null;
+let scenarioManifest = [];
+let scenarioDataCache = {};
+let currentScenarioKey = null;
+let currentAssumptions = { ...DEFAULT_ASSUMPTIONS };
 
 function t(key, ...args) {
   const value = I18N[currentLanguage]?.[key];
@@ -355,6 +382,7 @@ function getBaseMapLabel(mapKey) {
 
 function applyStaticTranslations() {
   const textMap = {
+    step0Title: "step0Title",
     appTitle: "appTitle",
     appSubtitle: "appSubtitle",
     step1Title: "step1Title",
@@ -391,6 +419,10 @@ function applyStaticTranslations() {
     layerCoveredBuildingsBaseLabel: "layerCoveredBuildingsBaseLabel",
     layerCoveredLabel: "layerCoveredLabel",
     countRangeLabel: "countRangeLabel",
+    assumePost1992ShelteredLabel: "assumePost1992ShelteredLabel",
+    assumeOver3FloorsShelteredLabel: "assumeOver3FloorsShelteredLabel",
+    assumeEducationSheltersLabel: "assumeEducationSheltersLabel",
+    assumePublicSheltersLabel: "assumePublicSheltersLabel",
   };
   for (const [id, key] of Object.entries(textMap)) {
     const el = document.getElementById(id);
@@ -480,6 +512,10 @@ const dataStore = {
   miklatimSourceCrs: "EPSG:2039",
   buildings: null,
   buildingsSourceCrs: "EPSG:2039",
+  educationFacilities: null,
+  educationFacilitiesSourceCrs: "EPSG:2039",
+  publicBuildings: null,
+  publicBuildingsSourceCrs: "EPSG:2039",
   coverage: null,
   contour: null,
   contourSourceCrs: "EPSG:3857",
@@ -516,6 +552,18 @@ function geometryToLatLng(feature, sourceCrs = "EPSG:2039") {
   if (!coords || coords.length < 2) return null;
   const [lon, lat] = proj4(sourceCrs, "EPSG:4326", coords);
   return [lat, lon];
+}
+
+function featureToLatLng(feature, sourceCrs = "EPSG:2039") {
+  if (feature?.geometry?.type === "Point") {
+    return geometryToLatLng(feature, sourceCrs);
+  }
+  const geometry = geometryToWgs(feature?.geometry, sourceCrs);
+  if (!geometry) return null;
+  const bounds = L.geoJSON({ type: "Feature", geometry, properties: {} }).getBounds();
+  if (!bounds.isValid()) return null;
+  const center = bounds.getCenter();
+  return [center.lat, center.lng];
 }
 
 function convertCoordinateToWgs(coord, sourceCrs = "EPSG:2039") {
@@ -675,10 +723,114 @@ function getCurrentBucketData() {
   return dataStore.optimalByMetricModeBucket?.[currentDistanceMetric]?.[currentPlacementMode]?.[bucketKey];
 }
 
+function assumptionsEqual(a, b) {
+  return (
+    Boolean(a?.post1992Sheltered) === Boolean(b?.post1992Sheltered) &&
+    Boolean(a?.over3FloorsSheltered) === Boolean(b?.over3FloorsSheltered) &&
+    Boolean(a?.educationShelters) === Boolean(b?.educationShelters) &&
+    Boolean(a?.publicShelters) === Boolean(b?.publicShelters)
+  );
+}
+
+function scenarioMatchesAssumptions(entry, assumptions) {
+  const scenarioAssumptions = entry?.assumptions || {};
+  return assumptionsEqual(scenarioAssumptions, assumptions);
+}
+
+function getCurrentScenarioBasePath() {
+  return currentScenarioKey ? `${SCENARIO_BASE}/${currentScenarioKey}` : NETWORK_BASE;
+}
+
+function syncAssumptionInputs() {
+  if (assumePost1992Sheltered) assumePost1992Sheltered.checked = Boolean(currentAssumptions.post1992Sheltered);
+  if (assumeOver3FloorsSheltered) {
+    assumeOver3FloorsSheltered.checked = Boolean(currentAssumptions.over3FloorsSheltered);
+  }
+  if (assumeEducationShelters) assumeEducationShelters.checked = Boolean(currentAssumptions.educationShelters);
+  if (assumePublicShelters) assumePublicShelters.checked = Boolean(currentAssumptions.publicShelters);
+}
+
+function readAssumptionsFromInputs() {
+  return {
+    post1992Sheltered: Boolean(assumePost1992Sheltered?.checked),
+    over3FloorsSheltered: Boolean(assumeOver3FloorsSheltered?.checked),
+    educationShelters: Boolean(assumeEducationShelters?.checked),
+    publicShelters: Boolean(assumePublicShelters?.checked),
+  };
+}
+
+async function loadScenarioManifest() {
+  try {
+    const payload = await fetchJson(`${NETWORK_BASE}/scenario_manifest.json`);
+    if (Array.isArray(payload?.scenarios)) {
+      scenarioManifest = payload.scenarios;
+      const defaultScenario = scenarioManifest.find((entry) => entry.key === payload?.defaultScenarioKey);
+      if (defaultScenario?.assumptions) {
+        currentAssumptions = { ...DEFAULT_ASSUMPTIONS, ...defaultScenario.assumptions };
+      }
+    }
+  } catch (_error) {
+    scenarioManifest = [];
+  }
+}
+
+function resolveScenarioKey(assumptions) {
+  const matched = scenarioManifest.find((entry) => scenarioMatchesAssumptions(entry, assumptions));
+  return matched?.key || null;
+}
+
+function setScenarioForAssumptions(assumptions) {
+  currentAssumptions = { ...assumptions };
+  currentScenarioKey = resolveScenarioKey(currentAssumptions);
+  syncAssumptionInputs();
+}
+
+async function ensureScenarioDataLoaded() {
+  const scenarioKey = currentScenarioKey || "__legacy__";
+  if (scenarioDataCache[scenarioKey]) {
+    const cached = scenarioDataCache[scenarioKey];
+    dataStore.coverageByMetric = cached.coverageByMetric;
+    dataStore.optimalByMetricModeBucket = cached.optimalByMetricModeBucket;
+    dataStore.shelterCoveragesByMetricModeBucket = cached.shelterCoveragesByMetricModeBucket;
+    return;
+  }
+
+  const basePath = getCurrentScenarioBasePath();
+  const coverageByMetric = {};
+  const optimalByMetricModeBucket = {};
+
+  for (const metric of DISTANCE_METRIC_OPTIONS) {
+    coverageByMetric[metric.key] = await fetchJson(`${basePath}/building_coverage_network_${metric.key}.json`);
+  }
+
+  for (const metric of DISTANCE_METRIC_OPTIONS) {
+    optimalByMetricModeBucket[metric.key] = {};
+    for (const mode of PLACEMENT_OPTIONS) {
+      optimalByMetricModeBucket[metric.key][mode.key] = {};
+      for (const bucket of BUCKET_OPTIONS) {
+        optimalByMetricModeBucket[metric.key][mode.key][bucket.key] = await fetchJson(
+          `${basePath}/optimal_meguniot_${metric.key}_${mode.key}_${bucket.key}.json`,
+        );
+      }
+    }
+  }
+
+  const scenarioPayload = {
+    coverageByMetric,
+    optimalByMetricModeBucket,
+    shelterCoveragesByMetricModeBucket: {},
+  };
+  scenarioDataCache[scenarioKey] = scenarioPayload;
+  dataStore.coverageByMetric = scenarioPayload.coverageByMetric;
+  dataStore.optimalByMetricModeBucket = scenarioPayload.optimalByMetricModeBucket;
+  dataStore.shelterCoveragesByMetricModeBucket = scenarioPayload.shelterCoveragesByMetricModeBucket;
+}
+
 async function ensureBucketAuxData(bucketKey = getActiveBucketKey()) {
   if (!dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric]?.[currentPlacementMode]?.[bucketKey]) {
+    const basePath = getCurrentScenarioBasePath();
     const payload = await fetchJson(
-      `${NETWORK_BASE}/shelter_coverages_${currentDistanceMetric}_${currentPlacementMode}_${bucketKey}.json`,
+      `${basePath}/shelter_coverages_${currentDistanceMetric}_${currentPlacementMode}_${bucketKey}.json`,
     );
     if (!dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric]) {
       dataStore.shelterCoveragesByMetricModeBucket[currentDistanceMetric] = {};
@@ -1212,6 +1364,52 @@ function renderExistingShelters() {
     );
     marker.addTo(layers.existingMiklatim);
   }
+
+  if (currentAssumptions.educationShelters) {
+    const educationFeatures = Array.isArray(dataStore.educationFacilities?.features)
+      ? dataStore.educationFacilities.features
+      : [];
+    for (const feature of educationFeatures) {
+      const latLng = featureToLatLng(feature, dataStore.educationFacilitiesSourceCrs);
+      if (!latLng) continue;
+      const shelterId = shelterIdCounter++;
+      const marker = L.marker(latLng, { icon: existingIcon });
+      marker.bindPopup(t("existingMiklatPopup"));
+      marker.on("click", () =>
+        selectShelter({
+          kind: "existing",
+          id: shelterId,
+          lat: latLng[0],
+          lon: latLng[1],
+          label: t("existingMiklatLabel"),
+        }),
+      );
+      marker.addTo(layers.existingMiklatim);
+    }
+  }
+
+  if (currentAssumptions.publicShelters) {
+    const publicFeatures = Array.isArray(dataStore.publicBuildings?.features)
+      ? dataStore.publicBuildings.features
+      : [];
+    for (const feature of publicFeatures) {
+      const latLng = featureToLatLng(feature, dataStore.publicBuildingsSourceCrs);
+      if (!latLng) continue;
+      const shelterId = shelterIdCounter++;
+      const marker = L.marker(latLng, { icon: existingIcon });
+      marker.bindPopup(t("existingMiklatPopup"));
+      marker.on("click", () =>
+        selectShelter({
+          kind: "existing",
+          id: shelterId,
+          lat: latLng[0],
+          lon: latLng[1],
+          label: t("existingMiklatLabel"),
+        }),
+      );
+      marker.addTo(layers.existingMiklatim);
+    }
+  }
 }
 
 function renderRecommended() {
@@ -1477,6 +1675,8 @@ function setGuideTab(tab) {
 }
 
 async function loadAllData() {
+  await loadScenarioManifest();
+  setScenarioForAssumptions(currentAssumptions);
   dataStore.miguniot = await fetchJson(`${DATA_BASE}/Miguniot.geojson`);
   dataStore.miguniotSourceCrs = normalizeCrsName(
     dataStore.miguniot?.crs?.properties?.name || "",
@@ -1489,17 +1689,20 @@ async function loadAllData() {
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
   );
+  dataStore.educationFacilities = await fetchJson(`${DATA_BASE}/Education_Facilities.geojson`);
+  dataStore.educationFacilitiesSourceCrs = normalizeCrsName(
+    dataStore.educationFacilities?.crs?.properties?.name || "",
+  );
+  dataStore.publicBuildings = await fetchJson(`${DATA_BASE}/Public_Buildings.geojson`);
+  dataStore.publicBuildingsSourceCrs = normalizeCrsName(
+    dataStore.publicBuildings?.crs?.properties?.name || "",
+  );
   dataStore.contour = await fetchJson(`${DATA_BASE}/contour.geojson`);
   dataStore.contourSourceCrs = normalizeCrsName(
     dataStore.contour?.crs?.properties?.name || "",
   );
   buildContourSegments();
-  dataStore.coverageByMetric = {};
-  for (const metric of DISTANCE_METRIC_OPTIONS) {
-    dataStore.coverageByMetric[metric.key] = await fetchJson(
-      `${NETWORK_BASE}/building_coverage_network_${metric.key}.json`,
-    );
-  }
+  await ensureScenarioDataLoaded();
   dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric];
 
   coverageByIndex.clear();
@@ -1510,19 +1713,6 @@ async function loadAllData() {
   }
   buildBuildingFeatureIndex();
 
-  dataStore.optimalByMetricModeBucket = {};
-  for (const metric of DISTANCE_METRIC_OPTIONS) {
-    dataStore.optimalByMetricModeBucket[metric.key] = {};
-    for (const mode of PLACEMENT_OPTIONS) {
-      dataStore.optimalByMetricModeBucket[metric.key][mode.key] = {};
-      for (const bucket of BUCKET_OPTIONS) {
-        const key = bucket.key;
-        dataStore.optimalByMetricModeBucket[metric.key][mode.key][key] = await fetchJson(
-          `${NETWORK_BASE}/optimal_meguniot_${metric.key}_${mode.key}_${key}.json`,
-        );
-      }
-    }
-  }
 }
 
 function setDistanceMetric(metricKey) {
@@ -1555,6 +1745,24 @@ function setPlacementMode(modeKey) {
   }
   clearSelection();
   void refreshView();
+}
+
+async function applyAssumptions(nextAssumptions) {
+  setScenarioForAssumptions(nextAssumptions);
+  await ensureScenarioDataLoaded();
+  dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric] || null;
+  coverageByIndex.clear();
+  coverageById.clear();
+  for (const b of dataStore.coverage?.buildings || []) {
+    coverageByIndex.set(Number(b.building_idx), b);
+    coverageById.set(Number(b.id), b);
+  }
+  buildBuildingFeatureIndex();
+  resetAddedSheltersToZero();
+  clearSelection();
+  await refreshView();
+  renderExistingShelters();
+  applyLayerVisibility();
 }
 
 function wireEvents() {
@@ -1659,6 +1867,18 @@ function wireEvents() {
       void refreshView();
     }
   });
+
+  const assumptionInputs = [
+    assumePost1992Sheltered,
+    assumeOver3FloorsSheltered,
+    assumeEducationShelters,
+    assumePublicShelters,
+  ].filter(Boolean);
+  for (const input of assumptionInputs) {
+    input.addEventListener("change", () => {
+      void applyAssumptions(readAssumptionsFromInputs());
+    });
+  }
 
   openGuideBtn.addEventListener("click", () => guideModal.classList.remove("hidden"));
   closeGuideBtn.addEventListener("click", () => guideModal.classList.add("hidden"));

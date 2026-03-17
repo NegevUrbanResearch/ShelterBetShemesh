@@ -102,6 +102,14 @@ class BucketResult:
     stop_reason: str
 
 
+@dataclass(frozen=True)
+class ScenarioAssumptions:
+    post_1992_has_shelter: bool = True
+    over_3_floors_has_shelter: bool = False
+    education_facilities_are_shelters: bool = False
+    public_buildings_are_shelters: bool = False
+
+
 def _configure_logging() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -261,7 +269,7 @@ def _to_int_safe(val: Any, default: int = 0) -> int:
         return default
 
 
-def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
+def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.GeoDataFrame:
     gdf = _load_geojson_with_real_crs(path).to_crs("EPSG:2039")
     gdf = _ensure_non_empty_points(gdf, "buildings")
 
@@ -274,6 +282,7 @@ def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
         gdf, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot"]
     )
     before_1992_col = _first_present(gdf, ["Before_1992", "before_1992", "before1992", "lifney_1992"])
+    over_3_floors_col = _first_present(gdf, ["more_than_3_floors", "more_than_3_floors_or_2_apartments"])
     single_family_col = _first_present(
         gdf, ["single_family", "singlefamily", "private_house", "tzmod_krka", "tzamud_karka"]
     )
@@ -288,6 +297,10 @@ def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
         gdf["before_1992_norm"] = gdf[before_1992_col].apply(_to_boolish)
     else:
         gdf["before_1992_norm"] = gdf["build_year_norm"].between(1, 1991)
+    if over_3_floors_col:
+        gdf["over_3_floors_norm"] = gdf[over_3_floors_col].apply(_to_boolish)
+    else:
+        gdf["over_3_floors_norm"] = gdf["floors_norm"] > 3
 
     residential_mask = pd.Series(True, index=gdf.index)
     if single_family_col:
@@ -295,8 +308,12 @@ def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
     if residential_col:
         residential_mask &= gdf[residential_col].apply(_to_boolish)
 
-    # Basic method scope: all residential buildings built before 1992.
-    target_mask = gdf["before_1992_norm"] & residential_mask
+    exempt_mask = pd.Series(False, index=gdf.index)
+    if assumptions.post_1992_has_shelter:
+        exempt_mask |= ~gdf["before_1992_norm"]
+    if assumptions.over_3_floors_has_shelter:
+        exempt_mask |= gdf["over_3_floors_norm"]
+    target_mask = residential_mask & ~exempt_mask
     target = gdf[target_mask].copy().reset_index(drop=True)
     if target.empty:
         raise ValueError("No target buildings found after filtering criteria.")
@@ -313,14 +330,44 @@ def load_target_buildings(path: Path) -> gpd.GeoDataFrame:
     return target
 
 
-def load_existing_shelters(mig_path: Path, mik_path: Path) -> gpd.GeoDataFrame:
+def _load_optional_shelters(path: Path, shelter_type: str) -> gpd.GeoDataFrame:
+    gdf = _load_geojson_with_real_crs(path).to_crs("EPSG:2039")
+    gdf = gdf[gdf.geometry.notna() & gdf.geometry.is_valid].copy()
+    if gdf.empty:
+        return gdf
+    if not gdf.geometry.geom_type.isin(["Point"]).all():
+        gdf["geometry"] = gdf.geometry.centroid
+    gdf["shelter_type"] = shelter_type
+    return gdf
+
+
+def load_existing_shelters(
+    mig_path: Path,
+    mik_path: Path,
+    assumptions: ScenarioAssumptions,
+    education_path: Path | None = None,
+    public_buildings_path: Path | None = None,
+) -> gpd.GeoDataFrame:
     mig = _load_geojson_with_real_crs(mig_path).to_crs("EPSG:2039").copy()
     mik = _load_geojson_with_real_crs(mik_path).to_crs("EPSG:2039").copy()
     mig["shelter_type"] = "megunit"
     mik["shelter_type"] = "miklat"
     mig = _ensure_non_empty_points(mig, "Miguniot")
     mik = _ensure_non_empty_points(mik, "Miklatim")
-    merged = pd.concat([mig, mik], ignore_index=True)
+    shelter_frames = [mig, mik]
+    if assumptions.education_facilities_are_shelters:
+        if education_path is None or not education_path.exists():
+            raise FileNotFoundError("Education facilities file is required for this scenario.")
+        education = _load_optional_shelters(education_path, "education")
+        if not education.empty:
+            shelter_frames.append(education)
+    if assumptions.public_buildings_are_shelters:
+        if public_buildings_path is None or not public_buildings_path.exists():
+            raise FileNotFoundError("Public buildings file is required for this scenario.")
+        public_buildings = _load_optional_shelters(public_buildings_path, "public")
+        if not public_buildings.empty:
+            shelter_frames.append(public_buildings)
+    merged = pd.concat(shelter_frames, ignore_index=True)
     if merged.empty:
         raise ValueError("No existing shelters loaded from Miguniot/Miklatim.")
     merged["shelter_id"] = np.arange(len(merged)).astype(int)
@@ -1200,7 +1247,14 @@ def run_pipeline(
     cluster_ensemble_runs: int = DEFAULT_CLUSTER_ENSEMBLE_RUNS,
     enable_swap_improvement: bool = False,
     building_weight_field: str | None = None,
+    assumptions: ScenarioAssumptions = ScenarioAssumptions(),
+    education_facilities_path: Path | None = None,
+    public_buildings_path: Path | None = None,
+    output_subdir: str | None = None,
 ) -> None:
+    global OUTPUT_DIR
+    base_output_dir = DATA_DIR / "meguniot_network"
+    OUTPUT_DIR = base_output_dir / output_subdir if output_subdir else base_output_dir
     if walk_speed_mps <= 0:
         raise ValueError("walk_speed_mps must be positive.")
     if max_new_shelters is not None and max_new_shelters < 0:
@@ -1225,16 +1279,26 @@ def run_pipeline(
     _cleanup_stale_bucket_outputs()
 
     required = [DATA_DIR / "buildings.geojson", DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson"]
+    if assumptions.education_facilities_are_shelters:
+        required.append(education_facilities_path or DATA_DIR / "Education_Facilities.geojson")
+    if assumptions.public_buildings_are_shelters:
+        required.append(public_buildings_path or DATA_DIR / "Public_Buildings.geojson")
     if dem_path is not None:
         required.append(dem_path)
     _assert_input_files_exist(required)
 
-    buildings = load_target_buildings(DATA_DIR / "buildings.geojson")
-    shelters = load_existing_shelters(DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson")
+    buildings = load_target_buildings(DATA_DIR / "buildings.geojson", assumptions=assumptions)
+    shelters = load_existing_shelters(
+        DATA_DIR / "Miguniot.geojson",
+        DATA_DIR / "Miklatim.geojson",
+        assumptions=assumptions,
+        education_path=education_facilities_path or DATA_DIR / "Education_Facilities.geojson",
+        public_buildings_path=public_buildings_path or DATA_DIR / "Public_Buildings.geojson",
+    )
     logger.info("Loaded %d target buildings and %d existing shelters", len(buildings), len(shelters))
 
     # --- Build or load walking graph ---
-    graph_path = OUTPUT_DIR / "walk_graph_2039.graphml"
+    graph_path = base_output_dir / "walk_graph_2039.graphml"
     if graph_path.exists() and not force_rebuild_graph:
         logger.info("Loading cached walk graph from %s", graph_path)
         graph = ox.load_graphml(graph_path)
@@ -1378,6 +1442,12 @@ def run_pipeline(
                 "densified_nodes_added": densified_nodes,
                 "elevation_model": elevation_model,
                 "candidate_sources_exact": [s.value for s in sorted(candidate_sources, key=lambda x: x.value)],
+                "assumptions": {
+                    "post1992Sheltered": assumptions.post_1992_has_shelter,
+                    "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
+                    "educationShelters": assumptions.education_facilities_are_shelters,
+                    "publicShelters": assumptions.public_buildings_are_shelters,
+                },
                 "total_candidates_by_placement": {
                     PlacementMode.EXACT.value: len(exact_candidates),
                     PlacementMode.CLUSTER.value: len(cluster_candidates),
@@ -1521,6 +1591,12 @@ def run_pipeline(
                         "elevation_model": elevation_model,
                         "euclidean_access_radius_m": EUCLIDEAN_ACCESS_RADIUS_M,
                         "emergency_crossing_radius_m": emergency_crossing_radius_m,
+                        "assumptions": {
+                            "post1992Sheltered": assumptions.post_1992_has_shelter,
+                            "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
+                            "educationShelters": assumptions.education_facilities_are_shelters,
+                            "publicShelters": assumptions.public_buildings_are_shelters,
+                        },
                         "coverages": coverage_entries,
                     },
                 )
@@ -1618,6 +1694,12 @@ def run_pipeline(
                             "node_proximity_m": node_proximity_m if mode == PlacementMode.EXACT else None,
                             "cluster_ensemble_runs": cluster_ensemble_runs if mode == PlacementMode.CLUSTER else None,
                             "total_candidates": len(candidates),
+                        },
+                        "assumptions": {
+                            "post1992Sheltered": assumptions.post_1992_has_shelter,
+                            "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
+                            "educationShelters": assumptions.education_facilities_are_shelters,
+                            "publicShelters": assumptions.public_buildings_are_shelters,
                         },
                         "statistics": stats,
                         "proposed_meguniot": proposed,
@@ -1725,6 +1807,12 @@ def run_pipeline(
         "max_new_shelters_per_mode": effective_max_new_shelters,
         "swap_improvement_enabled": enable_swap_improvement,
         "building_weight_field": building_weight_field,
+        "assumptions": {
+            "post1992Sheltered": assumptions.post_1992_has_shelter,
+            "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
+            "educationShelters": assumptions.education_facilities_are_shelters,
+            "publicShelters": assumptions.public_buildings_are_shelters,
+        },
         "per_metric": {},
     }
     for metric in DistanceMetric:
@@ -1782,6 +1870,12 @@ def run_pipeline(
         "max_new_shelters_per_mode": effective_max_new_shelters,
         "swap_improvement_enabled": enable_swap_improvement,
         "building_weight_field": building_weight_field,
+        "assumptions": {
+            "post1992Sheltered": assumptions.post_1992_has_shelter,
+            "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
+            "educationShelters": assumptions.education_facilities_are_shelters,
+            "publicShelters": assumptions.public_buildings_are_shelters,
+        },
         "elevation_model": elevation_model,
         "time_buckets": TIME_BUCKETS,
         "distance_metrics": [m.value for m in DistanceMetric],
@@ -1886,9 +1980,60 @@ def main() -> None:
         default=None,
         help="Column name for building weights (e.g. apartments). Default is uniform.",
     )
+    parser.add_argument(
+        "--assume-post-1992-has-shelter",
+        dest="assume_post_1992_has_shelter",
+        action="store_true",
+        default=True,
+        help="Treat buildings built in/after 1992 as already sheltered.",
+    )
+    parser.add_argument(
+        "--no-assume-post-1992-has-shelter",
+        dest="assume_post_1992_has_shelter",
+        action="store_false",
+    )
+    parser.add_argument(
+        "--assume-over-3-floors-has-shelter",
+        action="store_true",
+        help="Treat buildings above 3 floors as already sheltered.",
+    )
+    parser.add_argument(
+        "--assume-education-facilities-are-shelters",
+        action="store_true",
+        help="Count education facilities as existing shelter supply.",
+    )
+    parser.add_argument(
+        "--assume-public-buildings-are-shelters",
+        action="store_true",
+        help="Count public buildings as existing shelter supply.",
+    )
+    parser.add_argument(
+        "--education-facilities-path",
+        type=Path,
+        default=DATA_DIR / "Education_Facilities.geojson",
+        help="GeoJSON path for education facilities used as shelters when enabled.",
+    )
+    parser.add_argument(
+        "--public-buildings-path",
+        type=Path,
+        default=DATA_DIR / "Public_Buildings.geojson",
+        help="GeoJSON path for public buildings used as shelters when enabled.",
+    )
+    parser.add_argument(
+        "--output-subdir",
+        type=str,
+        default=None,
+        help="Optional subdirectory under data/meguniot_network for scenario outputs.",
+    )
     args = parser.parse_args()
 
     sources = {CandidateSource(s) for s in args.candidate_sources}
+    assumptions = ScenarioAssumptions(
+        post_1992_has_shelter=bool(args.assume_post_1992_has_shelter),
+        over_3_floors_has_shelter=bool(args.assume_over_3_floors_has_shelter),
+        education_facilities_are_shelters=bool(args.assume_education_facilities_are_shelters),
+        public_buildings_are_shelters=bool(args.assume_public_buildings_are_shelters),
+    )
     run_pipeline(
         walk_speed_mps=args.walk_speed_mps,
         force_rebuild_graph=args.force_rebuild_graph,
@@ -1903,6 +2048,10 @@ def main() -> None:
         cluster_ensemble_runs=args.cluster_ensemble_runs,
         enable_swap_improvement=args.enable_swap_improvement,
         building_weight_field=args.building_weight_field,
+        assumptions=assumptions,
+        education_facilities_path=args.education_facilities_path,
+        public_buildings_path=args.public_buildings_path,
+        output_subdir=args.output_subdir,
     )
 
 

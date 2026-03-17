@@ -41,6 +41,21 @@
 
       <aside class="control-stack">
         <section class="control-step-panel glass drawer-panel is-open">
+          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step0Content">
+            <h3 id="step0Title" class="control-step-title"><span class="step-chip">0</span> הנחות</h3>
+            <span class="drawer-chevron" aria-hidden="true">▾</span>
+          </button>
+          <div id="step0Content" class="drawer-content is-open">
+            <div class="layer-controls-list assumptions-list">
+              <label><input type="checkbox" id="assumePost1992Sheltered" checked /> <span id="assumePost1992ShelteredLabel">מבנים מ-1992 ואילך כוללים מיגון</span></label>
+              <label><input type="checkbox" id="assumeOver3FloorsSheltered" /> <span id="assumeOver3FloorsShelteredLabel">מבנים מעל 3 קומות כוללים מיגון</span></label>
+              <label><input type="checkbox" id="assumeEducationShelters" /> <span id="assumeEducationSheltersLabel">מוסדות חינוך משמשים כמיגון</span></label>
+              <label><input type="checkbox" id="assumePublicShelters" /> <span id="assumePublicSheltersLabel">מבני ציבור משמשים כמיגון</span></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="control-step-panel glass drawer-panel is-open">
           <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step1Content">
             <h3 id="step1Title" class="control-step-title"><span class="step-chip">1</span> בדיקת כיסוי</h3>
             <span class="drawer-chevron" aria-hidden="true">▾</span>
