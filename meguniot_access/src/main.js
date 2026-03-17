@@ -651,6 +651,210 @@ function createBuildingLayer(feature, style, radius = 3) {
   });
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function toDisplayValue(value, maxLen = 90) {
+  if (value === null || value === undefined) return "";
+  const normalized = String(value).replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  if (["-", "—", "N/A", "n/a", "null", "undefined"].includes(normalized)) return "";
+  return normalized.length > maxLen ? `${normalized.slice(0, maxLen - 1)}…` : normalized;
+}
+
+function getPropertyValue(properties, keys, maxLen = 90) {
+  if (!properties) return "";
+  for (const key of keys) {
+    if (!(key in properties)) continue;
+    const value = toDisplayValue(properties[key], maxLen);
+    if (value) return value;
+  }
+  return "";
+}
+
+function getPopupLabels() {
+  if (currentLanguage === "he") {
+    return {
+      titleExistingMegunit: "מיגונית קיימת",
+      titleExistingMiklat: "מקלט קיים",
+      titleEducation: "הנחה: מיגון שכנים | מוסד חינוך",
+      titlePublic: "הנחה: מיגון שכנים | מבנה ציבור",
+      id: "מזהה",
+      address: "כתובת",
+      area: "שטח",
+      use: "שימוש",
+      ownership: "בעלות",
+      contact: "איש קשר",
+      phone: "טלפון",
+      utilities: "תשתיות",
+      notes: "הערות",
+      institution: "שם מוסד",
+      framework: "סוג מסגרת",
+      status: "סטטוס",
+      supervision: "פיקוח",
+      sector: "מגזר",
+      stage: "שלב חינוך",
+      location: "מיקום",
+      yes: "כן",
+      no: "לא",
+      unknown: "לא ידוע",
+    };
+  }
+  return {
+    titleExistingMegunit: "Existing Megunit",
+    titleExistingMiklat: "Existing Miklat",
+    titleEducation: "Assumption: Shelter Neighbors | Education Facility",
+    titlePublic: "Assumption: Shelter Neighbors | Public Building",
+    id: "ID",
+    address: "Address",
+    area: "Area",
+    use: "Use",
+    ownership: "Ownership",
+    contact: "Contact",
+    phone: "Phone",
+    utilities: "Utilities",
+    notes: "Notes",
+    institution: "Institution",
+    framework: "Framework",
+    status: "Status",
+    supervision: "Supervision",
+    sector: "Sector",
+    stage: "Education stage",
+    location: "Location",
+    yes: "Yes",
+    no: "No",
+    unknown: "Unknown",
+  };
+}
+
+function renderPopupRows(title, rows) {
+  const body = rows
+    .filter((row) => row?.label && row?.value)
+    .map((row) => `<div><strong>${escapeHtml(row.label)}:</strong> ${escapeHtml(row.value)}</div>`)
+    .join("");
+  return `<div><strong>${escapeHtml(title)}</strong>${body ? `<br>${body}` : ""}</div>`;
+}
+
+function getUtilitiesSummary(properties) {
+  const water = getPropertyValue(properties, ["water", "WATER"]);
+  const electricity = getPropertyValue(properties, ["chashmal", "electricity", "ELECTRICITY"]);
+  const toilets = getPropertyValue(properties, ["sherutim", "toilets", "TOILETS"]);
+  const parts = [];
+  if (water) parts.push(`water: ${water}`);
+  if (electricity) parts.push(`electricity: ${electricity}`);
+  if (toilets) parts.push(`toilets: ${toilets}`);
+  if (!parts.length) return "";
+  if (currentLanguage === "he") {
+    return parts
+      .map((part) =>
+        part
+          .replace("water: ", "מים: ")
+          .replace("electricity: ", "חשמל: ")
+          .replace("toilets: ", "שירותים: "),
+      )
+      .join(" | ");
+  }
+  return parts.join(" | ");
+}
+
+function getPublicFallbackRows(properties) {
+  if (!properties) return [];
+  const excludedKeyParts = [
+    "fid",
+    "id",
+    "objectid",
+    "shape_leng",
+    "shape_len",
+    "shape_area",
+    "globalid",
+    "created",
+    "updated",
+    "lat",
+    "lon",
+    "x",
+    "y",
+    "code",
+  ];
+  const rows = [];
+  for (const [rawKey, rawValue] of Object.entries(properties)) {
+    const key = String(rawKey || "").trim();
+    const lowered = key.toLowerCase();
+    if (!key) continue;
+    if (excludedKeyParts.some((part) => lowered.includes(part))) continue;
+    const value = toDisplayValue(rawValue);
+    if (!value) continue;
+    rows.push({ label: key, value });
+    if (rows.length >= 4) break;
+  }
+  return rows;
+}
+
+function buildShelterPopup(sourceKind, feature, shelterId) {
+  const properties = feature?.properties || {};
+  const labels = getPopupLabels();
+  if (sourceKind === "miguniot") {
+    return renderPopupRows(labels.titleExistingMegunit, [
+      { label: labels.id, value: getPropertyValue(properties, ["OBJECTID", "FID", "Id"]) || String(shelterId) },
+    ]);
+  }
+  if (sourceKind === "miklatim") {
+    return renderPopupRows(labels.titleExistingMiklat, [
+      { label: labels.id, value: getPropertyValue(properties, ["mis_miklat", "num", "FID", "Id"]) || String(shelterId) },
+      { label: labels.address, value: getPropertyValue(properties, ["ctovet", "address", "ADDRESS"]) },
+      { label: labels.area, value: getPropertyValue(properties, ["shetach", "area", "AREA"]) },
+      { label: labels.use, value: getPropertyValue(properties, ["bshimush", "use", "USE"]) },
+      { label: labels.ownership, value: getPropertyValue(properties, ["baalut", "owner", "ownership"]) },
+      { label: labels.contact, value: getPropertyValue(properties, ["ish_kesher", "contact", "CONTACT"], 110) },
+      { label: labels.phone, value: getPropertyValue(properties, ["telephone", "phone", "PHONE"]) },
+      { label: labels.utilities, value: getUtilitiesSummary(properties) },
+      { label: labels.notes, value: getPropertyValue(properties, ["hearot", "notes", "NOTES"], 120) },
+    ]);
+  }
+  if (sourceKind === "education") {
+    return renderPopupRows(labels.titleEducation, [
+      {
+        label: labels.institution,
+        value: getPropertyValue(properties, ["SHEM_MOSAD", "shem_mosad", "NAME", "name"], 120),
+      },
+      {
+        label: labels.framework,
+        value: getPropertyValue(properties, ["TEUR_SUG_M", "TEUR_TAT_S", "SUG_MISGER", "type"], 120),
+      },
+      { label: labels.status, value: getPropertyValue(properties, ["TEUR_STATU", "status", "CODE_STATU"]) },
+      { label: labels.supervision, value: getPropertyValue(properties, ["TEUR_PIKOH", "supervision"]) },
+      { label: labels.sector, value: getPropertyValue(properties, ["TEUR_MIGZA", "sector"]) },
+      { label: labels.stage, value: getPropertyValue(properties, ["TEUR_SHLAV", "SHLAV_CHIN"]) },
+      {
+        label: labels.location,
+        value: getPropertyValue(properties, ["ISV_SHEM_I", "SHEM_RASHU", "city", "CITY"]),
+      },
+    ]);
+  }
+  const defaultPublicRows = [
+    {
+      label: labels.institution,
+      value: getPropertyValue(
+        properties,
+        ["SHEM_MOSAD", "SHEM", "shem", "NAME", "name", "building_name", "BUILDING_NAME"],
+        120,
+      ),
+    },
+    { label: labels.address, value: getPropertyValue(properties, ["ctovet", "KTOVET", "address", "ADDRESS"], 120) },
+    {
+      label: labels.use,
+      value: getPropertyValue(properties, ["TEUR_SUG_M", "TEUR_TAT_S", "purpose", "usage", "USAGE"], 120),
+    },
+  ];
+  const fallbackRows = getPublicFallbackRows(properties);
+  return renderPopupRows(labels.titlePublic, [...defaultPublicRows, ...fallbackRows]);
+}
+
 function getCoveragePointLatLng(coverage, idx) {
   if (Number.isFinite(coverage?.lat) && Number.isFinite(coverage?.lon)) {
     return L.latLng(coverage.lat, coverage.lon);
@@ -1336,7 +1540,7 @@ function renderExistingShelters() {
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
-    marker.bindPopup(t("existingMegunitPopup"));
+    marker.bindPopup(buildShelterPopup("miguniot", feature, shelterId));
     marker.on("click", () =>
       selectShelter(
         {
@@ -1356,7 +1560,7 @@ function renderExistingShelters() {
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
-    marker.bindPopup(t("existingMiklatPopup"));
+    marker.bindPopup(buildShelterPopup("miklatim", feature, shelterId));
     marker.on("click", () =>
       selectShelter(
         {
@@ -1380,7 +1584,7 @@ function renderExistingShelters() {
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
       const marker = L.marker(latLng, { icon: existingIcon });
-      marker.bindPopup(t("existingMiklatPopup"));
+      marker.bindPopup(buildShelterPopup("education", feature, shelterId));
       marker.on("click", () =>
         selectShelter({
           kind: "existing",
@@ -1403,7 +1607,7 @@ function renderExistingShelters() {
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
       const marker = L.marker(latLng, { icon: existingIcon });
-      marker.bindPopup(t("existingMiklatPopup"));
+      marker.bindPopup(buildShelterPopup("public", feature, shelterId));
       marker.on("click", () =>
         selectShelter({
           kind: "existing",
