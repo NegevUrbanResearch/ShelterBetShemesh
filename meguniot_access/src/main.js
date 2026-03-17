@@ -65,8 +65,7 @@ const I18N = {
     legendCoveredBase: "Buildings covered by existing shelters",
     legendCoveredSelected: "Covered by selected shelter",
     legendTopography: "Topography contour lines",
-    legendTopographyHint:
-      "Topography colors represent elevation: cool colors are lower elevation, warm colors are higher elevation",
+    legendTopographyScaleTitle: "Topography:",
     legendTopographyScaleLow: "Low",
     legendTopographyScaleHigh: "High",
     layersSummary: "Layers",
@@ -178,7 +177,7 @@ const I18N = {
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
     legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
     legendTopography: "קווי גובה טופוגרפיים",
-    legendTopographyHint: "צבעי הטופוגרפיה מייצגים גובה: צבע קר הוא גובה נמוך, צבע חם הוא גובה גבוה",
+    legendTopographyScaleTitle: "טופוגרפיה:",
     legendTopographyScaleLow: "נמוך",
     legendTopographyScaleHigh: "גבוה",
     layersSummary: "שכבות",
@@ -311,6 +310,9 @@ const layerCovered = document.getElementById("layerCovered");
 const accessibilityHeatmapToggle = document.getElementById("accessibilityHeatmapToggle");
 const accessibilityHeatmapHint = document.getElementById("accessibilityHeatmapHint");
 const coverageInspectHint = document.getElementById("coverageInspectHint");
+const legendTopographyScaleLowEl = document.getElementById("legendTopographyScaleLow");
+const legendTopographyScaleHighEl = document.getElementById("legendTopographyScaleHigh");
+const legendTopographyScaleBarEl = document.getElementById("legendTopographyScaleBar");
 
 const openGuideBtn = document.getElementById("openGuideBtn");
 const closeGuideBtn = document.getElementById("closeGuideBtn");
@@ -375,7 +377,7 @@ function applyStaticTranslations() {
     legendCoveredBase: "legendCoveredBase",
     legendCoveredSelected: "legendCoveredSelected",
     legendTopography: "legendTopography",
-    legendTopographyHint: "legendTopographyHint",
+    legendTopographyScaleTitle: "legendTopographyScaleTitle",
     legendTopographyScaleLow: "legendTopographyScaleLow",
     legendTopographyScaleHigh: "legendTopographyScaleHigh",
     layersSummary: "layersSummary",
@@ -404,6 +406,7 @@ function applyStaticTranslations() {
   metricEuclideanBtn.textContent = t("metricEuclideanBtn");
   modeExactBtn.textContent = t("modeExactBtn");
   modeClusterBtn.textContent = t("modeClusterBtn");
+  updateTopographyLegendScale();
 
   openGuideBtn.setAttribute("aria-label", t("infoAriaLabel"));
   closeGuideBtn.setAttribute("aria-label", t("closeHelpAriaLabel"));
@@ -954,6 +957,34 @@ function getContourColorByElevation(height, { min, max }) {
   return `hsl(${hue}, 88%, 58%)`;
 }
 
+function updateTopographyLegendScale() {
+  if (!legendTopographyScaleBarEl) return;
+  const { min, max } = dataStore.contourElevationRange || {};
+  if (!Number.isFinite(min) || !Number.isFinite(max) || max <= min) {
+    legendTopographyScaleBarEl.style.background =
+      "linear-gradient(90deg, hsl(230, 88%, 58%) 0%, hsl(15, 88%, 58%) 100%)";
+    if (legendTopographyScaleLowEl) legendTopographyScaleLowEl.textContent = t("legendTopographyScaleLow");
+    if (legendTopographyScaleHighEl) legendTopographyScaleHighEl.textContent = t("legendTopographyScaleHigh");
+    return;
+  }
+  const stops = [0, 0.2, 0.4, 0.6, 0.8, 1]
+    .map((ratio) => {
+      const sampleHeight = min + (max - min) * ratio;
+      const color = getContourColorByElevation(sampleHeight, { min, max }) || "hsl(230, 88%, 58%)";
+      return `${color} ${Math.round(ratio * 100)}%`;
+    })
+    .join(", ");
+  legendTopographyScaleBarEl.style.background = `linear-gradient(90deg, ${stops})`;
+
+  const unit = currentLanguage === "he" ? " מ'" : "m";
+  if (legendTopographyScaleLowEl) {
+    legendTopographyScaleLowEl.textContent = `${t("legendTopographyScaleLow")} ${Math.round(min)}${unit}`;
+  }
+  if (legendTopographyScaleHighEl) {
+    legendTopographyScaleHighEl.textContent = `${t("legendTopographyScaleHigh")} ${Math.round(max)}${unit}`;
+  }
+}
+
 function contourStyleForElevation(height) {
   const hasHeight = Number.isFinite(height);
   const isMajor = hasHeight && Math.abs(height % 50) < 0.0001;
@@ -999,6 +1030,7 @@ function buildContourSegments() {
     min: elevations.length ? Math.min(...elevations) : null,
     max: elevations.length ? Math.max(...elevations) : null,
   };
+  updateTopographyLegendScale();
 }
 
 function pointToSegmentDistanceSq(px, py, ax, ay, bx, by) {
