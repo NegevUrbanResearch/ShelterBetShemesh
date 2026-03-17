@@ -272,6 +272,24 @@ select {
   color: #a9cbff;
 }
 
+.elevation-click-popup .leaflet-popup-content-wrapper {
+  background: rgba(10, 22, 40, 0.92);
+  color: #e8f2ff;
+  border: 1px solid rgba(132, 190, 255, 0.55);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.elevation-click-popup .leaflet-popup-content {
+  margin: 8px 10px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.elevation-click-popup .leaflet-popup-tip {
+  background: rgba(10, 22, 40, 0.92);
+}
+
 .legend-card {
   position: absolute;
   right: 14px;
@@ -406,6 +424,46 @@ select {
 .legend-dot-covered {
   background: #2f80ff;
   border-color: #2f80ff;
+}
+
+.legend-line {
+  display: inline-block;
+  width: 20px;
+  height: 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.legend-line-contour {
+  border-top-color: #8fc2ff;
+  opacity: 0.8;
+}
+
+.legend-topography-note {
+  margin: -2px 0 2px 28px;
+}
+
+.legend-topography-scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -1px 0 4px 28px;
+}
+
+.legend-topography-scale-label {
+  font-size: 11px;
+  color: var(--ink-dim);
+  min-width: 28px;
+}
+
+.legend-topography-scale-bar {
+  display: inline-block;
+  width: 78px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(90deg, hsl(230, 88%, 58%) 0%, hsl(15, 88%, 58%) 100%);
 }
 
 .legend-layers {

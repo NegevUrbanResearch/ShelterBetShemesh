@@ -107,6 +107,18 @@
             <span id="legendRecommended">מיגוניות מומלצות</span>
           </div>
           <div class="legend-row">
+            <span class="legend-line legend-line-contour"></span>
+            <span id="legendTopography">קווי גובה טופוגרפיים</span>
+          </div>
+          <p id="legendTopographyHint" class="legend-hint legend-topography-note">
+            צבעים מייצגים גובה טופוגרפי: צבע קר = גובה נמוך, צבע חם = גובה גבוה
+          </p>
+          <div class="legend-topography-scale" aria-hidden="true">
+            <span id="legendTopographyScaleLow" class="legend-topography-scale-label">נמוך</span>
+            <span class="legend-topography-scale-bar"></span>
+            <span id="legendTopographyScaleHigh" class="legend-topography-scale-label">גבוה</span>
+          </div>
+          <div class="legend-row">
             <span class="legend-swatch legend-swatch-post-1992"></span>
             <span id="legendPost1992">מבנים שנבנו מ-1992 ואילך</span>
           </div>
@@ -132,6 +144,7 @@
           <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
           <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
           <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
+          <label><input type="checkbox" id="layerTopography" checked /> <span id="layerTopographyLabel">טופוגרפיה (קווי גובה)</span></label>
           <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
           <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
           <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>

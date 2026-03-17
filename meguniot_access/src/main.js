@@ -64,11 +64,17 @@ const I18N = {
     legendUncovered: "Uncovered buildings (existing conditions)",
     legendCoveredBase: "Buildings covered by existing shelters",
     legendCoveredSelected: "Covered by selected shelter",
+    legendTopography: "Topography contour lines",
+    legendTopographyHint:
+      "Topography colors represent elevation: cool colors are lower elevation, warm colors are higher elevation",
+    legendTopographyScaleLow: "Low",
+    legendTopographyScaleHigh: "High",
     layersSummary: "Layers",
     baseMapLabel: "Base map",
     layerMeguniotLabel: "Existing meguniot",
     layerMiklatimLabel: "Existing miklatim",
     layerRecommendedLabel: "Recommended meguniot",
+    layerTopographyLabel: "Topography (contours)",
     layerPost1992BuildingsLabel: "Buildings built in/after 1992",
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
@@ -106,6 +112,8 @@ const I18N = {
     existingMegunitLabel: "Existing megunit",
     existingMiklatPopup: "<strong>Existing miklat</strong>",
     existingMiklatLabel: "Existing miklat",
+    contourPopup: (heightMeters) => `<strong>Contour</strong><br>Elevation: ${heightMeters}m`,
+    mapClickElevationPopup: (heightMeters) => `<strong>Approx elevation</strong><br>${heightMeters}m`,
     recommendedLabel: (rank) => `Recommended #${rank}`,
     modeLabelCluster: "Cluster area",
     modeLabelExact: "Exact point",
@@ -169,11 +177,16 @@ const I18N = {
     legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
     legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
+    legendTopography: "קווי גובה טופוגרפיים",
+    legendTopographyHint: "צבעי הטופוגרפיה מייצגים גובה: צבע קר הוא גובה נמוך, צבע חם הוא גובה גבוה",
+    legendTopographyScaleLow: "נמוך",
+    legendTopographyScaleHigh: "גבוה",
     layersSummary: "שכבות",
     baseMapLabel: "מפת בסיס",
     layerMeguniotLabel: "מיגוניות קיימות",
     layerMiklatimLabel: "מקלטים קיימים",
     layerRecommendedLabel: "מיגוניות מומלצות",
+    layerTopographyLabel: "טופוגרפיה (קווי גובה)",
     layerPost1992BuildingsLabel: "מבנים שנבנו מ-1992 ואילך",
     layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
@@ -210,6 +223,8 @@ const I18N = {
     existingMegunitLabel: "מיגונית קיימת",
     existingMiklatPopup: "<strong>מקלט קיים</strong>",
     existingMiklatLabel: "מקלט קיים",
+    contourPopup: (heightMeters) => `<strong>קו גובה</strong><br>גובה: ${heightMeters} מ'`,
+    mapClickElevationPopup: (heightMeters) => `<strong>גובה משוער</strong><br>${heightMeters} מ'`,
     recommendedLabel: (rank) => `מומלץ #${rank}`,
     modeLabelCluster: "אזור אשכול",
     modeLabelExact: "נקודה מדויקת",
@@ -256,6 +271,7 @@ const LAYER_DEFAULTS = {
   meguniot: true,
   miklatim: true,
   recommended: true,
+  topography: true,
   post1992Buildings: true,
   uncoveredBuildings: true,
   coveredBuildingsBase: true,
@@ -287,6 +303,7 @@ const baseMapSelect = document.getElementById("baseMapSelect");
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
 const layerRecommended = document.getElementById("layerRecommended");
+const layerTopography = document.getElementById("layerTopography");
 const layerPost1992Buildings = document.getElementById("layerPost1992Buildings");
 const layerUncoveredBuildings = document.getElementById("layerUncoveredBuildings");
 const layerCoveredBuildingsBase = document.getElementById("layerCoveredBuildingsBase");
@@ -318,6 +335,7 @@ let currentGuideTab = "usage";
 let currentDistanceMetric = "euclidean";
 let currentPlacementMode = "exact";
 let accessibilityHeatmapEnabled = false;
+let elevationLabelPopup = null;
 
 function t(key, ...args) {
   const value = I18N[currentLanguage]?.[key];
@@ -356,11 +374,16 @@ function applyStaticTranslations() {
     legendUncovered: "legendUncovered",
     legendCoveredBase: "legendCoveredBase",
     legendCoveredSelected: "legendCoveredSelected",
+    legendTopography: "legendTopography",
+    legendTopographyHint: "legendTopographyHint",
+    legendTopographyScaleLow: "legendTopographyScaleLow",
+    legendTopographyScaleHigh: "legendTopographyScaleHigh",
     layersSummary: "layersSummary",
     baseMapLabel: "baseMapLabel",
     layerMeguniotLabel: "layerMeguniotLabel",
     layerMiklatimLabel: "layerMiklatimLabel",
     layerRecommendedLabel: "layerRecommendedLabel",
+    layerTopographyLabel: "layerTopographyLabel",
     layerPost1992BuildingsLabel: "layerPost1992BuildingsLabel",
     layerUncoveredBuildingsLabel: "layerUncoveredBuildingsLabel",
     layerCoveredBuildingsBaseLabel: "layerCoveredBuildingsBaseLabel",
@@ -437,6 +460,7 @@ const layers = {
   existingMeguniot: L.layerGroup().addTo(map),
   existingMiklatim: L.layerGroup().addTo(map),
   recommended: L.layerGroup().addTo(map),
+  topography: L.layerGroup().addTo(map),
   post1992Buildings: L.layerGroup().addTo(map),
   uncoveredBuildings: L.layerGroup().addTo(map),
   coveredBuildingsBase: L.layerGroup().addTo(map),
@@ -454,6 +478,10 @@ const dataStore = {
   buildings: null,
   buildingsSourceCrs: "EPSG:2039",
   coverage: null,
+  contour: null,
+  contourSourceCrs: "EPSG:3857",
+  contourSegments: [],
+  contourElevationRange: { min: null, max: null },
   coverageByMetric: {},
   optimalByMetricModeBucket: {},
   shelterCoveragesByMetricModeBucket: {},
@@ -838,6 +866,13 @@ function reportProjectionStatus() {
         : "reprojected from local CRS; small datum-related offsets are possible";
     console.info(`[CRS check] ${label}: source=${sourceCrs}, base=${baseProjection} -> ${status}`);
   }
+  const contourStatus =
+    dataStore.contourSourceCrs === baseProjection || dataStore.contourSourceCrs === "EPSG:4326"
+      ? "aligned (converted safely to WGS84 for Leaflet)"
+      : "reprojected from local CRS; small datum-related offsets are possible";
+  console.info(
+    `[CRS check] contour: source=${dataStore.contourSourceCrs}, base=${baseProjection} -> ${contourStatus}`,
+  );
 }
 
 function toCsv(rows) {
@@ -884,6 +919,12 @@ function clearSelection() {
   layers.coveredBuildings.clearLayers();
 }
 
+function closeElevationLabelPopup() {
+  if (!elevationLabelPopup) return;
+  map.closePopup(elevationLabelPopup);
+  elevationLabelPopup = null;
+}
+
 function getSelectedCoverageMatches() {
   if (!selectedShelters.length) return [];
   const bucket = getActiveBucketKey();
@@ -898,6 +939,151 @@ function getSelectedCoverageMatches() {
     if (match) matches.push({ shelter: sel, coverage: match });
   }
   return matches;
+}
+
+function getContourElevation(feature) {
+  return getFirstNumericProperty(feature?.properties, ["HEIGHT", "height", "ELEV", "elev", "elevation"]);
+}
+
+function getContourColorByElevation(height, { min, max }) {
+  if (!Number.isFinite(height) || !Number.isFinite(min) || !Number.isFinite(max) || max <= min) {
+    return null;
+  }
+  const ratio = Math.max(0, Math.min(1, (height - min) / (max - min)));
+  const hue = 230 - ratio * 215;
+  return `hsl(${hue}, 88%, 58%)`;
+}
+
+function contourStyleForElevation(height) {
+  const hasHeight = Number.isFinite(height);
+  const isMajor = hasHeight && Math.abs(height % 50) < 0.0001;
+  const gradientColor = getContourColorByElevation(height, dataStore.contourElevationRange);
+  const color = gradientColor || (isMajor ? "#8fc2ff" : "#6ea9f7");
+  return {
+    color,
+    weight: isMajor ? 1.75 : 1.15,
+    opacity: isMajor ? 0.9 : 0.72,
+    lineCap: "round",
+    lineJoin: "round",
+    dashArray: null,
+    interactive: true,
+  };
+}
+
+function buildContourSegments() {
+  const features = Array.isArray(dataStore.contour?.features) ? dataStore.contour.features : [];
+  const segments = [];
+  const elevations = [];
+  for (const feature of features) {
+    const elevation = getContourElevation(feature);
+    if (Number.isFinite(elevation)) elevations.push(elevation);
+    const coords = feature?.geometry?.coordinates;
+    if (!coords) continue;
+    const pushSegments = (lineCoords) => {
+      if (!Array.isArray(lineCoords) || lineCoords.length < 2) return;
+      for (let i = 1; i < lineCoords.length; i += 1) {
+        const a = lineCoords[i - 1];
+        const b = lineCoords[i];
+        if (!Array.isArray(a) || !Array.isArray(b) || a.length < 2 || b.length < 2) continue;
+        segments.push({ ax: a[0], ay: a[1], bx: b[0], by: b[1], elevation });
+      }
+    };
+    if (feature?.geometry?.type === "LineString") {
+      pushSegments(coords);
+    } else if (feature?.geometry?.type === "MultiLineString") {
+      for (const lineCoords of coords) pushSegments(lineCoords);
+    }
+  }
+  dataStore.contourSegments = segments;
+  dataStore.contourElevationRange = {
+    min: elevations.length ? Math.min(...elevations) : null,
+    max: elevations.length ? Math.max(...elevations) : null,
+  };
+}
+
+function pointToSegmentDistanceSq(px, py, ax, ay, bx, by) {
+  const vx = bx - ax;
+  const vy = by - ay;
+  const lenSq = vx * vx + vy * vy;
+  if (!lenSq) {
+    const dx = px - ax;
+    const dy = py - ay;
+    return dx * dx + dy * dy;
+  }
+  const t = Math.max(0, Math.min(1, ((px - ax) * vx + (py - ay) * vy) / lenSq));
+  const projX = ax + t * vx;
+  const projY = ay + t * vy;
+  const dx = px - projX;
+  const dy = py - projY;
+  return dx * dx + dy * dy;
+}
+
+function estimateElevationAtLatLng(latlng) {
+  if (!dataStore.contourSegments.length) return null;
+  const [x, y] = proj4("EPSG:4326", dataStore.contourSourceCrs, [latlng.lng, latlng.lat]);
+  let bestElevation = null;
+  let bestDistanceSq = Number.POSITIVE_INFINITY;
+  for (const segment of dataStore.contourSegments) {
+    const dSq = pointToSegmentDistanceSq(x, y, segment.ax, segment.ay, segment.bx, segment.by);
+    if (dSq < bestDistanceSq) {
+      bestDistanceSq = dSq;
+      bestElevation = segment.elevation;
+    }
+  }
+  return Number.isFinite(bestElevation) ? Math.round(bestElevation) : null;
+}
+
+function isTopographyVisibleForInteraction() {
+  return layerVisibility.topography && !accessibilityHeatmapEnabled && map.hasLayer(layers.topography);
+}
+
+function handleMapClickForElevation(event) {
+  if (!isTopographyVisibleForInteraction()) return;
+  const target = event?.originalEvent?.target;
+  if (target?.closest?.(".leaflet-interactive")) return;
+  const elevation = estimateElevationAtLatLng(event.latlng);
+  if (!Number.isFinite(elevation)) return;
+  closeElevationLabelPopup();
+  elevationLabelPopup = L.popup({
+    closeButton: false,
+    autoClose: true,
+    offset: [0, -6],
+    className: "elevation-click-popup",
+  })
+    .setLatLng(event.latlng)
+    .setContent(t("mapClickElevationPopup", elevation))
+    .openOn(map);
+}
+
+function renderContourLayer() {
+  layers.topography.clearLayers();
+  const contourFeatures = Array.isArray(dataStore.contour?.features) ? dataStore.contour.features : [];
+  if (!contourFeatures.length) return;
+
+  const features = contourFeatures
+    .map((feature) => {
+      const geometry = geometryToWgs(feature?.geometry, dataStore.contourSourceCrs);
+      if (!geometry) return null;
+      return {
+        type: "Feature",
+        properties: feature?.properties || {},
+        geometry,
+      };
+    })
+    .filter(Boolean);
+
+  L.geoJSON(
+    { type: "FeatureCollection", features },
+    {
+      style: (feature) => contourStyleForElevation(getContourElevation(feature)),
+      onEachFeature: (feature, layer) => {
+        const elevation = getContourElevation(feature);
+        if (Number.isFinite(elevation)) {
+          layer.bindPopup(t("contourPopup", elevation));
+        }
+      },
+    },
+  ).addTo(layers.topography);
 }
 
 function renderExistingShelters() {
@@ -1063,6 +1249,7 @@ function applyLayerVisibility() {
       layers.existingMeguniot,
       layers.existingMiklatim,
       layers.recommended,
+      layers.topography,
       layers.post1992Buildings,
       layers.uncoveredBuildings,
       layers.coveredBuildingsBase,
@@ -1082,6 +1269,7 @@ function applyLayerVisibility() {
     ["meguniot", layers.existingMeguniot],
     ["miklatim", layers.existingMiklatim],
     ["recommended", layers.recommended],
+    ["topography", layers.topography],
     ["post1992Buildings", layers.post1992Buildings],
     ["uncoveredBuildings", layers.uncoveredBuildings],
     ["coveredBuildingsBase", layers.coveredBuildingsBase],
@@ -1090,6 +1278,9 @@ function applyLayerVisibility() {
   for (const [key, layer] of bindings) {
     if (layerVisibility[key]) map.addLayer(layer);
     else map.removeLayer(layer);
+  }
+  if (!isTopographyVisibleForInteraction()) {
+    closeElevationLabelPopup();
   }
 }
 
@@ -1186,6 +1377,7 @@ function setGuideLanguage(lang, { refreshMap = true } = {}) {
   updateSliderBounds();
   if (refreshMap) {
     renderExistingShelters();
+    renderContourLayer();
     renderExistingCoverageBuildings();
     renderAccessibilityHeatmap();
     renderRecommended();
@@ -1218,6 +1410,11 @@ async function loadAllData() {
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
   );
+  dataStore.contour = await fetchJson(`${DATA_BASE}/contour.geojson`);
+  dataStore.contourSourceCrs = normalizeCrsName(
+    dataStore.contour?.crs?.properties?.name || "",
+  );
+  buildContourSegments();
   dataStore.coverageByMetric = {};
   for (const metric of DISTANCE_METRIC_OPTIONS) {
     dataStore.coverageByMetric[metric.key] = await fetchJson(
@@ -1296,6 +1493,7 @@ function wireEvents() {
   modeExactBtn?.addEventListener("click", () => setPlacementMode("exact"));
   modeClusterBtn?.addEventListener("click", () => setPlacementMode("cluster"));
   baseMapSelect?.addEventListener("change", () => setBaseMap(baseMapSelect.value));
+  map.on("click", handleMapClickForElevation);
   map.on("zoomend moveend", () => {
     if (!accessibilityHeatmapEnabled) return;
     renderAccessibilityHeatmap();
@@ -1351,6 +1549,7 @@ function wireEvents() {
     [layerMeguniot, "meguniot"],
     [layerMiklatim, "miklatim"],
     [layerRecommended, "recommended"],
+    [layerTopography, "topography"],
     [layerPost1992Buildings, "post1992Buildings"],
     [layerUncoveredBuildings, "uncoveredBuildings"],
     [layerCoveredBuildingsBase, "coveredBuildingsBase"],
@@ -1360,6 +1559,7 @@ function wireEvents() {
     checkbox.checked = layerVisibility[key];
     checkbox.addEventListener("change", () => {
       layerVisibility[key] = checkbox.checked;
+      if (key === "topography" && !checkbox.checked) closeElevationLabelPopup();
       applyLayerVisibility();
     });
   }
@@ -1403,6 +1603,7 @@ loadAllData()
   .then(() => {
     wireEvents();
     renderExistingShelters();
+    renderContourLayer();
     reportProjectionStatus();
     setPlacementMode("exact");
     setGuideLanguage(currentLanguage);
