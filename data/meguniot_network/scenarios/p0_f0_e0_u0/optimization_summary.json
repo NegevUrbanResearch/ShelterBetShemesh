@@ -1,7 +1,7 @@
 {
   "schema_version": "5.0.0",
   "walk_speed_mps_fallback": 1.3,
-  "euclidean_access_radius_m": 200.0,
+  "euclidean_access_radius_m": 100.0,
   "emergency_crossing_radius_m": 22.0,
   "densify_interval_m": 25.0,
   "building_access_radius_m": 80.0,
@@ -78,21 +78,21 @@
         {
           "time_bucket": "5min",
           "time_seconds": 300,
-          "currently_uncovered": 4033,
-          "additional_covered_by_proposed": 4031,
-          "num_proposed_meguniot": 164,
-          "final_uncovered": 2,
-          "stop_reason": "no_marginal_gain"
+          "currently_uncovered": 4789,
+          "additional_covered_by_proposed": 3921,
+          "num_proposed_meguniot": 200,
+          "final_uncovered": 868,
+          "stop_reason": "budget_limit"
         }
       ],
       "cluster": [
         {
           "time_bucket": "5min",
           "time_seconds": 300,
-          "currently_uncovered": 4033,
-          "additional_covered_by_proposed": 3693,
-          "num_proposed_meguniot": 121,
-          "final_uncovered": 340,
+          "currently_uncovered": 4789,
+          "additional_covered_by_proposed": 2774,
+          "num_proposed_meguniot": 148,
+          "final_uncovered": 2015,
           "stop_reason": "no_marginal_gain"
         }
       ]

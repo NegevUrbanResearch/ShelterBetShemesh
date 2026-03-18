@@ -29,7 +29,7 @@ The backend currently:
 - Computes existing coverage for a fixed `5min` bucket.
 - Supports two distance metrics:
   - `graph` (walking network with routing and access edges)
-  - `euclidean` (straight-line 200m accessibility, no graph routing in coverage scoring)
+  - `euclidean` (straight-line 100m accessibility, no graph routing in coverage scoring)
 - Supports two placement types for each metric:
   - `exact`
   - `cluster`

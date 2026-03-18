@@ -104,12 +104,12 @@ const I18N = {
     loadingData: "Loading data...",
     accessibilityStats:
       "Accessibility screen-grid mode is active. <strong>Green</strong> areas are closer to an existing shelter, while <strong>red</strong> areas are farther away.",
-    metricLabelEuclidean: "euclidean straight-line (200m)",
+    metricLabelEuclidean: "straight-line 100m",
     metricLabelGraph: "graph walking",
     clusterStats: (shownLength, metricLabel) =>
       `Cluster placement mode is showing <strong>${shownLength}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.`,
-    exactModeLabel: (metricLabel) => `exact placement mode (${metricLabel})`,
-    coveragePhraseEuclidean: "within 200m straight-line distance",
+    exactModeLabel: (metricLabel) => `exact placement mode - ${metricLabel}`,
+    coveragePhraseEuclidean: "within 100m straight-line distance",
     coveragePhraseGraph: (minuteLabel) => `within ${minuteLabel} walking distance`,
     exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
       `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. You have added <strong>${shownLength}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. There remain <strong>${remainingUncovered}</strong> uncovered buildings.`,
@@ -226,12 +226,12 @@ const I18N = {
     loadingData: "טוען נתונים...",
     accessibilityStats:
       "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> קרובים יותר למיגון קיים, ואזורים <strong>אדומים</strong> רחוקים יותר.",
-    metricLabelEuclidean: "מרחק אוקלידי בקו אווירי (200 מ')",
+    metricLabelEuclidean: "קו אווירי 100 מ'",
     metricLabelGraph: "מרחק הליכה ברשת הדרכים",
     clusterStats: (shownLength, metricLabel) =>
       `מצב מיקום באשכולות מציג <strong>${shownLength}</strong> מרכזי אשכול מומלצים מתוך <strong>150 התאמות KMeans מובילות</strong>. מדד מרחק: <strong>${metricLabel}</strong>. הסמנים מייצגים אזורים כלליים מומלצים למיקום מיגוניות, ולא כיסוי מדויק לפי מרחק נגישות.`,
-    exactModeLabel: (metricLabel) => `מצב מיקום מדויק (${metricLabel})`,
-    coveragePhraseEuclidean: "בטווח של 200 מ' בקו אווירי",
+    exactModeLabel: (metricLabel) => `מצב מיקום מדויק - ${metricLabel}`,
+    coveragePhraseEuclidean: "בטווח של 100 מ' בקו אווירי",
     coveragePhraseGraph: (minuteLabel) => `בטווח הליכה של ${minuteLabel}`,
     exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
       `ב<strong>${modeLabel}</strong> יש <strong>${uncoveredNow}</strong> מבני מגורים ללא מיגון <strong>${coveragePhrase}</strong>. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים <strong>${coveragePhrase}</strong>. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
