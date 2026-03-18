@@ -14,6 +14,18 @@
     <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
+    <div id="loadingOverlay" class="loading-overlay" role="status" aria-live="polite" aria-label="Loading map data">
+      <div class="loading-card">
+        <div class="loading-logo-wrap" aria-hidden="true">
+          <img src="./assets/nur-favicon.svg" alt="" class="loading-logo" />
+        </div>
+        <h2 id="loadingTitle" class="loading-title">Preparing shelter map</h2>
+        <p id="loadingMessage" class="loading-message">Loading data...</p>
+        <div class="loading-progress" aria-hidden="true">
+          <span class="loading-progress-bar"></span>
+        </div>
+      </div>
+    </div>
     <div id="app" class="lang-he-ui">
       <div id="map"></div>
       <div class="prototype-banner" aria-hidden="true">טיוטה</div>

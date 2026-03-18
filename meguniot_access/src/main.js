@@ -101,7 +101,14 @@ const I18N = {
     baseMap_streets: "Streets (OpenStreetMap)",
     baseMap_satellite: "Satellite (Esri World Imagery)",
     baseMap_light: "Light (Carto Positron)",
+    loadingTitle: "Preparing shelter map",
     loadingData: "Loading data...",
+    loadingStageManifest: "Loading scenario definitions...",
+    loadingStageCoreLayers: "Loading shelters and buildings...",
+    loadingStageNeighborLayers: "Loading neighboring shelter layers...",
+    loadingStageTerrain: "Loading topography contours...",
+    loadingStageCoverage: "Calculating coverage indexes...",
+    loadingStageFinalizing: "Finalizing map view...",
     accessibilityStats:
       "Accessibility screen-grid mode is active. <strong>Green</strong> areas are closer to an existing shelter, while <strong>red</strong> areas are farther away.",
     metricLabelEuclidean: "straight-line 100m",
@@ -225,7 +232,14 @@ const I18N = {
     baseMap_streets: "רחובות (OpenStreetMap)",
     baseMap_satellite: "לוויין (Esri World Imagery)",
     baseMap_light: "בהיר (Carto Positron)",
+    loadingTitle: "מכין את מפת המיגון",
     loadingData: "טוען נתונים...",
+    loadingStageManifest: "טוען הגדרות תרחישים...",
+    loadingStageCoreLayers: "טוען שכבות מיגון ומבנים...",
+    loadingStageNeighborLayers: "טוען שכבות מיגון שכנים...",
+    loadingStageTerrain: "טוען קווי גובה...",
+    loadingStageCoverage: "מחשב אינדקסי כיסוי...",
+    loadingStageFinalizing: "מסיים את תצוגת המפה...",
     accessibilityStats:
       "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> קרובים יותר למיגון קיים, ואזורים <strong>אדומים</strong> רחוקים יותר.",
     metricLabelEuclidean: "קו אווירי 100 מ'",
@@ -330,6 +344,9 @@ proj4.defs(
 
 const bucketSelect = document.getElementById("bucketSelect");
 const appRoot = document.getElementById("app");
+const loadingOverlay = document.getElementById("loadingOverlay");
+const loadingTitleEl = document.getElementById("loadingTitle");
+const loadingMessageEl = document.getElementById("loadingMessage");
 const bucketControls = document.getElementById("bucketControls");
 const coverageDisplayControls = document.getElementById("coverageDisplayControls");
 const countRange = document.getElementById("countRange");
@@ -403,6 +420,20 @@ function t(key, ...args) {
   const value = I18N[currentLanguage]?.[key];
   if (typeof value === "function") return value(...args);
   return value ?? key;
+}
+
+function setLoadingStatus(messageKeyOrText) {
+  if (loadingTitleEl) loadingTitleEl.textContent = t("loadingTitle");
+  if (!loadingMessageEl) return;
+  const knownI18nKey =
+    typeof messageKeyOrText === "string" &&
+    Object.prototype.hasOwnProperty.call(I18N[currentLanguage] || {}, messageKeyOrText);
+  loadingMessageEl.textContent = knownI18nKey ? t(messageKeyOrText) : String(messageKeyOrText ?? "");
+}
+
+function hideLoadingOverlay() {
+  if (!loadingOverlay) return;
+  loadingOverlay.classList.add("is-hidden");
 }
 
 function getBucketLabel(bucketKey) {
@@ -2183,6 +2214,7 @@ function setGuideLanguage(lang, { refreshMap = true } = {}) {
   guideTabUsage.setAttribute("aria-label", t("guideUsageTabAria"));
   guideTabMethods.setAttribute("aria-label", t("guideMethodsTabAria"));
   applyStaticTranslations();
+  setLoadingStatus("loadingData");
   repopulateLocalizedOptions();
   updateSliderBounds();
   if (refreshMap) {
@@ -2207,9 +2239,11 @@ function setGuideTab(tab) {
   renderGuideContent();
 }
 
-async function loadAllData() {
+async function loadAllData(reportLoadingStep = () => {}) {
+  reportLoadingStep("loadingStageManifest");
   await loadScenarioManifest();
   setScenarioForAssumptions(currentAssumptions);
+  reportLoadingStep("loadingStageCoreLayers");
   dataStore.miguniot = await fetchJson(`${DATA_BASE}/Miguniot.geojson`);
   dataStore.miguniotSourceCrs = normalizeCrsName(
     dataStore.miguniot?.crs?.properties?.name || "",
@@ -2222,6 +2256,7 @@ async function loadAllData() {
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
   );
+  reportLoadingStep("loadingStageNeighborLayers");
   dataStore.educationFacilities = await fetchJson(`${DATA_BASE}/Education_Facilities.geojson`);
   dataStore.educationFacilitiesSourceCrs = normalizeCrsName(
     dataStore.educationFacilities?.crs?.properties?.name || "",
@@ -2230,11 +2265,13 @@ async function loadAllData() {
   dataStore.publicBuildingsSourceCrs = normalizeCrsName(
     dataStore.publicBuildings?.crs?.properties?.name || "",
   );
+  reportLoadingStep("loadingStageTerrain");
   dataStore.contour = await fetchJson(`${DATA_BASE}/contour.geojson`);
   dataStore.contourSourceCrs = normalizeCrsName(
     dataStore.contour?.crs?.properties?.name || "",
   );
   buildContourSegments();
+  reportLoadingStep("loadingStageCoverage");
   await ensureScenarioDataLoaded();
   dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric];
 
@@ -2245,7 +2282,7 @@ async function loadAllData() {
     coverageById.set(Number(b.id), b);
   }
   buildBuildingFeatureIndex();
-
+  reportLoadingStep("loadingStageFinalizing");
 }
 
 function setDistanceMetric(metricKey) {
@@ -2444,17 +2481,29 @@ function wireEvents() {
 setBaseMap(baseMapSelect.value || "light");
 setGuideLanguage("he", { refreshMap: false });
 setGuideTab("usage");
+setLoadingStatus("loadingData");
 
-loadAllData()
-  .then(() => {
+const loadingOverlayStartMs = Date.now();
+loadAllData((stepKey) => setLoadingStatus(stepKey))
+  .then(async () => {
     wireEvents();
     renderExistingShelters();
     renderContourLayer();
     reportProjectionStatus();
     setPlacementMode("exact");
     setGuideLanguage(currentLanguage);
+    const elapsed = Date.now() - loadingOverlayStartMs;
+    const minVisibleMs = 700;
+    if (elapsed < minVisibleMs) {
+      await new Promise((resolve) => {
+        window.setTimeout(resolve, minVisibleMs - elapsed);
+      });
+    }
+    hideLoadingOverlay();
   })
   .catch((err) => {
     console.error(err);
-    statsEl.textContent = t("errorLoadingData", err.message);
+    const message = t("errorLoadingData", err.message);
+    statsEl.textContent = message;
+    setLoadingStatus(message);
   });
