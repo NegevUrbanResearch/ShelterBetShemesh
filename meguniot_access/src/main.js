@@ -306,6 +306,18 @@ const LAYER_DEFAULTS = {
   covered: true,
   accessibilityHeatmap: false,
 };
+const EXISTING_SHELTER_BLUE = {
+  buildingStroke: "#0b4f8f",
+  buildingFill: "#4f9bdc",
+  areaStroke: "#0a4a86",
+  areaFill: "#5ea9e6",
+};
+const RECOMMENDED_SHELTER_BLUE = {
+  buildingStroke: "#1f74bf",
+  buildingFill: "#9ed2ff",
+  areaStroke: "#2c7ec7",
+  areaFill: "#b6deff",
+};
 
 proj4.defs(
   "EPSG:2039",
@@ -522,6 +534,7 @@ const layers = {
   post1992Buildings: L.layerGroup().addTo(map),
   uncoveredBuildings: L.layerGroup().addTo(map),
   coveredBuildingsBase: L.layerGroup().addTo(map),
+  selectedShelterArea: L.layerGroup().addTo(map),
   coveredBuildings: L.layerGroup().addTo(map),
   accessibilityHeatmap: L.layerGroup(),
 };
@@ -1386,6 +1399,7 @@ function toCsv(rows) {
 
 function clearSelection() {
   selectedShelters = [];
+  layers.selectedShelterArea.clearLayers();
   layers.coveredBuildings.clearLayers();
 }
 
@@ -1395,11 +1409,14 @@ function closeElevationLabelPopup() {
   elevationLabelPopup = null;
 }
 
+function getCurrentShelterCoveragePayload() {
+  const bucket = getActiveBucketKey();
+  return dataStore.shelterCoveragesByMetricModeBucket?.[currentDistanceMetric]?.[currentPlacementMode]?.[bucket];
+}
+
 function getSelectedCoverageMatches() {
   if (!selectedShelters.length) return [];
-  const bucket = getActiveBucketKey();
-  const payload =
-    dataStore.shelterCoveragesByMetricModeBucket?.[currentDistanceMetric]?.[currentPlacementMode]?.[bucket];
+  const payload = getCurrentShelterCoveragePayload();
   const allCoverages = Array.isArray(payload?.coverages) ? payload.coverages : [];
   const matches = [];
   for (const sel of selectedShelters) {
@@ -1409,6 +1426,59 @@ function getSelectedCoverageMatches() {
     if (match) matches.push({ shelter: sel, coverage: match });
   }
   return matches;
+}
+
+function getSelectionPalette(shelter) {
+  return shelter?.kind === "recommended" ? RECOMMENDED_SHELTER_BLUE : EXISTING_SHELTER_BLUE;
+}
+
+function convexHull(points) {
+  if (!Array.isArray(points) || points.length < 3) return [];
+  const deduped = [];
+  const seen = new Set();
+  for (const point of points) {
+    if (!Array.isArray(point) || point.length < 2) continue;
+    const x = Number(point[0]);
+    const y = Number(point[1]);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+    const key = `${x.toFixed(7)}:${y.toFixed(7)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push([x, y]);
+  }
+  if (deduped.length < 3) return [];
+  deduped.sort((a, b) => (a[0] === b[0] ? a[1] - b[1] : a[0] - b[0]));
+  const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lower = [];
+  for (const point of deduped) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], point) <= 0) {
+      lower.pop();
+    }
+    lower.push(point);
+  }
+  const upper = [];
+  for (let i = deduped.length - 1; i >= 0; i -= 1) {
+    const point = deduped[i];
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], point) <= 0) {
+      upper.pop();
+    }
+    upper.push(point);
+  }
+  lower.pop();
+  upper.pop();
+  return [...lower, ...upper];
+}
+
+function getIsochronePolygonLatLngs(match, shelter) {
+  const coveredIndices = Array.isArray(match?.covered_building_indices) ? match.covered_building_indices : [];
+  const hullInput = [[Number(shelter?.lon), Number(shelter?.lat)]];
+  for (const idx of coveredIndices) {
+    const point = getCoveragePointLatLng(coverageByIndex.get(Number(idx)), idx);
+    if (!point) continue;
+    hullInput.push([point.lng, point.lat]);
+  }
+  const hull = convexHull(hullInput);
+  return hull.map(([lng, lat]) => [lat, lng]);
 }
 
 function getContourElevation(feature) {
@@ -1673,38 +1743,70 @@ function renderRecommended() {
 }
 
 function renderSelectedShelterCoverage() {
+  layers.selectedShelterArea.clearLayers();
   layers.coveredBuildings.clearLayers();
   if (!selectedShelters.length) return;
 
+  const payload = getCurrentShelterCoveragePayload();
   const matches = getSelectedCoverageMatches();
   if (!matches.length) return;
 
-  const newlyCoveredColor = "#81c784";
+  const euclideanRadius = Number(payload?.euclidean_access_radius_m);
+  const graphFallbackRadius = Number(payload?.emergency_crossing_radius_m) > 0
+    ? Number(payload.emergency_crossing_radius_m) * 2.5
+    : 55;
+
   for (let mi = 0; mi < matches.length; mi++) {
     const { shelter, coverage: match } = matches[mi];
-    const style = {
-      color: "#66bb6a",
+    const palette = getSelectionPalette(shelter);
+    const buildingStyle = {
+      color: palette.buildingStroke,
       weight: 2,
-      fillColor: newlyCoveredColor,
-      fillOpacity: 0.72,
+      fillColor: palette.buildingFill,
+      fillOpacity: 0.68,
       opacity: 1,
     };
+    const areaBaseStyle = {
+      color: palette.areaStroke,
+      weight: 2,
+      fillColor: palette.areaFill,
+      fillOpacity: 0.16,
+      opacity: 0.96,
+      interactive: false,
+    };
+    if (currentDistanceMetric === "euclidean" && Number.isFinite(euclideanRadius) && euclideanRadius > 0) {
+      L.circle([shelter.lat, shelter.lon], {
+        ...areaBaseStyle,
+        radius: euclideanRadius,
+      }).addTo(layers.selectedShelterArea);
+    } else {
+      const isochroneLatLngs = getIsochronePolygonLatLngs(match, shelter);
+      if (isochroneLatLngs.length >= 3) {
+        L.polygon(isochroneLatLngs, areaBaseStyle).addTo(layers.selectedShelterArea);
+      } else {
+        L.circle([shelter.lat, shelter.lon], {
+          ...areaBaseStyle,
+          radius: graphFallbackRadius,
+        }).addTo(layers.selectedShelterArea);
+      }
+    }
+
     const indices = Array.isArray(match.covered_building_indices) ? match.covered_building_indices : [];
 
     for (const idx of indices) {
       const buildingFeature = buildingFeatureByIndex.get(Number(idx));
       if (buildingFeature) {
-        createBuildingLayer(buildingFeature, style, 4).addTo(layers.coveredBuildings);
+        createBuildingLayer(buildingFeature, buildingStyle, 4).addTo(layers.coveredBuildings);
         continue;
       }
       const b = coverageByIndex.get(Number(idx));
       if (!b) continue;
       L.circleMarker([b.lat, b.lon], {
         radius: 4,
-        color: style.color,
-        fillColor: style.fillColor,
-        fillOpacity: style.fillOpacity,
-        weight: style.weight,
+        color: buildingStyle.color,
+        fillColor: buildingStyle.fillColor,
+        fillOpacity: buildingStyle.fillOpacity,
+        weight: buildingStyle.weight,
       }).addTo(layers.coveredBuildings);
     }
   }
@@ -1763,6 +1865,7 @@ function applyLayerVisibility() {
       layers.post1992Buildings,
       layers.uncoveredBuildings,
       layers.coveredBuildingsBase,
+      layers.selectedShelterArea,
       layers.coveredBuildings,
     ];
     for (const layer of standardLayers) {
@@ -1783,11 +1886,17 @@ function applyLayerVisibility() {
     ["post1992Buildings", layers.post1992Buildings],
     ["uncoveredBuildings", layers.uncoveredBuildings],
     ["coveredBuildingsBase", layers.coveredBuildingsBase],
-    ["covered", layers.coveredBuildings],
   ];
   for (const [key, layer] of bindings) {
     if (layerVisibility[key]) map.addLayer(layer);
     else map.removeLayer(layer);
+  }
+  if (layerVisibility.covered) {
+    map.addLayer(layers.selectedShelterArea);
+    map.addLayer(layers.coveredBuildings);
+  } else {
+    map.removeLayer(layers.selectedShelterArea);
+    map.removeLayer(layers.coveredBuildings);
   }
   if (!isTopographyVisibleForInteraction()) {
     closeElevationLabelPopup();
