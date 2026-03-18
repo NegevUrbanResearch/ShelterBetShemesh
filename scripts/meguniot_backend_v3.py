@@ -281,8 +281,12 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
     apartments_col = _first_present(
         gdf, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot"]
     )
-    before_1992_col = _first_present(gdf, ["Before_1992", "before_1992", "before1992", "lifney_1992"])
-    over_3_floors_col = _first_present(gdf, ["more_than_3_floors", "more_than_3_floors_or_2_apartments"])
+    before_1992_col = _first_present(
+        gdf, ["Before_199", "Before_1992", "before_1992", "before1992", "lifney_1992"]
+    )
+    over_3_floors_col = _first_present(
+        gdf, ["more_tha_3", "more_than_3_floors", "more_than_3_floors_or_2_apartments"]
+    )
     single_family_col = _first_present(
         gdf, ["single_family", "singlefamily", "private_house", "tzmod_krka", "tzamud_karka"]
     )
@@ -300,7 +304,7 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
     if over_3_floors_col:
         gdf["over_3_floors_norm"] = gdf[over_3_floors_col].apply(_to_boolish)
     else:
-        gdf["over_3_floors_norm"] = gdf["floors_norm"] > 3
+        gdf["over_3_floors_norm"] = (gdf["floors_norm"] > 3) | (gdf["apartments_norm"] > 3)
 
     residential_mask = pd.Series(True, index=gdf.index)
     if single_family_col:
@@ -1278,22 +1282,22 @@ def run_pipeline(
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     _cleanup_stale_bucket_outputs()
 
-    required = [DATA_DIR / "buildings.geojson", DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson"]
+    required = [DATA_DIR / "buildings_built_year.geojson", DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson"]
     if assumptions.education_facilities_are_shelters:
         required.append(education_facilities_path or DATA_DIR / "Education_Facilities.geojson")
     if assumptions.public_buildings_are_shelters:
-        required.append(public_buildings_path or DATA_DIR / "Public_Buildings.geojson")
+        required.append(public_buildings_path or DATA_DIR / "buildings_on_מבני_ציבור.geojson")
     if dem_path is not None:
         required.append(dem_path)
     _assert_input_files_exist(required)
 
-    buildings = load_target_buildings(DATA_DIR / "buildings.geojson", assumptions=assumptions)
+    buildings = load_target_buildings(DATA_DIR / "buildings_built_year.geojson", assumptions=assumptions)
     shelters = load_existing_shelters(
         DATA_DIR / "Miguniot.geojson",
         DATA_DIR / "Miklatim.geojson",
         assumptions=assumptions,
         education_path=education_facilities_path or DATA_DIR / "Education_Facilities.geojson",
-        public_buildings_path=public_buildings_path or DATA_DIR / "Public_Buildings.geojson",
+        public_buildings_path=public_buildings_path or DATA_DIR / "buildings_on_מבני_ציבור.geojson",
     )
     logger.info("Loaded %d target buildings and %d existing shelters", len(buildings), len(shelters))
 
@@ -2016,7 +2020,7 @@ def main() -> None:
     parser.add_argument(
         "--public-buildings-path",
         type=Path,
-        default=DATA_DIR / "Public_Buildings.geojson",
+        default=DATA_DIR / "buildings_on_מבני_ציבור.geojson",
         help="GeoJSON path for public buildings used as shelters when enabled.",
     )
     parser.add_argument(

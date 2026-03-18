@@ -30,12 +30,36 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
+          34.99642503962867,
+          31.754292930250696
+        ]
+      },
+      "properties": {
+        "rank": 2,
+        "distance_metric": "euclidean",
+        "placement_mode": "cluster",
+        "placement_semantics": "area_center",
+        "shelter_id": 26,
+        "candidate_source": "cluster_candidates",
+        "time_bucket": "5min",
+        "time_seconds": 300,
+        "coordinates": "31.754293,34.996425",
+        "nearest_building_dist_m": 19.71,
+        "newly_covered_buildings": 11,
+        "newly_covered_people_est": 77
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
           34.99066478650259,
           31.75649555403281
         ]
       },
       "properties": {
-        "rank": 2,
+        "rank": 3,
         "distance_metric": "euclidean",
         "placement_mode": "cluster",
         "placement_semantics": "area_center",
@@ -59,7 +83,7 @@
         ]
       },
       "properties": {
-        "rank": 3,
+        "rank": 4,
         "distance_metric": "euclidean",
         "placement_mode": "cluster",
         "placement_semantics": "area_center",
@@ -71,30 +95,6 @@
         "nearest_building_dist_m": 31.37,
         "newly_covered_buildings": 5,
         "newly_covered_people_est": 35
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          34.99512600586062,
-          31.754966555075633
-        ]
-      },
-      "properties": {
-        "rank": 4,
-        "distance_metric": "euclidean",
-        "placement_mode": "cluster",
-        "placement_semantics": "area_center",
-        "shelter_id": 112,
-        "candidate_source": "cluster_candidates",
-        "time_bucket": "5min",
-        "time_seconds": 300,
-        "coordinates": "31.754967,34.995126",
-        "nearest_building_dist_m": 46.37,
-        "newly_covered_buildings": 20,
-        "newly_covered_people_est": 140
       }
     },
     {
@@ -126,36 +126,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          34.9963188609145,
-          31.75963238669973
-        ]
-      },
-      "properties": {
-        "rank": 6,
-        "distance_metric": "euclidean",
-        "placement_mode": "cluster",
-        "placement_semantics": "area_center",
-        "shelter_id": 127,
-        "candidate_source": "cluster_candidates",
-        "time_bucket": "5min",
-        "time_seconds": 300,
-        "coordinates": "31.759632,34.996319",
-        "nearest_building_dist_m": 22.8,
-        "newly_covered_buildings": 8,
-        "newly_covered_people_est": 56
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
           34.993652626242834,
           31.75550561617826
         ]
       },
       "properties": {
-        "rank": 7,
+        "rank": 6,
         "distance_metric": "euclidean",
         "placement_mode": "cluster",
         "placement_semantics": "area_center",
@@ -167,6 +143,30 @@
         "nearest_building_dist_m": 4.19,
         "newly_covered_buildings": 13,
         "newly_covered_people_est": 91
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.9963188609145,
+          31.75963238669973
+        ]
+      },
+      "properties": {
+        "rank": 7,
+        "distance_metric": "euclidean",
+        "placement_mode": "cluster",
+        "placement_semantics": "area_center",
+        "shelter_id": 127,
+        "candidate_source": "cluster_candidates",
+        "time_bucket": "5min",
+        "time_seconds": 300,
+        "coordinates": "31.759632,34.996319",
+        "nearest_building_dist_m": 22.8,
+        "newly_covered_buildings": 8,
+        "newly_covered_people_est": 56
       }
     },
     {

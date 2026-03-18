@@ -566,6 +566,7 @@ let selectedShelters = [];
 const coverageByIndex = new Map();
 const coverageById = new Map();
 const buildingFeatureByIndex = new Map();
+const matchedSourceBuildingFeatureIndexes = new Set();
 
 const existingIcon = L.icon({
   iconUrl: "assets/existing.svg",
@@ -651,7 +652,11 @@ function toBoolish(value) {
 function isBuiltAfter1992(feature) {
   const props = feature?.properties || {};
   const before1992Raw =
-    props.Before_1992 ?? props.before_1992 ?? props.before1992 ?? props.lifney_1992;
+    props.Before_199 ??
+    props.Before_1992 ??
+    props.before_1992 ??
+    props.before1992 ??
+    props.lifney_1992;
   if (before1992Raw !== null && before1992Raw !== undefined && before1992Raw !== "") {
     return !toBoolish(before1992Raw);
   }
@@ -664,6 +669,49 @@ function isBuiltAfter1992(feature) {
     "shnat_bnaya",
   ]);
   return Number.isFinite(year) ? year >= 1992 : false;
+}
+
+function isOver3FloorsOrApartments(feature) {
+  const props = feature?.properties || {};
+  const over3Raw =
+    props.more_tha_3 ??
+    props.more_than_3_floors ??
+    props.more_than_3_floors_or_2_apartments ??
+    props.over_3_floors;
+  if (over3Raw !== null && over3Raw !== undefined && over3Raw !== "") {
+    return toBoolish(over3Raw);
+  }
+  const floors = getFirstNumericProperty(props, ["Floors", "floors", "komot"]);
+  const apartments = getFirstNumericProperty(props, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot"]);
+  return (Number.isFinite(floors) && floors > 3) || (Number.isFinite(apartments) && apartments > 3);
+}
+
+function isTargetBuildingFeature(feature) {
+  const props = feature?.properties || {};
+  const singleFamilyKey = [
+    "single_family",
+    "singlefamily",
+    "private_house",
+    "tzmod_krka",
+    "tzamud_karka",
+  ].find((key) => Object.prototype.hasOwnProperty.call(props, key));
+  const residentialKey = [
+    "residential",
+    "is_residential",
+    "res",
+    "miyuad_mgourim",
+    "megurim",
+  ].find((key) => Object.prototype.hasOwnProperty.call(props, key));
+
+  let residential = true;
+  if (singleFamilyKey) residential = residential && toBoolish(props[singleFamilyKey]);
+  if (residentialKey) residential = residential && toBoolish(props[residentialKey]);
+  if (!residential) return false;
+
+  let exempt = false;
+  if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltAfter1992(feature);
+  if (currentAssumptions.over3FloorsSheltered) exempt = exempt || isOver3FloorsOrApartments(feature);
+  return !exempt;
 }
 
 function createBuildingLayer(feature, style, radius = 3) {
@@ -1191,9 +1239,11 @@ function wireDrawerToggles() {
 
 function buildBuildingFeatureIndex() {
   buildingFeatureByIndex.clear();
+  matchedSourceBuildingFeatureIndexes.clear();
   const features = Array.isArray(dataStore.buildings?.features) ? dataStore.buildings.features : [];
   const idKeys = ["building_idx", "OBJECTID", "objectid", "id", "ID"];
-  for (const feature of features) {
+  for (let sourceIdx = 0; sourceIdx < features.length; sourceIdx += 1) {
+    const feature = features[sourceIdx];
     const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
     if (!geometry) continue;
     const featureId = getFeatureNumericId(feature, idKeys);
@@ -1206,6 +1256,39 @@ function buildBuildingFeatureIndex() {
       geometry,
       properties: { ...(feature.properties || {}), building_idx: idx },
     });
+    matchedSourceBuildingFeatureIndexes.add(sourceIdx);
+  }
+
+  // Fallback for datasets without a stable shared ID:
+  // reproduce backend target filtering and map by ordered row index.
+  if (buildingFeatureByIndex.size < coverageByIndex.size) {
+    const orderedTargetFeatures = [];
+    for (let sourceIdx = 0; sourceIdx < features.length; sourceIdx += 1) {
+      const feature = features[sourceIdx];
+      if (!isTargetBuildingFeature(feature)) continue;
+      const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
+      if (!geometry) continue;
+      orderedTargetFeatures.push({
+        sourceIdx,
+        feature: {
+          type: "Feature",
+          geometry,
+          properties: { ...(feature.properties || {}) },
+        },
+      });
+    }
+
+    for (const idx of coverageByIndex.keys()) {
+      const numericIdx = Number(idx);
+      if (buildingFeatureByIndex.has(numericIdx)) continue;
+      const mapped = orderedTargetFeatures[numericIdx];
+      if (!mapped?.feature) continue;
+      buildingFeatureByIndex.set(numericIdx, {
+        ...mapped.feature,
+        properties: { ...(mapped.feature.properties || {}), building_idx: numericIdx },
+      });
+      matchedSourceBuildingFeatureIndexes.add(mapped.sourceIdx);
+    }
   }
 }
 
@@ -1238,16 +1321,32 @@ function renderExistingCoverageBuildings() {
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
     const feature = buildingFeatureByIndex.get(Number(idx));
-    if (!feature) continue;
     const covered = Boolean(coverage?.[`covered_${bucket}`]);
-    const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
-    layer.bindPopup(covered ? t("buildingPopupCovered", idx) : t("buildingPopupUncovered", idx));
-    layer.addTo(covered ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
+    if (feature) {
+      const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
+      layer.bindPopup(covered ? t("buildingPopupCovered", idx) : t("buildingPopupUncovered", idx));
+      layer.addTo(covered ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
+      continue;
+    }
+    if (Number.isFinite(coverage?.lat) && Number.isFinite(coverage?.lon)) {
+      const fallbackLayer = L.circleMarker([coverage.lat, coverage.lon], {
+        radius: 2.5,
+        color: covered ? coveredStyle.color : uncoveredStyle.color,
+        weight: covered ? coveredStyle.weight : uncoveredStyle.weight,
+        fillColor: covered ? coveredStyle.fillColor : uncoveredStyle.fillColor,
+        fillOpacity: covered ? coveredStyle.fillOpacity : uncoveredStyle.fillOpacity,
+        opacity: covered ? coveredStyle.opacity : uncoveredStyle.opacity,
+      });
+      fallbackLayer.bindPopup(covered ? t("buildingPopupCovered", idx) : t("buildingPopupUncovered", idx));
+      fallbackLayer.addTo(covered ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
+    }
   }
 
   const sourceFeatures = Array.isArray(dataStore.buildings?.features) ? dataStore.buildings.features : [];
   const idKeys = ["building_idx", "OBJECTID", "objectid", "id", "ID"];
-  for (const feature of sourceFeatures) {
+  for (let sourceIdx = 0; sourceIdx < sourceFeatures.length; sourceIdx += 1) {
+    const feature = sourceFeatures[sourceIdx];
+    if (matchedSourceBuildingFeatureIndexes.has(sourceIdx)) continue;
     const featureId = getFeatureNumericId(feature, idKeys);
     if (featureId !== null && coverageById.has(Number(featureId))) continue;
     if (!isBuiltAfter1992(feature)) continue;
@@ -1306,6 +1405,7 @@ function renderAccessibilityHeatmap() {
 function normalizeCrsName(rawName) {
   if (!rawName) return "EPSG:2039";
   const normalized = String(rawName).toUpperCase();
+  if (normalized.includes("CRS84") || normalized.includes("WGS84")) return "EPSG:4326";
   if (normalized.includes("EPSG::3857")) return "EPSG:3857";
   if (normalized.includes("EPSG::2039")) return "EPSG:2039";
   if (normalized.includes("EPSG::4326")) return "EPSG:4326";
@@ -2027,7 +2127,7 @@ async function loadAllData() {
   dataStore.miklatimSourceCrs = normalizeCrsName(
     dataStore.miklatim?.crs?.properties?.name || "",
   );
-  dataStore.buildings = await fetchJson(`${DATA_BASE}/buildings.geojson`);
+  dataStore.buildings = await fetchJson(`${DATA_BASE}/buildings_built_year.geojson`);
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
   );
@@ -2035,7 +2135,7 @@ async function loadAllData() {
   dataStore.educationFacilitiesSourceCrs = normalizeCrsName(
     dataStore.educationFacilities?.crs?.properties?.name || "",
   );
-  dataStore.publicBuildings = await fetchJson(`${DATA_BASE}/Public_Buildings.geojson`);
+  dataStore.publicBuildings = await fetchJson(`${DATA_BASE}/buildings_on_מבני_ציבור.geojson`);
   dataStore.publicBuildingsSourceCrs = normalizeCrsName(
     dataStore.publicBuildings?.crs?.properties?.name || "",
   );

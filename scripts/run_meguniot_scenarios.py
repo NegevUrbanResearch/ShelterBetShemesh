@@ -8,6 +8,8 @@ import itertools
 import json
 from pathlib import Path
 
+from tqdm import tqdm
+
 from meguniot_backend_v3 import (
     CandidateSource,
     DATA_DIR,
@@ -46,12 +48,21 @@ def main() -> None:
     parser.add_argument("--enable-swap-improvement", action="store_true")
     parser.add_argument("--building-weight-field", type=str, default=None)
     parser.add_argument("--education-facilities-path", type=Path, default=DATA_DIR / "Education_Facilities.geojson")
-    parser.add_argument("--public-buildings-path", type=Path, default=DATA_DIR / "Public_Buildings.geojson")
+    parser.add_argument(
+        "--public-buildings-path", type=Path, default=DATA_DIR / "buildings_on_מבני_ציבור.geojson"
+    )
     args = parser.parse_args()
 
     sources = {CandidateSource(s) for s in args.candidate_sources}
     scenarios = []
-    for post_1992, over_3, education, public in itertools.product([False, True], repeat=4):
+    assumption_combinations = list(itertools.product([False, True], repeat=4))
+    progress = tqdm(
+        assumption_combinations,
+        desc="Running scenarios",
+        total=len(assumption_combinations),
+        unit="scenario",
+    )
+    for post_1992, over_3, education, public in progress:
         assumptions = ScenarioAssumptions(
             post_1992_has_shelter=post_1992,
             over_3_floors_has_shelter=over_3,
@@ -59,6 +70,7 @@ def main() -> None:
             public_buildings_are_shelters=public,
         )
         key = scenario_key(assumptions)
+        progress.set_postfix_str(key)
         run_pipeline(
             walk_speed_mps=args.walk_speed_mps,
             force_rebuild_graph=args.force_rebuild_graph and not scenarios,
