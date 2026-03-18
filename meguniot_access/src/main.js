@@ -763,6 +763,7 @@ function getPopupLabels() {
       titleExistingMiklat: "מקלט קיים",
       titleEducation: "הנחה: מיגון שכנים | מוסד חינוך",
       titlePublic: "הנחה: מיגון שכנים | מבנה ציבור",
+      titleRecommended: "מיקום מומלץ",
       id: "מזהה",
       address: "כתובת",
       area: "שטח",
@@ -779,6 +780,13 @@ function getPopupLabels() {
       sector: "מגזר",
       stage: "שלב חינוך",
       location: "מיקום",
+      rank: "דירוג",
+      mode: "מצב",
+      source: "מקור",
+      newlyCovered: "כיסוי חדש",
+      coveredBuildings: "מבנים מכוסים",
+      metadata: "פרטי מיגונית",
+      buildingsSuffix: "מבנים",
       yes: "כן",
       no: "לא",
       unknown: "לא ידוע",
@@ -789,6 +797,7 @@ function getPopupLabels() {
     titleExistingMiklat: "Existing Miklat",
     titleEducation: "Assumption: Shelter Neighbors | Education Facility",
     titlePublic: "Assumption: Shelter Neighbors | Public Building",
+    titleRecommended: "Recommended Shelter",
     id: "ID",
     address: "Address",
     area: "Area",
@@ -805,18 +814,39 @@ function getPopupLabels() {
     sector: "Sector",
     stage: "Education stage",
     location: "Location",
+    rank: "Rank",
+    mode: "Mode",
+    source: "Source",
+    newlyCovered: "Newly covered",
+    coveredBuildings: "Covered buildings",
+    metadata: "Shelter details",
+    buildingsSuffix: "buildings",
     yes: "Yes",
     no: "No",
     unknown: "Unknown",
   };
 }
 
-function renderPopupRows(title, rows) {
-  const body = rows
+function renderShelterSelectionPopup(title, coveredCount, rows = []) {
+  const labels = getPopupLabels();
+  const metaRows = rows
     .filter((row) => row?.label && row?.value)
-    .map((row) => `<div><strong>${escapeHtml(row.label)}:</strong> ${escapeHtml(row.value)}</div>`)
+    .map(
+      (row) =>
+        `<div class="shelter-selection-meta-row"><span class="shelter-selection-meta-label">${escapeHtml(row.label)}</span><span class="shelter-selection-meta-value">${escapeHtml(row.value)}</span></div>`,
+    )
     .join("");
-  return `<div><strong>${escapeHtml(title)}</strong>${body ? `<br>${body}` : ""}</div>`;
+  const countDisplay = Number.isFinite(coveredCount)
+    ? `${new Intl.NumberFormat(currentLanguage === "he" ? "he-IL" : "en-US").format(coveredCount)} ${labels.buildingsSuffix}`
+    : labels.unknown;
+  return `
+    <div class="shelter-selection-card" dir="${currentLanguage === "he" ? "rtl" : "ltr"}">
+      <div class="shelter-selection-title">${escapeHtml(title)}</div>
+      <div class="shelter-selection-kicker">${escapeHtml(labels.coveredBuildings)}</div>
+      <div class="shelter-selection-count">${escapeHtml(countDisplay)}</div>
+      ${metaRows ? `<div class="shelter-selection-meta"><div class="shelter-selection-meta-title">${escapeHtml(labels.metadata)}</div>${metaRows}</div>` : ""}
+    </div>
+  `;
 }
 
 function getUtilitiesSummary(properties) {
@@ -873,46 +903,53 @@ function getPublicFallbackRows(properties) {
   return rows;
 }
 
-function buildShelterPopup(sourceKind, feature, shelterId) {
+function buildShelterPopupData(sourceKind, feature, shelterId) {
   const properties = feature?.properties || {};
   const labels = getPopupLabels();
   if (sourceKind === "miguniot") {
-    return renderPopupRows(labels.titleExistingMegunit, [
-      { label: labels.id, value: getPropertyValue(properties, ["OBJECTID", "FID", "Id"]) || String(shelterId) },
-    ]);
+    return {
+      title: labels.titleExistingMegunit,
+      rows: [{ label: labels.id, value: getPropertyValue(properties, ["OBJECTID", "FID", "Id"]) || String(shelterId) }],
+    };
   }
   if (sourceKind === "miklatim") {
-    return renderPopupRows(labels.titleExistingMiklat, [
-      { label: labels.id, value: getPropertyValue(properties, ["mis_miklat", "num", "FID", "Id"]) || String(shelterId) },
-      { label: labels.address, value: getPropertyValue(properties, ["ctovet", "address", "ADDRESS"]) },
-      { label: labels.area, value: getPropertyValue(properties, ["shetach", "area", "AREA"]) },
-      { label: labels.use, value: getPropertyValue(properties, ["bshimush", "use", "USE"]) },
-      { label: labels.ownership, value: getPropertyValue(properties, ["baalut", "owner", "ownership"]) },
-      { label: labels.contact, value: getPropertyValue(properties, ["ish_kesher", "contact", "CONTACT"], 110) },
-      { label: labels.phone, value: getPropertyValue(properties, ["telephone", "phone", "PHONE"]) },
-      { label: labels.utilities, value: getUtilitiesSummary(properties) },
-      { label: labels.notes, value: getPropertyValue(properties, ["hearot", "notes", "NOTES"], 120) },
-    ]);
+    return {
+      title: labels.titleExistingMiklat,
+      rows: [
+        { label: labels.id, value: getPropertyValue(properties, ["mis_miklat", "num", "FID", "Id"]) || String(shelterId) },
+        { label: labels.address, value: getPropertyValue(properties, ["ctovet", "address", "ADDRESS"]) },
+        { label: labels.area, value: getPropertyValue(properties, ["shetach", "area", "AREA"]) },
+        { label: labels.use, value: getPropertyValue(properties, ["bshimush", "use", "USE"]) },
+        { label: labels.ownership, value: getPropertyValue(properties, ["baalut", "owner", "ownership"]) },
+        { label: labels.contact, value: getPropertyValue(properties, ["ish_kesher", "contact", "CONTACT"], 110) },
+        { label: labels.phone, value: getPropertyValue(properties, ["telephone", "phone", "PHONE"]) },
+        { label: labels.utilities, value: getUtilitiesSummary(properties) },
+        { label: labels.notes, value: getPropertyValue(properties, ["hearot", "notes", "NOTES"], 120) },
+      ],
+    };
   }
   if (sourceKind === "education") {
-    return renderPopupRows(labels.titleEducation, [
-      {
-        label: labels.institution,
-        value: getPropertyValue(properties, ["SHEM_MOSAD", "shem_mosad", "NAME", "name"], 120),
-      },
-      {
-        label: labels.framework,
-        value: getPropertyValue(properties, ["TEUR_SUG_M", "TEUR_TAT_S", "SUG_MISGER", "type"], 120),
-      },
-      { label: labels.status, value: getPropertyValue(properties, ["TEUR_STATU", "status", "CODE_STATU"]) },
-      { label: labels.supervision, value: getPropertyValue(properties, ["TEUR_PIKOH", "supervision"]) },
-      { label: labels.sector, value: getPropertyValue(properties, ["TEUR_MIGZA", "sector"]) },
-      { label: labels.stage, value: getPropertyValue(properties, ["TEUR_SHLAV", "SHLAV_CHIN"]) },
-      {
-        label: labels.location,
-        value: getPropertyValue(properties, ["ISV_SHEM_I", "SHEM_RASHU", "city", "CITY"]),
-      },
-    ]);
+    return {
+      title: labels.titleEducation,
+      rows: [
+        {
+          label: labels.institution,
+          value: getPropertyValue(properties, ["SHEM_MOSAD", "shem_mosad", "NAME", "name"], 120),
+        },
+        {
+          label: labels.framework,
+          value: getPropertyValue(properties, ["TEUR_SUG_M", "TEUR_TAT_S", "SUG_MISGER", "type"], 120),
+        },
+        { label: labels.status, value: getPropertyValue(properties, ["TEUR_STATU", "status", "CODE_STATU"]) },
+        { label: labels.supervision, value: getPropertyValue(properties, ["TEUR_PIKOH", "supervision"]) },
+        { label: labels.sector, value: getPropertyValue(properties, ["TEUR_MIGZA", "sector"]) },
+        { label: labels.stage, value: getPropertyValue(properties, ["TEUR_SHLAV", "SHLAV_CHIN"]) },
+        {
+          label: labels.location,
+          value: getPropertyValue(properties, ["ISV_SHEM_I", "SHEM_RASHU", "city", "CITY"]),
+        },
+      ],
+    };
   }
   const defaultPublicRows = [
     {
@@ -930,7 +967,17 @@ function buildShelterPopup(sourceKind, feature, shelterId) {
     },
   ];
   const fallbackRows = getPublicFallbackRows(properties);
-  return renderPopupRows(labels.titlePublic, [...defaultPublicRows, ...fallbackRows]);
+  return { title: labels.titlePublic, rows: [...defaultPublicRows, ...fallbackRows] };
+}
+
+function getShelterCoveredBuildingCount(shelterKind, shelterId) {
+  const payload = getCurrentShelterCoveragePayload();
+  const allCoverages = Array.isArray(payload?.coverages) ? payload.coverages : [];
+  const match = allCoverages.find((coverage) => {
+    return coverage?.shelter_kind === shelterKind && Number(coverage?.shelter_id) === Number(shelterId);
+  });
+  if (!match) return null;
+  return Array.isArray(match.covered_building_indices) ? match.covered_building_indices.length : 0;
 }
 
 function getCoveragePointLatLng(coverage, idx) {
@@ -1728,7 +1775,14 @@ function renderExistingShelters() {
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
-    marker.bindPopup(buildShelterPopup("miguniot", feature, shelterId));
+    marker.bindPopup(
+      () => {
+        const popup = buildShelterPopupData("miguniot", feature, shelterId);
+        const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
+        return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+      },
+      { className: "shelter-selection-popup" },
+    );
     marker.on("click", () =>
       selectShelter(
         {
@@ -1748,7 +1802,14 @@ function renderExistingShelters() {
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
-    marker.bindPopup(buildShelterPopup("miklatim", feature, shelterId));
+    marker.bindPopup(
+      () => {
+        const popup = buildShelterPopupData("miklatim", feature, shelterId);
+        const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
+        return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+      },
+      { className: "shelter-selection-popup" },
+    );
     marker.on("click", () =>
       selectShelter(
         {
@@ -1772,7 +1833,14 @@ function renderExistingShelters() {
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
       const marker = L.marker(latLng, { icon: existingIcon });
-      marker.bindPopup(buildShelterPopup("education", feature, shelterId));
+      marker.bindPopup(
+        () => {
+          const popup = buildShelterPopupData("education", feature, shelterId);
+          const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
+          return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+        },
+        { className: "shelter-selection-popup" },
+      );
       marker.on("click", () =>
         selectShelter({
           kind: "existing",
@@ -1795,7 +1863,14 @@ function renderExistingShelters() {
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
       const marker = L.marker(latLng, { icon: existingIcon });
-      marker.bindPopup(buildShelterPopup("public", feature, shelterId));
+      marker.bindPopup(
+        () => {
+          const popup = buildShelterPopupData("public", feature, shelterId);
+          const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
+          return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+        },
+        { className: "shelter-selection-popup" },
+      );
       marker.on("click", () =>
         selectShelter({
           kind: "existing",
@@ -1814,18 +1889,24 @@ function renderRecommended() {
   layers.recommended.clearLayers();
   const rows = recommendationsForCurrentView();
   const modeLabel = currentPlacementMode === "cluster" ? t("modeLabelCluster") : t("modeLabelExact");
+  const labels = getPopupLabels();
   for (const rec of rows) {
     const shelterId = rec.shelter_id ?? rec.candidate_id ?? rec.building_idx;
     const fullCount = (rec.covered_building_indices || []).length;
     const marginalCount = rec.newly_covered_buildings ?? fullCount;
     const marker = L.marker([rec.lat, rec.lon], { icon: recommendedIcon });
-    if (isClusterMode()) {
-      marker.bindPopup(t("clusterPopup", rec.rank, modeLabel, rec.candidate_source || "cluster_ensemble_kmeans"));
-    } else {
-      marker.bindPopup(
-        t("recommendedPopup", rec.rank, modeLabel, rec.candidate_source || "building", fullCount, marginalCount),
-      );
-    }
+    marker.bindPopup(
+      () => {
+        const coveredCount = getShelterCoveredBuildingCount("recommended", shelterId) ?? fullCount;
+        return renderShelterSelectionPopup(labels.titleRecommended, coveredCount, [
+          { label: labels.rank, value: String(rec.rank) },
+          { label: labels.mode, value: modeLabel },
+          { label: labels.source, value: rec.candidate_source || (isClusterMode() ? "cluster_ensemble_kmeans" : "building") },
+          { label: labels.newlyCovered, value: `${marginalCount} ${labels.buildingsSuffix}` },
+        ]);
+      },
+      { className: "shelter-selection-popup" },
+    );
     marker.on("click", () =>
       selectShelter(
         {
