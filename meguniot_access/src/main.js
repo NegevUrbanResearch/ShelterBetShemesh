@@ -64,7 +64,7 @@ const I18N = {
     legendTitle: "Map legend",
     legendExisting: "Existing shelters (meguniot + miklatim)",
     legendRecommended: "Recommended shelters",
-    legendPost1992: "Buildings built in/after 1992",
+    legendPost1992: "Buildings assumed sheltered",
     legendUncovered: "Uncovered buildings (existing conditions)",
     legendCoveredBase: "Buildings covered by existing shelters",
     legendCoveredSelected: "Covered by selected shelter",
@@ -78,7 +78,7 @@ const I18N = {
     layerMiklatimLabel: "Existing miklatim",
     layerRecommendedLabel: "Recommended meguniot",
     layerTopographyLabel: "Topography (contours)",
-    layerPost1992BuildingsLabel: "Buildings built in/after 1992",
+    layerPost1992BuildingsLabel: "Buildings assumed sheltered",
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
     layerCoveredLabel: "Covered by selected shelter",
@@ -115,6 +115,8 @@ const I18N = {
       `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. You have added <strong>${shownLength}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. There remain <strong>${remainingUncovered}</strong> uncovered buildings.`,
     buildingPopupCovered: (idx) => `<strong>Building #${idx}</strong><br>Covered by existing shelters`,
     buildingPopupUncovered: (idx) => `<strong>Building #${idx}</strong><br>Uncovered by existing shelters`,
+    buildingAssumedShelteredPopup:
+      "<strong>Building assumed as already sheltered</strong><br>Shown as not requiring new shelter coverage in this analysis",
     buildingPost1992Popup:
       "<strong>Building built in/after 1992</strong><br>Shown as not requiring new shelter coverage in this analysis",
     existingMegunitPopup: "<strong>Existing megunit</strong>",
@@ -187,7 +189,7 @@ const I18N = {
     legendTitle: "מקרא מפה",
     legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
     legendRecommended: "מיגוניות מומלצות",
-    legendPost1992: "מבנים שנבנו מ-1992 ואילך",
+    legendPost1992: "מבנים שמוגדרים כממוגנים לפי הנחות",
     legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
     legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
@@ -201,7 +203,7 @@ const I18N = {
     layerMiklatimLabel: "מקלטים קיימים",
     layerRecommendedLabel: "מיגוניות מומלצות",
     layerTopographyLabel: "טופוגרפיה (קווי גובה)",
-    layerPost1992BuildingsLabel: "מבנים שנבנו מ-1992 ואילך",
+    layerPost1992BuildingsLabel: "מבנים שמוגדרים כממוגנים לפי הנחות",
     layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
     layerCoveredLabel: "מכוסים על ידי מיגונית שנבחרה",
@@ -237,6 +239,8 @@ const I18N = {
       `ב<strong>${modeLabel}</strong> יש <strong>${uncoveredNow}</strong> מבני מגורים ללא מיגון <strong>${coveragePhrase}</strong>. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים <strong>${coveragePhrase}</strong>. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
     buildingPopupCovered: (idx) => `<strong>מבנה #${idx}</strong><br>מכוסה על ידי מיגון קיים`,
     buildingPopupUncovered: (idx) => `<strong>מבנה #${idx}</strong><br>ללא כיסוי על ידי מיגון קיים`,
+    buildingAssumedShelteredPopup:
+      "<strong>מבנה שהוגדר כממוגן לפי הנחות</strong><br>מוצג כלא נדרש לכיסוי מיגון חדש בניתוח זה",
     buildingPost1992Popup:
       "<strong>מבנה שנבנה מ-1992 ואילך</strong><br>מוצג כלא נדרש לכיסוי מיגון חדש בניתוח זה",
     existingMegunitPopup: "<strong>מיגונית קיימת</strong>",
@@ -712,6 +716,12 @@ function isTargetBuildingFeature(feature) {
   if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltAfter1992(feature);
   if (currentAssumptions.over3FloorsSheltered) exempt = exempt || isOver3FloorsOrApartments(feature);
   return !exempt;
+}
+
+function isAssumedShelteredFeature(feature) {
+  if (currentAssumptions.post1992Sheltered && isBuiltAfter1992(feature)) return true;
+  if (currentAssumptions.over3FloorsSheltered && isOver3FloorsOrApartments(feature)) return true;
+  return false;
 }
 
 function createBuildingLayer(feature, style, radius = 3) {
@@ -1396,12 +1406,12 @@ function renderExistingCoverageBuildings() {
     if (matchedSourceBuildingFeatureIndexes.has(sourceIdx)) continue;
     const featureId = getFeatureNumericId(feature, idKeys);
     if (featureId !== null && coverageById.has(Number(featureId))) continue;
-    if (!isBuiltAfter1992(feature)) continue;
+    if (!isAssumedShelteredFeature(feature)) continue;
     const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
     if (!geometry) continue;
     const featureForRender = { type: "Feature", geometry, properties: feature?.properties || {} };
     const layer = createBuildingLayer(featureForRender, post1992Style, 2.3);
-    layer.bindPopup(t("buildingPost1992Popup"));
+    layer.bindPopup(t("buildingAssumedShelteredPopup"));
     layer.addTo(layers.post1992Buildings);
   }
 }
