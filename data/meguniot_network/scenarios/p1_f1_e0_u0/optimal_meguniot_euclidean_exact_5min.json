@@ -8,7 +8,7 @@
     "mode": "flat_speed",
     "dem_file": null
   },
-  "euclidean_access_radius_m": 200.0,
+  "euclidean_access_radius_m": 100.0,
   "optimization_method": "lazy_greedy_maximum_coverage",
   "swap_improvement_enabled": false,
   "candidate_generation": {
@@ -31,7 +31,7 @@
     "placement_mode": "exact",
     "time_bucket": "5min",
     "time_seconds": 300,
-    "euclidean_access_radius_m": 200.0,
+    "euclidean_access_radius_m": 100.0,
     "walk_speed_mps_fallback": 1.3,
     "emergency_crossing_radius_m": 22.0,
     "total_target_buildings": 409,
@@ -40,14 +40,14 @@
       "buildings",
       "network_nodes"
     ],
-    "covered_by_existing": 174,
-    "currently_uncovered": 235,
-    "additional_covered_by_proposed": 235,
+    "covered_by_existing": 88,
+    "currently_uncovered": 321,
+    "additional_covered_by_proposed": 321,
     "final_uncovered": 0,
-    "num_proposed_meguniot": 53,
+    "num_proposed_meguniot": 125,
     "proposed_by_source": {
-      "network_nodes": 11,
-      "buildings": 42
+      "network_nodes": 17,
+      "buildings": 108
     },
     "max_proposed_limit": 200,
     "stop_reason": "full_coverage_achieved"
@@ -58,71 +58,48 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 567,
-      "candidate_id": 567,
+      "shelter_id": 2085,
+      "candidate_id": 2085,
       "candidate_source": "network_nodes",
-      "source_id": 760698573,
+      "source_id": 13610723199,
       "building_idx": null,
-      "coordinates": "31.743557,34.975906",
-      "lat": 31.743556500682153,
-      "lon": 34.975905999476126,
-      "nearest_building_dist_m": 63.12,
-      "newly_covered_buildings": 25,
-      "newly_covered_people_est": 175,
+      "coordinates": "31.747238,34.989117",
+      "lat": 31.74723831579209,
+      "lon": 34.98911708858659,
+      "nearest_building_dist_m": 16.92,
+      "newly_covered_buildings": 13,
+      "newly_covered_people_est": 91,
       "covered_building_indices": [
-        34,
-        35,
-        37,
-        41,
-        58,
-        60,
-        70,
-        118,
-        119,
-        129,
-        144,
-        154,
-        159,
-        163,
-        203,
-        259,
-        266,
-        306,
-        320,
-        344,
-        348,
-        350,
-        351,
-        353,
-        357,
-        392
+        6,
+        20,
+        30,
+        31,
+        74,
+        106,
+        113,
+        127,
+        245,
+        317,
+        328,
+        378,
+        379,
+        383,
+        402
       ],
       "marginal_covered_building_indices": [
-        34,
-        35,
-        37,
-        41,
-        58,
-        60,
-        70,
-        118,
-        119,
-        129,
-        144,
-        154,
-        159,
-        163,
-        203,
-        259,
-        266,
-        320,
-        344,
-        348,
-        350,
-        351,
-        353,
-        357,
-        392
+        6,
+        20,
+        30,
+        31,
+        74,
+        106,
+        113,
+        127,
+        317,
+        328,
+        378,
+        379,
+        402
       ]
     },
     {
@@ -130,55 +107,44 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 777,
-      "candidate_id": 777,
+      "shelter_id": 468,
+      "candidate_id": 468,
       "candidate_source": "network_nodes",
-      "source_id": 1083199207,
+      "source_id": 760591255,
       "building_idx": null,
-      "coordinates": "31.751193,34.995575",
-      "lat": 31.75119310068256,
-      "lon": 34.99557459947602,
-      "nearest_building_dist_m": 17.08,
-      "newly_covered_buildings": 17,
-      "newly_covered_people_est": 119,
+      "coordinates": "31.748393,34.987789",
+      "lat": 31.748392500682378,
+      "lon": 34.98778889947607,
+      "nearest_building_dist_m": 34.69,
+      "newly_covered_buildings": 12,
+      "newly_covered_people_est": 84,
       "covered_building_indices": [
-        17,
-        47,
-        61,
-        87,
-        109,
-        112,
-        140,
-        145,
-        171,
-        239,
-        248,
-        261,
-        271,
-        274,
-        307,
-        308,
-        358,
-        359
+        36,
+        38,
+        72,
+        81,
+        116,
+        153,
+        160,
+        244,
+        285,
+        287,
+        325,
+        330
       ],
       "marginal_covered_building_indices": [
-        17,
-        47,
-        61,
-        87,
-        109,
-        112,
-        140,
-        145,
-        171,
-        239,
-        248,
-        261,
-        271,
-        307,
-        308,
-        358,
-        359
+        36,
+        38,
+        72,
+        81,
+        116,
+        153,
+        160,
+        244,
+        285,
+        287,
+        325,
+        330
       ]
     },
     {
@@ -186,54 +152,40 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 323,
-      "candidate_id": 323,
+      "shelter_id": 163,
+      "candidate_id": 163,
       "candidate_source": "buildings",
-      "source_id": 323,
-      "building_idx": 323,
-      "coordinates": "31.742827,34.978512",
-      "lat": 31.742827307723772,
-      "lon": 34.9785117862479,
+      "source_id": 163,
+      "building_idx": 163,
+      "coordinates": "31.743675,34.974765",
+      "lat": 31.743675059306383,
+      "lon": 34.974765200006864,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 14,
-      "newly_covered_people_est": 98,
+      "newly_covered_buildings": 10,
+      "newly_covered_people_est": 70,
       "covered_building_indices": [
-        15,
-        46,
-        119,
-        144,
-        154,
-        156,
-        167,
-        196,
-        203,
-        222,
-        223,
-        259,
-        306,
-        323,
-        333,
-        341,
-        390,
-        393,
-        394,
-        406
+        60,
+        118,
+        163,
+        266,
+        344,
+        348,
+        350,
+        351,
+        353,
+        392
       ],
       "marginal_covered_building_indices": [
-        15,
-        46,
-        156,
-        167,
-        196,
-        222,
-        223,
-        323,
-        333,
-        341,
-        390,
-        393,
-        394,
-        406
+        60,
+        118,
+        163,
+        266,
+        344,
+        348,
+        350,
+        351,
+        353,
+        392
       ]
     },
     {
@@ -241,46 +193,38 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 301,
-      "candidate_id": 301,
+      "shelter_id": 205,
+      "candidate_id": 205,
       "candidate_source": "buildings",
-      "source_id": 301,
-      "building_idx": 301,
-      "coordinates": "31.741433,34.993869",
-      "lat": 31.741433380280995,
-      "lon": 34.99386881971434,
+      "source_id": 205,
+      "building_idx": 205,
+      "coordinates": "31.714183,34.990210",
+      "lat": 31.714182916700516,
+      "lon": 34.99020965394813,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 13,
-      "newly_covered_people_est": 91,
+      "newly_covered_buildings": 9,
+      "newly_covered_people_est": 63,
       "covered_building_indices": [
-        49,
-        59,
-        104,
-        120,
-        148,
-        183,
-        202,
-        280,
-        301,
-        354,
-        362,
-        375,
-        386
+        27,
+        40,
+        123,
+        132,
+        205,
+        213,
+        218,
+        249,
+        250
       ],
       "marginal_covered_building_indices": [
-        49,
-        59,
-        104,
-        120,
-        148,
-        183,
-        202,
-        280,
-        301,
-        354,
-        362,
-        375,
-        386
+        27,
+        40,
+        123,
+        132,
+        205,
+        213,
+        218,
+        249,
+        250
       ]
     },
     {
@@ -288,48 +232,38 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 373,
-      "candidate_id": 373,
+      "shelter_id": 358,
+      "candidate_id": 358,
       "candidate_source": "buildings",
-      "source_id": 373,
-      "building_idx": 373,
-      "coordinates": "31.737171,34.983781",
-      "lat": 31.737170646459486,
-      "lon": 34.98378092790866,
+      "source_id": 358,
+      "building_idx": 358,
+      "coordinates": "31.751270,34.995009",
+      "lat": 31.751270054048646,
+      "lon": 34.995009210834155,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 13,
-      "newly_covered_people_est": 91,
+      "newly_covered_buildings": 9,
+      "newly_covered_people_est": 63,
       "covered_building_indices": [
-        53,
-        55,
-        71,
-        126,
-        212,
-        226,
-        257,
-        265,
-        309,
-        338,
-        343,
-        372,
-        373,
-        377,
-        391
+        17,
+        47,
+        87,
+        109,
+        140,
+        239,
+        261,
+        271,
+        358
       ],
       "marginal_covered_building_indices": [
-        53,
-        55,
-        126,
-        212,
-        257,
-        265,
-        309,
-        338,
-        343,
-        372,
-        373,
-        377,
-        391
+        17,
+        47,
+        87,
+        109,
+        140,
+        239,
+        261,
+        271,
+        358
       ]
     },
     {
@@ -337,44 +271,36 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 1931,
-      "candidate_id": 1931,
-      "candidate_source": "network_nodes",
-      "source_id": 11057850652,
-      "building_idx": null,
-      "coordinates": "31.712763,34.990562",
-      "lat": 31.712763000686277,
-      "lon": 34.99056159947341,
-      "nearest_building_dist_m": 134.08,
-      "newly_covered_buildings": 12,
-      "newly_covered_people_est": 84,
+      "shelter_id": 309,
+      "candidate_id": 309,
+      "candidate_source": "buildings",
+      "source_id": 309,
+      "building_idx": 309,
+      "coordinates": "31.736513,34.982355",
+      "lat": 31.736513041832495,
+      "lon": 34.98235490938816,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 8,
+      "newly_covered_people_est": 56,
       "covered_building_indices": [
-        27,
-        29,
-        40,
-        123,
-        130,
-        132,
-        205,
-        213,
-        218,
-        249,
-        250,
-        263
+        53,
+        71,
+        226,
+        269,
+        270,
+        309,
+        338,
+        343
       ],
       "marginal_covered_building_indices": [
-        27,
-        29,
-        40,
-        123,
-        130,
-        132,
-        205,
-        213,
-        218,
-        249,
-        250,
-        263
+        53,
+        71,
+        226,
+        269,
+        270,
+        309,
+        338,
+        343
       ]
     },
     {
@@ -382,40 +308,36 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 297,
-      "candidate_id": 297,
-      "candidate_source": "buildings",
-      "source_id": 297,
-      "building_idx": 297,
-      "coordinates": "31.745618,34.993818",
-      "lat": 31.745618321959228,
-      "lon": 34.993818161224574,
-      "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 10,
-      "newly_covered_people_est": 70,
+      "shelter_id": 564,
+      "candidate_id": 564,
+      "candidate_source": "network_nodes",
+      "source_id": 760700133,
+      "building_idx": null,
+      "coordinates": "31.741953,34.978561",
+      "lat": 31.741953400682497,
+      "lon": 34.97856129947592,
+      "nearest_building_dist_m": 22.66,
+      "newly_covered_buildings": 8,
+      "newly_covered_people_est": 56,
       "covered_building_indices": [
-        1,
-        23,
-        89,
-        100,
-        101,
-        105,
-        267,
-        297,
-        335,
-        345
+        156,
+        222,
+        323,
+        333,
+        341,
+        390,
+        393,
+        406
       ],
       "marginal_covered_building_indices": [
-        1,
-        23,
-        89,
-        100,
-        101,
-        105,
-        267,
-        297,
-        335,
-        345
+        156,
+        222,
+        323,
+        333,
+        341,
+        390,
+        393,
+        406
       ]
     },
     {
@@ -423,45 +345,35 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 749,
-      "candidate_id": 749,
-      "candidate_source": "network_nodes",
-      "source_id": 12673108944,
-      "building_idx": null,
-      "coordinates": "31.740096,34.985916",
-      "lat": 31.740096300683145,
-      "lon": 34.98591649947555,
-      "nearest_building_dist_m": 106.38,
-      "newly_covered_buildings": 10,
-      "newly_covered_people_est": 70,
+      "shelter_id": 35,
+      "candidate_id": 35,
+      "candidate_source": "buildings",
+      "source_id": 35,
+      "building_idx": 35,
+      "coordinates": "31.745153,34.975438",
+      "lat": 31.745153385289314,
+      "lon": 34.97543797092434,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
       "covered_building_indices": [
-        28,
-        57,
-        139,
-        142,
-        146,
-        150,
-        172,
-        176,
-        193,
-        234,
-        282,
-        302,
-        318,
-        363,
-        395
+        34,
+        35,
+        60,
+        108,
+        129,
+        134,
+        320,
+        357
       ],
       "marginal_covered_building_indices": [
-        28,
-        57,
-        139,
-        142,
-        150,
-        176,
-        234,
-        302,
-        318,
-        363
+        34,
+        35,
+        108,
+        129,
+        134,
+        320,
+        357
       ]
     },
     {
@@ -469,38 +381,34 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 277,
-      "candidate_id": 277,
+      "shelter_id": 57,
+      "candidate_id": 57,
       "candidate_source": "buildings",
-      "source_id": 277,
-      "building_idx": 277,
-      "coordinates": "31.709548,34.998852",
-      "lat": 31.709547637225654,
-      "lon": 34.99885202861827,
+      "source_id": 57,
+      "building_idx": 57,
+      "coordinates": "31.738540,34.985250",
+      "lat": 31.738539550614405,
+      "lon": 34.98525045542428,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 9,
-      "newly_covered_people_est": 63,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
       "covered_building_indices": [
-        194,
-        277,
-        288,
-        315,
-        324,
-        329,
-        336,
-        398,
-        407
+        57,
+        126,
+        139,
+        150,
+        176,
+        363,
+        377
       ],
       "marginal_covered_building_indices": [
-        194,
-        277,
-        288,
-        315,
-        324,
-        329,
-        336,
-        398,
-        407
+        57,
+        126,
+        139,
+        150,
+        176,
+        363,
+        377
       ]
     },
     {
@@ -508,38 +416,34 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 860,
-      "candidate_id": 860,
-      "candidate_source": "network_nodes",
-      "source_id": 11073336208,
-      "building_idx": null,
-      "coordinates": "31.714642,34.982776",
-      "lat": 31.714641600685592,
-      "lon": 34.98277619947382,
-      "nearest_building_dist_m": 121.6,
-      "newly_covered_buildings": 9,
-      "newly_covered_people_est": 63,
+      "shelter_id": 171,
+      "candidate_id": 171,
+      "candidate_source": "buildings",
+      "source_id": 171,
+      "building_idx": 171,
+      "coordinates": "31.752727,34.994883",
+      "lat": 31.752727309952906,
+      "lon": 34.99488308686127,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 7,
+      "newly_covered_people_est": 49,
       "covered_building_indices": [
-        10,
-        110,
-        166,
-        185,
-        201,
-        211,
-        219,
-        230,
-        299
+        112,
+        145,
+        171,
+        195,
+        281,
+        359,
+        364
       ],
       "marginal_covered_building_indices": [
-        10,
-        110,
-        166,
-        185,
-        201,
-        211,
-        219,
-        230,
-        299
+        112,
+        145,
+        171,
+        195,
+        281,
+        359,
+        364
       ]
     },
     {
@@ -547,41 +451,34 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 198,
-      "candidate_id": 198,
+      "shelter_id": 201,
+      "candidate_id": 201,
       "candidate_source": "buildings",
-      "source_id": 198,
-      "building_idx": 198,
-      "coordinates": "31.739177,34.978873",
-      "lat": 31.73917737356686,
-      "lon": 34.97887317130963,
+      "source_id": 201,
+      "building_idx": 201,
+      "coordinates": "31.715916,34.982529",
+      "lat": 31.715915969567533,
+      "lon": 34.98252893375078,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 7,
       "newly_covered_people_est": 49,
       "covered_building_indices": [
-        86,
-        131,
-        162,
-        198,
-        215,
-        232,
-        236,
-        253,
-        256,
-        321,
-        352,
-        380,
-        389,
-        408
+        10,
+        185,
+        201,
+        211,
+        219,
+        230,
+        299
       ],
       "marginal_covered_building_indices": [
-        131,
-        162,
-        198,
-        215,
-        253,
-        256,
-        389
+        10,
+        185,
+        201,
+        211,
+        219,
+        230,
+        299
       ]
     },
     {
@@ -589,38 +486,227 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 316,
-      "candidate_id": 316,
-      "candidate_source": "buildings",
-      "source_id": 316,
-      "building_idx": 316,
-      "coordinates": "31.758230,34.997475",
-      "lat": 31.758230415670727,
-      "lon": 34.997475130174664,
-      "nearest_building_dist_m": 0.0,
+      "shelter_id": 2212,
+      "candidate_id": 2212,
+      "candidate_source": "network_nodes",
+      "source_id": 13610723455,
+      "building_idx": null,
+      "coordinates": "31.738700,34.979040",
+      "lat": 31.738700131394232,
+      "lon": 34.97904044223912,
+      "nearest_building_dist_m": 21.4,
       "newly_covered_buildings": 7,
       "newly_covered_people_est": 49,
       "covered_building_indices": [
-        13,
-        14,
-        39,
-        85,
-        141,
-        152,
-        316
+        86,
+        198,
+        232,
+        253,
+        256,
+        321,
+        408
       ],
       "marginal_covered_building_indices": [
-        13,
-        14,
-        39,
-        85,
-        141,
-        152,
-        316
+        86,
+        198,
+        232,
+        253,
+        256,
+        321,
+        408
       ]
     },
     {
       "rank": 13,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 154,
+      "candidate_id": 154,
+      "candidate_source": "buildings",
+      "source_id": 154,
+      "building_idx": 154,
+      "coordinates": "31.742493,34.977294",
+      "lat": 31.74249284080207,
+      "lon": 34.977294438671315,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 6,
+      "newly_covered_people_est": 42,
+      "covered_building_indices": [
+        41,
+        119,
+        144,
+        154,
+        203,
+        306
+      ],
+      "marginal_covered_building_indices": [
+        41,
+        119,
+        144,
+        154,
+        203,
+        306
+      ]
+    },
+    {
+      "rank": 14,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 63,
+      "candidate_id": 63,
+      "candidate_source": "buildings",
+      "source_id": 63,
+      "building_idx": 63,
+      "coordinates": "31.747907,34.978977",
+      "lat": 31.747907357636006,
+      "lon": 34.978977394134105,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        63,
+        147,
+        273,
+        304,
+        374,
+        387
+      ],
+      "marginal_covered_building_indices": [
+        63,
+        147,
+        273,
+        304,
+        387
+      ]
+    },
+    {
+      "rank": 15,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 105,
+      "candidate_id": 105,
+      "candidate_source": "buildings",
+      "source_id": 105,
+      "building_idx": 105,
+      "coordinates": "31.746238,34.993673",
+      "lat": 31.74623761394823,
+      "lon": 34.99367329233313,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        1,
+        23,
+        105,
+        267,
+        297
+      ],
+      "marginal_covered_building_indices": [
+        1,
+        23,
+        105,
+        267,
+        297
+      ]
+    },
+    {
+      "rank": 16,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 148,
+      "candidate_id": 148,
+      "candidate_source": "buildings",
+      "source_id": 148,
+      "building_idx": 148,
+      "coordinates": "31.741861,34.993423",
+      "lat": 31.741860503162517,
+      "lon": 34.993423491288695,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        148,
+        183,
+        280,
+        301,
+        375
+      ],
+      "marginal_covered_building_indices": [
+        148,
+        183,
+        280,
+        301,
+        375
+      ]
+    },
+    {
+      "rank": 17,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 159,
+      "candidate_id": 159,
+      "candidate_source": "buildings",
+      "source_id": 159,
+      "building_idx": 159,
+      "coordinates": "31.744458,34.977501",
+      "lat": 31.74445802044512,
+      "lon": 34.97750062185627,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        58,
+        70,
+        159,
+        259,
+        394
+      ],
+      "marginal_covered_building_indices": [
+        58,
+        70,
+        159,
+        259,
+        394
+      ]
+    },
+    {
+      "rank": 18,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 282,
+      "candidate_id": 282,
+      "candidate_source": "buildings",
+      "source_id": 282,
+      "building_idx": 282,
+      "coordinates": "31.739330,34.987348",
+      "lat": 31.739330156732514,
+      "lon": 34.987348498847375,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        146,
+        170,
+        172,
+        234,
+        282
+      ],
+      "marginal_covered_building_indices": [
+        146,
+        170,
+        172,
+        234,
+        282
+      ]
+    },
+    {
+      "rank": 19,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -633,123 +719,394 @@
       "lat": 31.716670470891895,
       "lon": 34.998816737229134,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
       "covered_building_indices": [
         3,
         4,
-        210,
-        251,
         305,
         384
       ],
       "marginal_covered_building_indices": [
         3,
         4,
-        210,
-        251,
         305,
         384
       ]
     },
     {
-      "rank": 14,
+      "rank": 20,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 665,
-      "candidate_id": 665,
+      "shelter_id": 28,
+      "candidate_id": 28,
+      "candidate_source": "buildings",
+      "source_id": 28,
+      "building_idx": 28,
+      "coordinates": "31.740680,34.984267",
+      "lat": 31.740679598015923,
+      "lon": 34.98426716824386,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        28,
+        142,
+        302,
+        318
+      ],
+      "marginal_covered_building_indices": [
+        28,
+        142,
+        302,
+        318
+      ]
+    },
+    {
+      "rank": 21,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 167,
+      "candidate_id": 167,
+      "candidate_source": "buildings",
+      "source_id": 167,
+      "building_idx": 167,
+      "coordinates": "31.744188,34.979031",
+      "lat": 31.744187560433737,
+      "lon": 34.97903138315161,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        46,
+        167,
+        196,
+        223,
+        394
+      ],
+      "marginal_covered_building_indices": [
+        46,
+        167,
+        196,
+        223
+      ]
+    },
+    {
+      "rank": 22,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 194,
+      "candidate_id": 194,
+      "candidate_source": "buildings",
+      "source_id": 194,
+      "building_idx": 194,
+      "coordinates": "31.710064,34.997949",
+      "lat": 31.71006355343392,
+      "lon": 34.99794869183313,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        194,
+        288,
+        329,
+        336
+      ],
+      "marginal_covered_building_indices": [
+        194,
+        288,
+        329,
+        336
+      ]
+    },
+    {
+      "rank": 23,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 247,
+      "candidate_id": 247,
+      "candidate_source": "buildings",
+      "source_id": 247,
+      "building_idx": 247,
+      "coordinates": "31.749362,34.996501",
+      "lat": 31.74936178057404,
+      "lon": 34.99650112754741,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        247,
+        248,
+        361,
+        368
+      ],
+      "marginal_covered_building_indices": [
+        247,
+        248,
+        361,
+        368
+      ]
+    },
+    {
+      "rank": 24,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 257,
+      "candidate_id": 257,
+      "candidate_source": "buildings",
+      "source_id": 257,
+      "building_idx": 257,
+      "coordinates": "31.736886,34.984037",
+      "lat": 31.73688627010562,
+      "lon": 34.984036880041984,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        257,
+        265,
+        343,
+        372,
+        373
+      ],
+      "marginal_covered_building_indices": [
+        257,
+        265,
+        372,
+        373
+      ]
+    },
+    {
+      "rank": 25,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 262,
+      "candidate_id": 262,
+      "candidate_source": "buildings",
+      "source_id": 262,
+      "building_idx": 262,
+      "coordinates": "31.755535,34.993625",
+      "lat": 31.755535364819966,
+      "lon": 34.99362528055753,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
+      "covered_building_indices": [
+        67,
+        233,
+        262,
+        279
+      ],
+      "marginal_covered_building_indices": [
+        67,
+        233,
+        262,
+        279
+      ]
+    },
+    {
+      "rank": 26,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 471,
+      "candidate_id": 471,
       "candidate_source": "network_nodes",
-      "source_id": 1078510315,
+      "source_id": 5443298225,
       "building_idx": null,
-      "coordinates": "31.727797,34.993625",
-      "lat": 31.72779700068489,
-      "lon": 34.993624599474394,
-      "nearest_building_dist_m": 76.3,
-      "newly_covered_buildings": 6,
-      "newly_covered_people_est": 42,
+      "coordinates": "31.744738,34.990155",
+      "lat": 31.74473750068292,
+      "lon": 34.99015459947574,
+      "nearest_building_dist_m": 63.13,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
       "covered_building_indices": [
-        25,
-        75,
-        107,
-        349,
-        360,
-        401
+        56,
+        174,
+        177,
+        252
       ],
       "marginal_covered_building_indices": [
-        25,
-        75,
-        107,
-        349,
-        360,
-        401
+        56,
+        174,
+        177,
+        252
       ]
     },
     {
-      "rank": 15,
+      "rank": 27,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 187,
-      "candidate_id": 187,
-      "candidate_source": "buildings",
-      "source_id": 187,
-      "building_idx": 187,
-      "coordinates": "31.715034,34.993392",
-      "lat": 31.71503388416536,
-      "lon": 34.99339213385755,
-      "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
+      "shelter_id": 542,
+      "candidate_id": 542,
+      "candidate_source": "network_nodes",
+      "source_id": 1095130143,
+      "building_idx": null,
+      "coordinates": "31.746364,34.996086",
+      "lat": 31.74636430068311,
+      "lon": 34.99608609947566,
+      "nearest_building_dist_m": 74.68,
+      "newly_covered_buildings": 4,
+      "newly_covered_people_est": 28,
       "covered_building_indices": [
-        29,
-        115,
-        187,
-        188,
-        284,
-        366
+        89,
+        101,
+        136,
+        151
       ],
       "marginal_covered_building_indices": [
-        115,
-        187,
-        188,
-        284,
-        366
+        89,
+        101,
+        136,
+        151
       ]
     },
     {
-      "rank": 16,
+      "rank": 28,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 396,
-      "candidate_id": 396,
+      "shelter_id": 14,
+      "candidate_id": 14,
       "candidate_source": "buildings",
-      "source_id": 396,
-      "building_idx": 396,
-      "coordinates": "31.709894,34.993877",
-      "lat": 31.709893799500033,
-      "lon": 34.993877359365165,
+      "source_id": 14,
+      "building_idx": 14,
+      "coordinates": "31.758834,34.996612",
+      "lat": 31.75883384075812,
+      "lon": 34.99661211070291,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 5,
-      "newly_covered_people_est": 35,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
       "covered_building_indices": [
-        32,
-        42,
-        54,
-        275,
-        396
+        13,
+        14,
+        85
       ],
       "marginal_covered_building_indices": [
-        32,
-        42,
-        54,
-        275,
-        396
+        13,
+        14,
+        85
       ]
     },
     {
-      "rank": 17,
+      "rank": 29,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 25,
+      "candidate_id": 25,
+      "candidate_source": "buildings",
+      "source_id": 25,
+      "building_idx": 25,
+      "coordinates": "31.726394,34.993057",
+      "lat": 31.726393855650432,
+      "lon": 34.993056627883604,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        25,
+        75,
+        349
+      ],
+      "marginal_covered_building_indices": [
+        25,
+        75,
+        349
+      ]
+    },
+    {
+      "rank": 30,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 49,
+      "candidate_id": 49,
+      "candidate_source": "buildings",
+      "source_id": 49,
+      "building_idx": 49,
+      "coordinates": "31.742424,34.995303",
+      "lat": 31.742424378132725,
+      "lon": 34.99530284147147,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        49,
+        59,
+        354
+      ],
+      "marginal_covered_building_indices": [
+        49,
+        59,
+        354
+      ]
+    },
+    {
+      "rank": 31,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 51,
+      "candidate_id": 51,
+      "candidate_source": "buildings",
+      "source_id": 51,
+      "building_idx": 51,
+      "coordinates": "31.752837,34.992940",
+      "lat": 31.75283720827816,
+      "lon": 34.99294038447348,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        51,
+        128,
+        158,
+        182,
+        281
+      ],
+      "marginal_covered_building_indices": [
+        51,
+        128,
+        182
+      ]
+    },
+    {
+      "rank": 32,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 55,
+      "candidate_id": 55,
+      "candidate_source": "buildings",
+      "source_id": 55,
+      "building_idx": 55,
+      "coordinates": "31.738081,34.983161",
+      "lat": 31.738080806053475,
+      "lon": 34.983160974043166,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        55,
+        212,
+        391
+      ],
+      "marginal_covered_building_indices": [
+        55,
+        212,
+        391
+      ]
+    },
+    {
+      "rank": 33,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -762,226 +1119,267 @@
       "lat": 31.726769209999528,
       "lon": 34.97823055014615,
       "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
       "covered_building_indices": [
         69,
         73,
-        224,
         264
       ],
       "marginal_covered_building_indices": [
         69,
         73,
-        224,
         264
       ]
     },
     {
-      "rank": 18,
+      "rank": 34,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 149,
-      "candidate_id": 149,
+      "shelter_id": 76,
+      "candidate_id": 76,
       "candidate_source": "buildings",
-      "source_id": 149,
-      "building_idx": 149,
-      "coordinates": "31.749409,34.995166",
-      "lat": 31.74940864287038,
-      "lon": 34.995166183891314,
-      "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        140,
-        149,
-        239,
-        247,
-        248,
-        261,
-        271,
-        274,
-        361,
-        368
-      ],
-      "marginal_covered_building_indices": [
-        149,
-        247,
-        361,
-        368
-      ]
-    },
-    {
-      "rank": 19,
-      "distance_metric": "euclidean",
-      "placement_mode": "exact",
-      "placement_semantics": "exact_point",
-      "shelter_id": 481,
-      "candidate_id": 481,
-      "candidate_source": "network_nodes",
-      "source_id": 12704309708,
-      "building_idx": null,
-      "coordinates": "31.742582,34.981851",
-      "lat": 31.742582400682632,
-      "lon": 34.981851499475866,
-      "nearest_building_dist_m": 31.09,
-      "newly_covered_buildings": 4,
-      "newly_covered_people_est": 28,
-      "covered_building_indices": [
-        278,
-        293,
-        347,
-        405
-      ],
-      "marginal_covered_building_indices": [
-        278,
-        293,
-        347,
-        405
-      ]
-    },
-    {
-      "rank": 20,
-      "distance_metric": "euclidean",
-      "placement_mode": "exact",
-      "placement_semantics": "exact_point",
-      "shelter_id": 91,
-      "candidate_id": 91,
-      "candidate_source": "buildings",
-      "source_id": 91,
-      "building_idx": 91,
-      "coordinates": "31.709496,35.001672",
-      "lat": 31.709496125968727,
-      "lon": 35.00167247054951,
+      "source_id": 76,
+      "building_idx": 76,
+      "coordinates": "31.755443,34.994829",
+      "lat": 31.75544291504359,
+      "lon": 34.99482882418994,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        91,
-        346,
-        385,
-        407
+        76,
+        133,
+        334
       ],
       "marginal_covered_building_indices": [
-        91,
-        346,
-        385
+        76,
+        133,
+        334
       ]
     },
     {
-      "rank": 21,
+      "rank": 35,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 286,
-      "candidate_id": 286,
+      "shelter_id": 104,
+      "candidate_id": 104,
       "candidate_source": "buildings",
-      "source_id": 286,
-      "building_idx": 286,
-      "coordinates": "31.739701,34.995810",
-      "lat": 31.739701140245348,
-      "lon": 34.99581004669916,
+      "source_id": 104,
+      "building_idx": 104,
+      "coordinates": "31.740406,34.992416",
+      "lat": 31.74040575866577,
+      "lon": 34.99241607730025,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        104,
+        202,
+        386
+      ],
+      "marginal_covered_building_indices": [
+        104,
+        202,
+        386
+      ]
+    },
+    {
+      "rank": 36,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 115,
+      "candidate_id": 115,
+      "candidate_source": "buildings",
+      "source_id": 115,
+      "building_idx": 115,
+      "coordinates": "31.716171,34.993087",
+      "lat": 31.71617080320036,
+      "lon": 34.99308659152391,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        115,
+        188,
+        284
+      ],
+      "marginal_covered_building_indices": [
+        115,
+        188,
+        284
+      ]
+    },
+    {
+      "rank": 37,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 120,
+      "candidate_id": 120,
+      "candidate_source": "buildings",
+      "source_id": 120,
+      "building_idx": 120,
+      "coordinates": "31.739663,34.993799",
+      "lat": 31.73966272624024,
+      "lon": 34.99379949554764,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
         120,
-        169,
-        286,
         362,
         399
       ],
       "marginal_covered_building_indices": [
-        169,
-        286,
+        120,
+        362,
         399
       ]
     },
     {
-      "rank": 22,
+      "rank": 38,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 515,
-      "candidate_id": 515,
-      "candidate_source": "network_nodes",
-      "source_id": 4732226081,
-      "building_idx": null,
-      "coordinates": "31.738686,34.991803",
-      "lat": 31.73868560068365,
-      "lon": 34.99180329947525,
-      "nearest_building_dist_m": 121.78,
+      "shelter_id": 125,
+      "candidate_id": 125,
+      "candidate_source": "buildings",
+      "source_id": 125,
+      "building_idx": 125,
+      "coordinates": "31.750630,34.983619",
+      "lat": 31.750630122380056,
+      "lon": 34.983618529767234,
+      "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        79,
-        104,
-        157,
-        356
+        44,
+        48,
+        125,
+        192,
+        227,
+        303
       ],
       "marginal_covered_building_indices": [
-        79,
-        157,
-        356
+        44,
+        192,
+        227
       ]
     },
     {
-      "rank": 23,
+      "rank": 39,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 704,
-      "candidate_id": 704,
-      "candidate_source": "network_nodes",
-      "source_id": 1078623274,
-      "building_idx": null,
-      "coordinates": "31.724325,34.994460",
-      "lat": 31.724324800685313,
-      "lon": 34.99445989947413,
-      "nearest_building_dist_m": 149.15,
+      "shelter_id": 179,
+      "candidate_id": 179,
+      "candidate_source": "buildings",
+      "source_id": 179,
+      "building_idx": 179,
+      "coordinates": "31.751453,34.990733",
+      "lat": 31.751452519777377,
+      "lon": 34.990733148515886,
+      "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        88,
-        175,
-        216
+        179,
+        241,
+        268
       ],
       "marginal_covered_building_indices": [
-        88,
-        175,
-        216
+        179,
+        241,
+        268
       ]
     },
     {
-      "rank": 24,
+      "rank": 40,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 815,
-      "candidate_id": 815,
+      "shelter_id": 921,
+      "candidate_id": 921,
       "candidate_source": "network_nodes",
-      "source_id": 3812338284,
+      "source_id": 10914864060,
       "building_idx": null,
-      "coordinates": "31.712917,34.996755",
-      "lat": 31.712917100686635,
-      "lon": 34.99675519947321,
-      "nearest_building_dist_m": 76.68,
+      "coordinates": "31.708737,34.998871",
+      "lat": 31.708736500687195,
+      "lon": 34.99887139947284,
+      "nearest_building_dist_m": 58.81,
       "newly_covered_buildings": 3,
       "newly_covered_people_est": 21,
       "covered_building_indices": [
-        96,
-        122,
-        337
+        277,
+        315,
+        398
       ],
       "marginal_covered_building_indices": [
-        96,
-        122,
-        337
+        277,
+        315,
+        398
       ]
     },
     {
-      "rank": 25,
+      "rank": 41,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 1073,
+      "candidate_id": 1073,
+      "candidate_source": "network_nodes",
+      "source_id": 3798149779,
+      "building_idx": null,
+      "coordinates": "31.757782,34.997143",
+      "lat": 31.75778210068199,
+      "lon": 34.99714279947644,
+      "nearest_building_dist_m": 58.84,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        141,
+        152,
+        316
+      ],
+      "marginal_covered_building_indices": [
+        141,
+        152,
+        316
+      ]
+    },
+    {
+      "rank": 42,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 1341,
+      "candidate_id": 1341,
+      "candidate_source": "network_nodes",
+      "source_id": 11030963108,
+      "building_idx": null,
+      "coordinates": "31.709607,35.001282",
+      "lat": 31.70960730068724,
+      "lon": 35.001282099472824,
+      "nearest_building_dist_m": 39.0,
+      "newly_covered_buildings": 3,
+      "newly_covered_people_est": 21,
+      "covered_building_indices": [
+        91,
+        385,
+        407
+      ],
+      "marginal_covered_building_indices": [
+        91,
+        385,
+        407
+      ]
+    },
+    {
+      "rank": 43,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1006,231 +1404,141 @@
       ]
     },
     {
-      "rank": 26,
+      "rank": 44,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 8,
-      "candidate_id": 8,
+      "shelter_id": 6,
+      "candidate_id": 6,
       "candidate_source": "buildings",
-      "source_id": 8,
-      "building_idx": 8,
-      "coordinates": "31.720691,34.997008",
-      "lat": 31.720691368715727,
-      "lon": 34.997008326719794,
+      "source_id": 6,
+      "building_idx": 6,
+      "coordinates": "31.746980,34.990032",
+      "lat": 31.74697974730338,
+      "lon": 34.99003228149413,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        8,
-        165
+        6,
+        16,
+        30,
+        113,
+        117,
+        127,
+        379
       ],
       "marginal_covered_building_indices": [
-        8,
-        165
+        16,
+        117
       ]
     },
     {
-      "rank": 27,
+      "rank": 45,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 18,
-      "candidate_id": 18,
+      "shelter_id": 24,
+      "candidate_id": 24,
       "candidate_source": "buildings",
-      "source_id": 18,
-      "building_idx": 18,
-      "coordinates": "31.733035,34.954304",
-      "lat": 31.733034644335962,
-      "lon": 34.954304130279375,
+      "source_id": 24,
+      "building_idx": 24,
+      "coordinates": "31.747040,34.991689",
+      "lat": 31.74703977670727,
+      "lon": 34.99168853800451,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        18,
-        400
+        24,
+        312
       ],
       "marginal_covered_building_indices": [
-        18,
-        400
+        24,
+        312
       ]
     },
     {
-      "rank": 28,
+      "rank": 46,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 34,
-      "candidate_id": 34,
+      "shelter_id": 32,
+      "candidate_id": 32,
       "candidate_source": "buildings",
-      "source_id": 34,
-      "building_idx": 34,
-      "coordinates": "31.745180,34.975869",
-      "lat": 31.745180368048626,
-      "lon": 34.97586889366886,
+      "source_id": 32,
+      "building_idx": 32,
+      "coordinates": "31.709192,34.992788",
+      "lat": 31.709192307462132,
+      "lon": 34.99278770709902,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        34,
-        35,
-        58,
-        60,
-        70,
-        108,
-        129,
-        134,
-        159,
-        163,
-        259,
-        320,
-        350,
-        357
+        32,
+        42
       ],
       "marginal_covered_building_indices": [
-        108,
-        134
+        32,
+        42
       ]
     },
     {
-      "rank": 29,
+      "rank": 47,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 43,
-      "candidate_id": 43,
+      "shelter_id": 61,
+      "candidate_id": 61,
       "candidate_source": "buildings",
-      "source_id": 43,
-      "building_idx": 43,
-      "coordinates": "31.761454,34.994302",
-      "lat": 31.761453835209778,
-      "lon": 34.994301829788924,
+      "source_id": 61,
+      "building_idx": 61,
+      "coordinates": "31.751151,34.993521",
+      "lat": 31.751151240481065,
+      "lon": 34.9935213824234,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        43,
-        93
+        17,
+        61,
+        239,
+        261,
+        271,
+        311
       ],
       "marginal_covered_building_indices": [
-        43,
-        93
+        61,
+        311
       ]
     },
     {
-      "rank": 30,
+      "rank": 48,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 56,
-      "candidate_id": 56,
+      "shelter_id": 88,
+      "candidate_id": 88,
       "candidate_source": "buildings",
-      "source_id": 56,
-      "building_idx": 56,
-      "coordinates": "31.744512,34.990766",
-      "lat": 31.744512101962677,
-      "lon": 34.990766423933806,
+      "source_id": 88,
+      "building_idx": 88,
+      "coordinates": "31.724852,34.996172",
+      "lat": 31.724852162070615,
+      "lon": 34.996172416465626,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        56,
-        98,
-        174,
-        177,
-        252,
-        258
+        88,
+        175
       ],
       "marginal_covered_building_indices": [
-        56,
-        252
+        88,
+        175
       ]
     },
     {
-      "rank": 31,
-      "distance_metric": "euclidean",
-      "placement_mode": "exact",
-      "placement_semantics": "exact_point",
-      "shelter_id": 77,
-      "candidate_id": 77,
-      "candidate_source": "buildings",
-      "source_id": 77,
-      "building_idx": 77,
-      "coordinates": "31.735793,34.998577",
-      "lat": 31.735793051819083,
-      "lon": 34.998577051069056,
-      "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        77,
-        332
-      ],
-      "marginal_covered_building_indices": [
-        77,
-        332
-      ]
-    },
-    {
-      "rank": 32,
-      "distance_metric": "euclidean",
-      "placement_mode": "exact",
-      "placement_semantics": "exact_point",
-      "shelter_id": 89,
-      "candidate_id": 89,
-      "candidate_source": "buildings",
-      "source_id": 89,
-      "building_idx": 89,
-      "coordinates": "31.745615,34.995660",
-      "lat": 31.745615206719567,
-      "lon": 34.99566045205508,
-      "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        89,
-        101,
-        136,
-        151,
-        267,
-        297,
-        335,
-        345
-      ],
-      "marginal_covered_building_indices": [
-        136,
-        151
-      ]
-    },
-    {
-      "rank": 33,
-      "distance_metric": "euclidean",
-      "placement_mode": "exact",
-      "placement_semantics": "exact_point",
-      "shelter_id": 121,
-      "candidate_id": 121,
-      "candidate_source": "buildings",
-      "source_id": 121,
-      "building_idx": 121,
-      "coordinates": "31.713164,34.984968",
-      "lat": 31.713164196414063,
-      "lon": 34.984967645354224,
-      "nearest_building_dist_m": 0.0,
-      "newly_covered_buildings": 2,
-      "newly_covered_people_est": 14,
-      "covered_building_indices": [
-        110,
-        121,
-        166,
-        319
-      ],
-      "marginal_covered_building_indices": [
-        121,
-        319
-      ]
-    },
-    {
-      "rank": 34,
+      "rank": 49,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1255,40 +1563,480 @@
       ]
     },
     {
-      "rank": 35,
+      "rank": 50,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 686,
-      "candidate_id": 686,
-      "candidate_source": "network_nodes",
-      "source_id": 1078546827,
-      "building_idx": null,
-      "coordinates": "31.714784,34.988405",
-      "lat": 31.71478400068595,
-      "lon": 34.98840529947363,
-      "nearest_building_dist_m": 88.21,
+      "shelter_id": 130,
+      "candidate_id": 130,
+      "candidate_source": "buildings",
+      "source_id": 130,
+      "building_idx": 130,
+      "coordinates": "31.711807,34.992241",
+      "lat": 31.711807268100273,
+      "lon": 34.992240971298266,
+      "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 2,
       "newly_covered_people_est": 14,
       "covered_building_indices": [
-        40,
-        123,
-        132,
-        189,
-        204,
-        205,
-        213,
-        218,
-        249,
-        250
+        130,
+        263
       ],
       "marginal_covered_building_indices": [
-        189,
-        204
+        130,
+        263
       ]
     },
     {
-      "rank": 36,
+      "rank": 51,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 131,
+      "candidate_id": 131,
+      "candidate_source": "buildings",
+      "source_id": 131,
+      "building_idx": 131,
+      "coordinates": "31.740779,34.978879",
+      "lat": 31.740778895778984,
+      "lon": 34.97887865815838,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        131,
+        222,
+        389,
+        393
+      ],
+      "marginal_covered_building_indices": [
+        131,
+        389
+      ]
+    },
+    {
+      "rank": 52,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 149,
+      "candidate_id": 149,
+      "candidate_source": "buildings",
+      "source_id": 149,
+      "building_idx": 149,
+      "coordinates": "31.749409,34.995166",
+      "lat": 31.74940864287038,
+      "lon": 34.995166183891314,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        149,
+        274,
+        361
+      ],
+      "marginal_covered_building_indices": [
+        149,
+        274
+      ]
+    },
+    {
+      "rank": 53,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 186,
+      "candidate_id": 186,
+      "candidate_source": "buildings",
+      "source_id": 186,
+      "building_idx": 186,
+      "coordinates": "31.750117,34.987280",
+      "lat": 31.750117032494106,
+      "lon": 34.98728038441325,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        186,
+        206,
+        209,
+        240
+      ],
+      "marginal_covered_building_indices": [
+        186,
+        240
+      ]
+    },
+    {
+      "rank": 54,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 267,
+      "candidate_id": 267,
+      "candidate_source": "buildings",
+      "source_id": 267,
+      "building_idx": 267,
+      "coordinates": "31.745421,34.993882",
+      "lat": 31.74542142968621,
+      "lon": 34.99388163041031,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        105,
+        267,
+        297,
+        335,
+        345
+      ],
+      "marginal_covered_building_indices": [
+        335,
+        345
+      ]
+    },
+    {
+      "rank": 55,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 278,
+      "candidate_id": 278,
+      "candidate_source": "buildings",
+      "source_id": 278,
+      "building_idx": 278,
+      "coordinates": "31.743248,34.983736",
+      "lat": 31.743247627546257,
+      "lon": 34.98373584154726,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        278,
+        405
+      ],
+      "marginal_covered_building_indices": [
+        278,
+        405
+      ]
+    },
+    {
+      "rank": 56,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 342,
+      "candidate_id": 342,
+      "candidate_source": "buildings",
+      "source_id": 342,
+      "building_idx": 342,
+      "coordinates": "31.736198,34.981144",
+      "lat": 31.736197549065178,
+      "lon": 34.98114429559111,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        270,
+        342,
+        370
+      ],
+      "marginal_covered_building_indices": [
+        342,
+        370
+      ]
+    },
+    {
+      "rank": 57,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 413,
+      "candidate_id": 413,
+      "candidate_source": "network_nodes",
+      "source_id": 1095135909,
+      "building_idx": null,
+      "coordinates": "31.739538,34.996229",
+      "lat": 31.739538100683827,
+      "lon": 34.99622889947514,
+      "nearest_building_dist_m": 43.61,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        169,
+        286
+      ],
+      "marginal_covered_building_indices": [
+        169,
+        286
+      ]
+    },
+    {
+      "rank": 58,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 494,
+      "candidate_id": 494,
+      "candidate_source": "network_nodes",
+      "source_id": 4792269372,
+      "building_idx": null,
+      "coordinates": "31.742052,34.981691",
+      "lat": 31.74205190068269,
+      "lon": 34.981691199475826,
+      "nearest_building_dist_m": 45.25,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        293,
+        347
+      ],
+      "marginal_covered_building_indices": [
+        293,
+        347
+      ]
+    },
+    {
+      "rank": 59,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 586,
+      "candidate_id": 586,
+      "candidate_source": "network_nodes",
+      "source_id": 1068399063,
+      "building_idx": null,
+      "coordinates": "31.739648,34.977865",
+      "lat": 31.73964750068269,
+      "lon": 34.977864699475774,
+      "nearest_building_dist_m": 49.29,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        215,
+        236
+      ],
+      "marginal_covered_building_indices": [
+        215,
+        236
+      ]
+    },
+    {
+      "rank": 60,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 594,
+      "candidate_id": 594,
+      "candidate_source": "network_nodes",
+      "source_id": 1077833529,
+      "building_idx": null,
+      "coordinates": "31.739370,34.990337",
+      "lat": 31.739369800683473,
+      "lon": 34.99033739947535,
+      "nearest_building_dist_m": 57.33,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        157,
+        356
+      ],
+      "marginal_covered_building_indices": [
+        157,
+        356
+      ]
+    },
+    {
+      "rank": 61,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 854,
+      "candidate_id": 854,
+      "candidate_source": "network_nodes",
+      "source_id": 1110260363,
+      "building_idx": null,
+      "coordinates": "31.714031,34.985229",
+      "lat": 31.714030700685814,
+      "lon": 34.985228599473686,
+      "nearest_building_dist_m": 75.95,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        121,
+        319
+      ],
+      "marginal_covered_building_indices": [
+        121,
+        319
+      ]
+    },
+    {
+      "rank": 62,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 858,
+      "candidate_id": 858,
+      "candidate_source": "network_nodes",
+      "source_id": 1110260549,
+      "building_idx": null,
+      "coordinates": "31.714490,34.983223",
+      "lat": 31.714489700685636,
+      "lon": 34.983223399473765,
+      "nearest_building_dist_m": 87.57,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        110,
+        166
+      ],
+      "marginal_covered_building_indices": [
+        110,
+        166
+      ]
+    },
+    {
+      "rank": 63,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 977,
+      "candidate_id": 977,
+      "candidate_source": "network_nodes",
+      "source_id": 1194196332,
+      "building_idx": null,
+      "coordinates": "31.714764,34.997780",
+      "lat": 31.714763800686516,
+      "lon": 34.99778039947333,
+      "nearest_building_dist_m": 59.12,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        96,
+        251
+      ],
+      "marginal_covered_building_indices": [
+        96,
+        251
+      ]
+    },
+    {
+      "rank": 64,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 1576,
+      "candidate_id": 1576,
+      "candidate_source": "network_nodes",
+      "source_id": 11024018297,
+      "building_idx": null,
+      "coordinates": "31.710687,34.994343",
+      "lat": 31.710687000686733,
+      "lon": 34.99434349947314,
+      "nearest_building_dist_m": 90.7,
+      "newly_covered_buildings": 2,
+      "newly_covered_people_est": 14,
+      "covered_building_indices": [
+        275,
+        396
+      ],
+      "marginal_covered_building_indices": [
+        275,
+        396
+      ]
+    },
+    {
+      "rank": 65,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 5,
+      "candidate_id": 5,
+      "candidate_source": "buildings",
+      "source_id": 5,
+      "building_idx": 5,
+      "coordinates": "31.746524,34.987875",
+      "lat": 31.746523509211226,
+      "lon": 34.98787491809697,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        5,
+        7,
+        20,
+        22,
+        83,
+        90,
+        99,
+        181,
+        245,
+        326,
+        381
+      ],
+      "marginal_covered_building_indices": [
+        381
+      ]
+    },
+    {
+      "rank": 66,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 8,
+      "candidate_id": 8,
+      "candidate_source": "buildings",
+      "source_id": 8,
+      "building_idx": 8,
+      "coordinates": "31.720691,34.997008",
+      "lat": 31.720691368715727,
+      "lon": 34.997008326719794,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        8
+      ],
+      "marginal_covered_building_indices": [
+        8
+      ]
+    },
+    {
+      "rank": 67,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 9,
+      "candidate_id": 9,
+      "candidate_source": "buildings",
+      "source_id": 9,
+      "building_idx": 9,
+      "coordinates": "31.752263,34.988568",
+      "lat": 31.752263255457713,
+      "lon": 34.9885683368347,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        9,
+        111,
+        114,
+        178,
+        254,
+        255,
+        276,
+        283,
+        314,
+        327,
+        331
+      ],
+      "marginal_covered_building_indices": [
+        254
+      ]
+    },
+    {
+      "rank": 68,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1311,7 +2059,7 @@
       ]
     },
     {
-      "rank": 37,
+      "rank": 69,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1334,39 +2082,235 @@
       ]
     },
     {
-      "rank": 38,
+      "rank": 70,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 46,
-      "candidate_id": 46,
+      "shelter_id": 15,
+      "candidate_id": 15,
       "candidate_source": "buildings",
-      "source_id": 46,
-      "building_idx": 46,
-      "coordinates": "31.744431,34.979313",
-      "lat": 31.744430559252617,
-      "lon": 34.97931321263774,
+      "source_id": 15,
+      "building_idx": 15,
+      "coordinates": "31.743035,34.978880",
+      "lat": 31.743034556943968,
+      "lon": 34.97887951850639,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
         15,
-        46,
-        159,
-        167,
-        184,
-        196,
         223,
-        259,
         323,
-        394
+        341,
+        406
       ],
       "marginal_covered_building_indices": [
-        184
+        15
       ]
     },
     {
-      "rank": 39,
+      "rank": 71,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 18,
+      "candidate_id": 18,
+      "candidate_source": "buildings",
+      "source_id": 18,
+      "building_idx": 18,
+      "coordinates": "31.733035,34.954304",
+      "lat": 31.733034644335962,
+      "lon": 34.954304130279375,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        18
+      ],
+      "marginal_covered_building_indices": [
+        18
+      ]
+    },
+    {
+      "rank": 72,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 23,
+      "candidate_id": 23,
+      "candidate_source": "buildings",
+      "source_id": 23,
+      "building_idx": 23,
+      "coordinates": "31.746648,34.993599",
+      "lat": 31.74664846536476,
+      "lon": 34.993599328507784,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        1,
+        23,
+        100,
+        105
+      ],
+      "marginal_covered_building_indices": [
+        100
+      ]
+    },
+    {
+      "rank": 73,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 27,
+      "candidate_id": 27,
+      "candidate_source": "buildings",
+      "source_id": 27,
+      "building_idx": 27,
+      "coordinates": "31.713851,34.991178",
+      "lat": 31.71385138599239,
+      "lon": 34.99117781149941,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        27,
+        29,
+        205
+      ],
+      "marginal_covered_building_indices": [
+        29
+      ]
+    },
+    {
+      "rank": 74,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 37,
+      "candidate_id": 37,
+      "candidate_source": "buildings",
+      "source_id": 37,
+      "building_idx": 37,
+      "coordinates": "31.742969,34.975474",
+      "lat": 31.742968581339937,
+      "lon": 34.97547404176321,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        37,
+        41,
+        118,
+        266,
+        344,
+        348,
+        351,
+        353,
+        392
+      ],
+      "marginal_covered_building_indices": [
+        37
+      ]
+    },
+    {
+      "rank": 75,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 39,
+      "candidate_id": 39,
+      "candidate_source": "buildings",
+      "source_id": 39,
+      "building_idx": 39,
+      "coordinates": "31.757747,34.999451",
+      "lat": 31.757747364782194,
+      "lon": 34.99945141993591,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        39
+      ],
+      "marginal_covered_building_indices": [
+        39
+      ]
+    },
+    {
+      "rank": 76,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 43,
+      "candidate_id": 43,
+      "candidate_source": "buildings",
+      "source_id": 43,
+      "building_idx": 43,
+      "coordinates": "31.761454,34.994302",
+      "lat": 31.761453835209778,
+      "lon": 34.994301829788924,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        43
+      ],
+      "marginal_covered_building_indices": [
+        43
+      ]
+    },
+    {
+      "rank": 77,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 45,
+      "candidate_id": 45,
+      "candidate_source": "buildings",
+      "source_id": 45,
+      "building_idx": 45,
+      "coordinates": "31.750652,34.980336",
+      "lat": 31.750651569313487,
+      "lon": 34.98033610653385,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        45
+      ],
+      "marginal_covered_building_indices": [
+        45
+      ]
+    },
+    {
+      "rank": 78,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 47,
+      "candidate_id": 47,
+      "candidate_source": "buildings",
+      "source_id": 47,
+      "building_idx": 47,
+      "coordinates": "31.751627,34.995870",
+      "lat": 31.751627463018032,
+      "lon": 34.99586955919586,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        47,
+        87,
+        109,
+        308,
+        358
+      ],
+      "marginal_covered_building_indices": [
+        308
+      ]
+    },
+    {
+      "rank": 79,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1389,42 +2333,53 @@
       ]
     },
     {
-      "rank": 40,
+      "rank": 80,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
-      "shelter_id": 53,
-      "candidate_id": 53,
+      "shelter_id": 52,
+      "candidate_id": 52,
       "candidate_source": "buildings",
-      "source_id": 53,
-      "building_idx": 53,
-      "coordinates": "31.736231,34.982716",
-      "lat": 31.736231128234277,
-      "lon": 34.982716188876424,
+      "source_id": 52,
+      "building_idx": 52,
+      "coordinates": "31.738048,34.980634",
+      "lat": 31.738048240732663,
+      "lon": 34.98063355705799,
       "nearest_building_dist_m": 0.0,
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        53,
-        71,
-        226,
-        257,
-        265,
-        269,
-        270,
-        309,
-        338,
-        342,
-        343,
-        372,
-        373
+        52
       ],
       "marginal_covered_building_indices": [
-        269
+        52
       ]
     },
     {
-      "rank": 41,
+      "rank": 81,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 54,
+      "candidate_id": 54,
+      "candidate_source": "buildings",
+      "source_id": 54,
+      "building_idx": 54,
+      "coordinates": "31.708890,34.995610",
+      "lat": 31.708890435870504,
+      "lon": 34.99560998567077,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        54
+      ],
+      "marginal_covered_building_indices": [
+        54
+      ]
+    },
+    {
+      "rank": 82,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1440,20 +2395,14 @@
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        26,
-        65,
-        161,
-        289,
-        322,
-        355,
-        371
+        65
       ],
       "marginal_covered_building_indices": [
-        355
+        65
       ]
     },
     {
-      "rank": 42,
+      "rank": 83,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1476,7 +2425,53 @@
       ]
     },
     {
-      "rank": 43,
+      "rank": 84,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 77,
+      "candidate_id": 77,
+      "candidate_source": "buildings",
+      "source_id": 77,
+      "building_idx": 77,
+      "coordinates": "31.735793,34.998577",
+      "lat": 31.735793051819083,
+      "lon": 34.998577051069056,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        77
+      ],
+      "marginal_covered_building_indices": [
+        77
+      ]
+    },
+    {
+      "rank": 85,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 79,
+      "candidate_id": 79,
+      "candidate_source": "buildings",
+      "source_id": 79,
+      "building_idx": 79,
+      "coordinates": "31.737878,34.992935",
+      "lat": 31.73787789785235,
+      "lon": 34.99293473796019,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        79
+      ],
+      "marginal_covered_building_indices": [
+        79
+      ]
+    },
+    {
+      "rank": 86,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1499,7 +2494,54 @@
       ]
     },
     {
-      "rank": 44,
+      "rank": 87,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 93,
+      "candidate_id": 93,
+      "candidate_source": "buildings",
+      "source_id": 93,
+      "building_idx": 93,
+      "coordinates": "31.760995,34.996332",
+      "lat": 31.760995275265476,
+      "lon": 34.996332116177534,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        93
+      ],
+      "marginal_covered_building_indices": [
+        93
+      ]
+    },
+    {
+      "rank": 88,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 94,
+      "candidate_id": 94,
+      "candidate_source": "buildings",
+      "source_id": 94,
+      "building_idx": 94,
+      "coordinates": "31.754157,34.989823",
+      "lat": 31.75415712403575,
+      "lon": 34.98982255209415,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        94,
+        143
+      ],
+      "marginal_covered_building_indices": [
+        94
+      ]
+    },
+    {
+      "rank": 89,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1522,7 +2564,7 @@
       ]
     },
     {
-      "rank": 45,
+      "rank": 90,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1545,7 +2587,54 @@
       ]
     },
     {
-      "rank": 46,
+      "rank": 91,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 107,
+      "candidate_id": 107,
+      "candidate_source": "buildings",
+      "source_id": 107,
+      "building_idx": 107,
+      "coordinates": "31.728359,34.991816",
+      "lat": 31.728358803784594,
+      "lon": 34.991816157914414,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        107
+      ],
+      "marginal_covered_building_indices": [
+        107
+      ]
+    },
+    {
+      "rank": 92,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 122,
+      "candidate_id": 122,
+      "candidate_source": "buildings",
+      "source_id": 122,
+      "building_idx": 122,
+      "coordinates": "31.711207,34.996956",
+      "lat": 31.71120656579044,
+      "lon": 34.996956040736784,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        122,
+        288
+      ],
+      "marginal_covered_building_indices": [
+        122
+      ]
+    },
+    {
+      "rank": 93,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1561,15 +2650,177 @@
       "newly_covered_buildings": 1,
       "newly_covered_people_est": 7,
       "covered_building_indices": [
-        135,
-        216
+        135
       ],
       "marginal_covered_building_indices": [
         135
       ]
     },
     {
-      "rank": 47,
+      "rank": 94,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 137,
+      "candidate_id": 137,
+      "candidate_source": "buildings",
+      "source_id": 137,
+      "building_idx": 137,
+      "coordinates": "31.754641,34.995433",
+      "lat": 31.75464099890995,
+      "lon": 34.99543312484251,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        137,
+        334
+      ],
+      "marginal_covered_building_indices": [
+        137
+      ]
+    },
+    {
+      "rank": 95,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 162,
+      "candidate_id": 162,
+      "candidate_source": "buildings",
+      "source_id": 162,
+      "building_idx": 162,
+      "coordinates": "31.739171,34.980599",
+      "lat": 31.73917130388584,
+      "lon": 34.9805986792522,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        162,
+        253
+      ],
+      "marginal_covered_building_indices": [
+        162
+      ]
+    },
+    {
+      "rank": 96,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 165,
+      "candidate_id": 165,
+      "candidate_source": "buildings",
+      "source_id": 165,
+      "building_idx": 165,
+      "coordinates": "31.722154,34.996065",
+      "lat": 31.72215449654714,
+      "lon": 34.99606483444631,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        165
+      ],
+      "marginal_covered_building_indices": [
+        165
+      ]
+    },
+    {
+      "rank": 97,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 184,
+      "candidate_id": 184,
+      "candidate_source": "buildings",
+      "source_id": 184,
+      "building_idx": 184,
+      "coordinates": "31.745286,34.979793",
+      "lat": 31.74528555445051,
+      "lon": 34.97979341881044,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        184
+      ],
+      "marginal_covered_building_indices": [
+        184
+      ]
+    },
+    {
+      "rank": 98,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 187,
+      "candidate_id": 187,
+      "candidate_source": "buildings",
+      "source_id": 187,
+      "building_idx": 187,
+      "coordinates": "31.715034,34.993392",
+      "lat": 31.71503388416536,
+      "lon": 34.99339213385755,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        187
+      ],
+      "marginal_covered_building_indices": [
+        187
+      ]
+    },
+    {
+      "rank": 99,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 189,
+      "candidate_id": 189,
+      "candidate_source": "buildings",
+      "source_id": 189,
+      "building_idx": 189,
+      "coordinates": "31.716312,34.987775",
+      "lat": 31.716312217013567,
+      "lon": 34.987775392488615,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        189
+      ],
+      "marginal_covered_building_indices": [
+        189
+      ]
+    },
+    {
+      "rank": 100,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 193,
+      "candidate_id": 193,
+      "candidate_source": "buildings",
+      "source_id": 193,
+      "building_idx": 193,
+      "coordinates": "31.741833,34.986371",
+      "lat": 31.741832501990586,
+      "lon": 34.98637108910028,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        193
+      ],
+      "marginal_covered_building_indices": [
+        193
+      ]
+    },
+    {
+      "rank": 101,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1592,7 +2843,7 @@
       ]
     },
     {
-      "rank": 48,
+      "rank": 102,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1615,7 +2866,54 @@
       ]
     },
     {
-      "rank": 49,
+      "rank": 103,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 204,
+      "candidate_id": 204,
+      "candidate_source": "buildings",
+      "source_id": 204,
+      "building_idx": 204,
+      "coordinates": "31.715020,34.989294",
+      "lat": 31.715020244272964,
+      "lon": 34.989293917803224,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        204,
+        213
+      ],
+      "marginal_covered_building_indices": [
+        204
+      ]
+    },
+    {
+      "rank": 104,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 210,
+      "candidate_id": 210,
+      "candidate_source": "buildings",
+      "source_id": 210,
+      "building_idx": 210,
+      "coordinates": "31.716250,34.996976",
+      "lat": 31.71625024410745,
+      "lon": 34.99697573834207,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        210
+      ],
+      "marginal_covered_building_indices": [
+        210
+      ]
+    },
+    {
+      "rank": 105,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1638,7 +2936,30 @@
       ]
     },
     {
-      "rank": 50,
+      "rank": 106,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 216,
+      "candidate_id": 216,
+      "candidate_source": "buildings",
+      "source_id": 216,
+      "building_idx": 216,
+      "coordinates": "31.723977,34.992940",
+      "lat": 31.72397664147378,
+      "lon": 34.99293983971871,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        216
+      ],
+      "marginal_covered_building_indices": [
+        216
+      ]
+    },
+    {
+      "rank": 107,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1661,7 +2982,30 @@
       ]
     },
     {
-      "rank": 51,
+      "rank": 108,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 224,
+      "candidate_id": 224,
+      "candidate_source": "buildings",
+      "source_id": 224,
+      "building_idx": 224,
+      "coordinates": "31.726331,34.976624",
+      "lat": 31.726330792298217,
+      "lon": 34.97662413379102,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        224
+      ],
+      "marginal_covered_building_indices": [
+        224
+      ]
+    },
+    {
+      "rank": 109,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1684,7 +3028,30 @@
       ]
     },
     {
-      "rank": 52,
+      "rank": 110,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 258,
+      "candidate_id": 258,
+      "candidate_source": "buildings",
+      "source_id": 258,
+      "building_idx": 258,
+      "coordinates": "31.744478,34.989088",
+      "lat": 31.7444784596655,
+      "lon": 34.98908842853398,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        258
+      ],
+      "marginal_covered_building_indices": [
+        258
+      ]
+    },
+    {
+      "rank": 111,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1707,7 +3074,7 @@
       ]
     },
     {
-      "rank": 53,
+      "rank": 112,
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "placement_semantics": "exact_point",
@@ -1727,6 +3094,308 @@
       ],
       "marginal_covered_building_indices": [
         294
+      ]
+    },
+    {
+      "rank": 113,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 307,
+      "candidate_id": 307,
+      "candidate_source": "buildings",
+      "source_id": 307,
+      "building_idx": 307,
+      "coordinates": "31.751038,34.997560",
+      "lat": 31.75103832566175,
+      "lon": 34.99755978470611,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        307
+      ],
+      "marginal_covered_building_indices": [
+        307
+      ]
+    },
+    {
+      "rank": 114,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 313,
+      "candidate_id": 313,
+      "candidate_source": "buildings",
+      "source_id": 313,
+      "building_idx": 313,
+      "coordinates": "31.707727,35.001050",
+      "lat": 31.70772724504899,
+      "lon": 35.00105042894784,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        313
+      ],
+      "marginal_covered_building_indices": [
+        313
+      ]
+    },
+    {
+      "rank": 115,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 321,
+      "candidate_id": 321,
+      "candidate_source": "buildings",
+      "source_id": 321,
+      "building_idx": 321,
+      "coordinates": "31.738763,34.978073",
+      "lat": 31.738762564606738,
+      "lon": 34.97807321270736,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        198,
+        256,
+        321,
+        352
+      ],
+      "marginal_covered_building_indices": [
+        352
+      ]
+    },
+    {
+      "rank": 116,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 322,
+      "candidate_id": 322,
+      "candidate_source": "buildings",
+      "source_id": 322,
+      "building_idx": 322,
+      "coordinates": "31.749066,34.983795",
+      "lat": 31.749065506696777,
+      "lon": 34.983794888506125,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        322
+      ],
+      "marginal_covered_building_indices": [
+        322
+      ]
+    },
+    {
+      "rank": 117,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 324,
+      "candidate_id": 324,
+      "candidate_source": "buildings",
+      "source_id": 324,
+      "building_idx": 324,
+      "coordinates": "31.711091,34.999427",
+      "lat": 31.711090938072946,
+      "lon": 34.99942699825825,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        324
+      ],
+      "marginal_covered_building_indices": [
+        324
+      ]
+    },
+    {
+      "rank": 118,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 332,
+      "candidate_id": 332,
+      "candidate_source": "buildings",
+      "source_id": 332,
+      "building_idx": 332,
+      "coordinates": "31.736934,34.998304",
+      "lat": 31.736934027366548,
+      "lon": 34.998303710151205,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        332
+      ],
+      "marginal_covered_building_indices": [
+        332
+      ]
+    },
+    {
+      "rank": 119,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 337,
+      "candidate_id": 337,
+      "candidate_source": "buildings",
+      "source_id": 337,
+      "building_idx": 337,
+      "coordinates": "31.712741,34.997538",
+      "lat": 31.71274147694063,
+      "lon": 34.997537634050225,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        337
+      ],
+      "marginal_covered_building_indices": [
+        337
+      ]
+    },
+    {
+      "rank": 120,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 346,
+      "candidate_id": 346,
+      "candidate_source": "buildings",
+      "source_id": 346,
+      "building_idx": 346,
+      "coordinates": "31.711184,35.001258",
+      "lat": 31.71118360359988,
+      "lon": 35.00125824063053,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        346
+      ],
+      "marginal_covered_building_indices": [
+        346
+      ]
+    },
+    {
+      "rank": 121,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 355,
+      "candidate_id": 355,
+      "candidate_source": "buildings",
+      "source_id": 355,
+      "building_idx": 355,
+      "coordinates": "31.746538,34.983273",
+      "lat": 31.746537691460006,
+      "lon": 34.9832726793079,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        355
+      ],
+      "marginal_covered_building_indices": [
+        355
+      ]
+    },
+    {
+      "rank": 122,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 360,
+      "candidate_id": 360,
+      "candidate_source": "buildings",
+      "source_id": 360,
+      "building_idx": 360,
+      "coordinates": "31.727434,34.995393",
+      "lat": 31.727434186885535,
+      "lon": 34.995393045144695,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        360
+      ],
+      "marginal_covered_building_indices": [
+        360
+      ]
+    },
+    {
+      "rank": 123,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 366,
+      "candidate_id": 366,
+      "candidate_source": "buildings",
+      "source_id": 366,
+      "building_idx": 366,
+      "coordinates": "31.713599,34.994229",
+      "lat": 31.71359857973242,
+      "lon": 34.994228863955136,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        366
+      ],
+      "marginal_covered_building_indices": [
+        366
+      ]
+    },
+    {
+      "rank": 124,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 400,
+      "candidate_id": 400,
+      "candidate_source": "buildings",
+      "source_id": 400,
+      "building_idx": 400,
+      "coordinates": "31.732758,34.952935",
+      "lat": 31.73275839577917,
+      "lon": 34.952935159618775,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        400
+      ],
+      "marginal_covered_building_indices": [
+        400
+      ]
+    },
+    {
+      "rank": 125,
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "placement_semantics": "exact_point",
+      "shelter_id": 401,
+      "candidate_id": 401,
+      "candidate_source": "buildings",
+      "source_id": 401,
+      "building_idx": 401,
+      "coordinates": "31.728130,34.994329",
+      "lat": 31.72813021045268,
+      "lon": 34.99432895706506,
+      "nearest_building_dist_m": 0.0,
+      "newly_covered_buildings": 1,
+      "newly_covered_people_est": 7,
+      "covered_building_indices": [
+        401
+      ],
+      "marginal_covered_building_indices": [
+        401
       ]
     }
   ]
