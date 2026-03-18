@@ -458,7 +458,6 @@ function applyStaticTranslations() {
   metricEuclideanBtn.textContent = t("metricEuclideanBtn");
   modeExactBtn.textContent = t("modeExactBtn");
   modeClusterBtn.textContent = t("modeClusterBtn");
-  updateTopographyLegendScale();
 
   openGuideBtn.setAttribute("aria-label", t("infoAriaLabel"));
   closeGuideBtn.setAttribute("aria-label", t("closeHelpAriaLabel"));
@@ -1416,50 +1415,11 @@ function getContourElevation(feature) {
   return getFirstNumericProperty(feature?.properties, ["HEIGHT", "height", "ELEV", "elev", "elevation"]);
 }
 
-function getContourColorByElevation(height, { min, max }) {
-  if (!Number.isFinite(height) || !Number.isFinite(min) || !Number.isFinite(max) || max <= min) {
-    return null;
-  }
-  const ratio = Math.max(0, Math.min(1, (height - min) / (max - min)));
-  const hue = 230 - ratio * 215;
-  return `hsl(${hue}, 88%, 58%)`;
-}
-
-function updateTopographyLegendScale() {
-  if (!legendTopographyScaleBarEl) return;
-  const { min, max } = dataStore.contourElevationRange || {};
-  if (!Number.isFinite(min) || !Number.isFinite(max) || max <= min) {
-    legendTopographyScaleBarEl.style.background =
-      "linear-gradient(90deg, hsl(230, 88%, 58%) 0%, hsl(15, 88%, 58%) 100%)";
-    if (legendTopographyScaleLowEl) legendTopographyScaleLowEl.textContent = t("legendTopographyScaleLow");
-    if (legendTopographyScaleHighEl) legendTopographyScaleHighEl.textContent = t("legendTopographyScaleHigh");
-    return;
-  }
-  const stops = [0, 0.2, 0.4, 0.6, 0.8, 1]
-    .map((ratio) => {
-      const sampleHeight = min + (max - min) * ratio;
-      const color = getContourColorByElevation(sampleHeight, { min, max }) || "hsl(230, 88%, 58%)";
-      return `${color} ${Math.round(ratio * 100)}%`;
-    })
-    .join(", ");
-  legendTopographyScaleBarEl.style.background = `linear-gradient(90deg, ${stops})`;
-
-  const unit = currentLanguage === "he" ? " מ'" : "m";
-  if (legendTopographyScaleLowEl) {
-    legendTopographyScaleLowEl.textContent = `${t("legendTopographyScaleLow")} ${Math.round(min)}${unit}`;
-  }
-  if (legendTopographyScaleHighEl) {
-    legendTopographyScaleHighEl.textContent = `${t("legendTopographyScaleHigh")} ${Math.round(max)}${unit}`;
-  }
-}
-
 function contourStyleForElevation(height) {
   const hasHeight = Number.isFinite(height);
   const isMajor = hasHeight && Math.abs(height % 50) < 0.0001;
-  const gradientColor = getContourColorByElevation(height, dataStore.contourElevationRange);
-  const color = gradientColor || (isMajor ? "#8fc2ff" : "#6ea9f7");
   return {
-    color,
+    color: isMajor ? "#aeb9ca" : "#9aa8bc",
     weight: isMajor ? 1.75 : 1.15,
     opacity: isMajor ? 0.9 : 0.72,
     lineCap: "round",
@@ -1498,7 +1458,6 @@ function buildContourSegments() {
     min: elevations.length ? Math.min(...elevations) : null,
     max: elevations.length ? Math.max(...elevations) : null,
   };
-  updateTopographyLegendScale();
 }
 
 function pointToSegmentDistanceSq(px, py, ax, ay, bx, by) {
