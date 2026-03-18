@@ -1312,11 +1312,11 @@ function renderExistingCoverageBuildings() {
     opacity: 0.95,
   };
   const coveredStyle = {
-    color: "#2e7d32",
-    weight: 1.2,
-    fillColor: "#43a047",
-    fillOpacity: 0.32,
-    opacity: 0.92,
+    color: "#00c853",
+    weight: 1.5,
+    fillColor: "#76ff7a",
+    fillOpacity: 0.56,
+    opacity: 0.98,
   };
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
