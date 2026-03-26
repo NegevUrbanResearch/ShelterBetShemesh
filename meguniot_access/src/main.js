@@ -1936,16 +1936,16 @@ function renderExistingCoverageBuildings() {
     const feature = buildingFeatureByIndex.get(Number(idx));
     const covered = Boolean(coverage?.[`covered_${bucket}`]);
     if (feature) {
+      if (!isRelevantBySelectedBuildingTypes(feature)) {
+        addNotRelevantBuilding(feature, idx);
+        continue;
+      }
       if (isAssumedShelteredFeature(feature)) {
         const layer = createBuildingLayer(feature, post1992Style, 2.3);
         layer.bindPopup(buildBuildingPopupHtml(feature, idx, "buildingPopupStatusAssumed", coverage), {
           className: "shelter-selection-popup",
         });
         layer.addTo(layers.post1992Buildings);
-        continue;
-      }
-      if (!isRelevantBySelectedBuildingTypes(feature)) {
-        addNotRelevantBuilding(feature, idx);
         continue;
       }
       const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
@@ -1986,6 +1986,10 @@ function renderExistingCoverageBuildings() {
     if (!geometry) continue;
     const featureForRender = { type: "Feature", geometry, properties: feature?.properties || {} };
     const renderIdx = getFeatureNumericId(feature, idKeys) ?? sourceIdx;
+    if (!isRelevantBySelectedBuildingTypes(feature)) {
+      addNotRelevantBuilding(featureForRender, renderIdx);
+      continue;
+    }
     if (isAssumedShelteredFeature(feature)) {
       const assumedLayer = createBuildingLayer(featureForRender, post1992Style, 2.3);
       assumedLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusAssumed", null), {
@@ -1994,7 +1998,6 @@ function renderExistingCoverageBuildings() {
       assumedLayer.addTo(layers.post1992Buildings);
       continue;
     }
-    addNotRelevantBuilding(featureForRender, renderIdx);
   }
 }
 
