@@ -101,6 +101,9 @@ const I18N = {
     assumptionsBuildingTypesTitle: "Building types",
     buildingTypesSelectAllLabel: "Select all",
     buildingTypesDeselectAllLabel: "Deselect all",
+    buildingTypesAllSelectedLabel: "All building types",
+    buildingTypesMoreSelectedLabel: (extraCount) => `+${extraCount} more`,
+    buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "No building types selected",
     assumeOnlyPublicLandLabel: "Only place on public land",
     assumeWeightByPopulationLabel: "Weight by population density",
@@ -272,6 +275,9 @@ const I18N = {
     assumptionsBuildingTypesTitle: "סוגי מבנים",
     buildingTypesSelectAllLabel: "בחר הכל",
     buildingTypesDeselectAllLabel: "נקה הכל",
+    buildingTypesAllSelectedLabel: "כל סוגי המבנים",
+    buildingTypesMoreSelectedLabel: (extraCount) => `+${extraCount} נוספים`,
+    buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
     assumeWeightByPopulationLabel: "שקלול לפי צפיפות אוכלוסין",
@@ -453,6 +459,7 @@ const buildingTypesDropdown = document.getElementById("buildingTypesDropdown");
 const buildingTypesDropdownToggle = document.getElementById("buildingTypesDropdownToggle");
 const buildingTypesDropdownMenu = document.getElementById("buildingTypesDropdownMenu");
 const buildingTypesDropdownSummary = document.getElementById("buildingTypesDropdownSummary");
+const buildingTypesSelectedCount = document.getElementById("buildingTypesSelectedCount");
 const buildingTypesSelectAllBtn = document.getElementById("buildingTypesSelectAllBtn");
 const buildingTypesDeselectAllBtn = document.getElementById("buildingTypesDeselectAllBtn");
 const buildingTypeOptionButtons = Array.from(document.querySelectorAll(".building-type-option"));
@@ -1373,8 +1380,19 @@ function normalizeBuildingUseTypes(rawTypes) {
 function updateBuildingTypesSummaryText() {
   if (!buildingTypesDropdownSummary) return;
   const selectedTypes = getSelectedBuildingUseTypesFromUi();
+  const selectedCount = selectedTypes.length;
+  const totalCount = BUILDING_USE_TYPES.length;
+  if (buildingTypesSelectedCount) {
+    buildingTypesSelectedCount.textContent = t("buildingTypesCountLabel", selectedCount, totalCount);
+  }
   if (!selectedTypes.length) {
     buildingTypesDropdownSummary.textContent = t("buildingTypesNoneSelectedLabel");
+    buildingTypesDropdownToggle?.setAttribute("aria-label", t("buildingTypesNoneSelectedLabel"));
+    return;
+  }
+  if (selectedCount === totalCount) {
+    buildingTypesDropdownSummary.textContent = t("buildingTypesAllSelectedLabel");
+    buildingTypesDropdownToggle?.setAttribute("aria-label", t("buildingTypesAllSelectedLabel"));
     return;
   }
   const labels = selectedTypes.map((typeValue) => {
@@ -1383,7 +1401,12 @@ function updateBuildingTypesSummaryText() {
     if (typeValue === 3) return t("assumeBuildingUseType3Label");
     return t("assumeBuildingUseType4Label");
   });
-  buildingTypesDropdownSummary.textContent = labels.join(", ");
+  const preview =
+    labels.length > 3
+      ? `${labels.slice(0, 3).join(", ")} ${t("buildingTypesMoreSelectedLabel", labels.length - 3)}`
+      : labels.join(", ");
+  buildingTypesDropdownSummary.textContent = preview;
+  buildingTypesDropdownToggle?.setAttribute("aria-label", labels.join(", "));
 }
 
 function setBuildingTypesDropdownOpen(isOpen) {
@@ -2844,6 +2867,11 @@ function wireEvents() {
     const target = event.target;
     if (!(target instanceof Node)) return;
     if (!buildingTypesDropdown.contains(target)) {
+      setBuildingTypesDropdownOpen(false);
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && buildingTypesDropdown?.classList.contains("is-open")) {
       setBuildingTypesDropdownOpen(false);
     }
   });
