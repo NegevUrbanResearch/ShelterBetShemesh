@@ -28,7 +28,7 @@
     </div>
     <div id="app" class="lang-he-ui">
       <div id="map"></div>
-      <div class="prototype-banner" aria-hidden="true">טיוטה</div>
+      <div id="prototypeBanner" class="prototype-banner" aria-hidden="true">טיוטה</div>
 
       <header class="topbar">
         <div class="brand">
@@ -107,6 +107,29 @@
                 <label class="heatmap-toggle-control assumption-toggle">
                   <input type="checkbox" id="assumeWeightByPopulation" class="checkbox-toggle" />
                   <span id="assumeWeightByPopulationLabel" class="checkbox-label assumption-toggle-label">Weight by population density</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+              </section>
+              <section class="assumption-group">
+                <h4 id="assumptionsBuildingTypesTitle" class="assumption-group-title">Building types</h4>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeBuildingUseType1" class="checkbox-toggle" checked />
+                  <span id="assumeBuildingUseType1Label" class="checkbox-label assumption-toggle-label">Public</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeBuildingUseType2" class="checkbox-toggle" checked />
+                  <span id="assumeBuildingUseType2Label" class="checkbox-label assumption-toggle-label">Mixed use</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeBuildingUseType3" class="checkbox-toggle" checked />
+                  <span id="assumeBuildingUseType3Label" class="checkbox-label assumption-toggle-label">Residential</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeBuildingUseType4" class="checkbox-toggle" checked />
+                  <span id="assumeBuildingUseType4Label" class="checkbox-label assumption-toggle-label">Commercial</span>
                   <span class="checkbox-checkmark">✓</span>
                 </label>
               </section>

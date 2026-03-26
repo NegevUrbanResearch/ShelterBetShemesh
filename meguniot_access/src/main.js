@@ -38,6 +38,8 @@ const BASE_MAP_OPTIONS = [
 ];
 const FIXED_BUCKET_KEY = "5min";
 const ACCESSIBILITY_GRID_CELL_SIZE_PX = 8;
+const BUILDING_USE_TYPES = [1, 2, 3, 4];
+const WEIGHTED_ALLOWED_BUILDING_USE_TYPES = [2, 3];
 const I18N = {
   en: {
     appTitle: "Access to Shelter - Beit Shemesh",
@@ -46,6 +48,7 @@ const I18N = {
     closeHelpAriaLabel: "Close help",
     guideTabsAriaLabel: "Guide sections",
     mobileControlsBtn: "Controls",
+    prototypeBanner: "Prototype",
     mobilePanelTitle: "Map controls",
     mobileCloseAriaLabel: "Close controls",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
@@ -95,8 +98,13 @@ const I18N = {
     assumePublicSheltersLabel: "Public buildings",
     assumptionsPlacementTitle: "Placement",
     assumptionsWeightingTitle: "Weighting",
+    assumptionsBuildingTypesTitle: "Building types",
     assumeOnlyPublicLandLabel: "Only place on public land",
     assumeWeightByPopulationLabel: "Weight by population density",
+    assumeBuildingUseType1Label: "Public",
+    assumeBuildingUseType2Label: "Mixed use",
+    assumeBuildingUseType3Label: "Residential",
+    assumeBuildingUseType4Label: "Commercial",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
       `Recommended ${modeLabel} (max ${maxRecommendations})`,
     clusterAreas: "cluster areas",
@@ -182,6 +190,7 @@ const I18N = {
     closeHelpAriaLabel: "סגירת עזרה",
     guideTabsAriaLabel: "לשוניות מדריך",
     mobileControlsBtn: "פקדים",
+    prototypeBanner: "טיוטה",
     mobilePanelTitle: "פקדי מפה",
     mobileCloseAriaLabel: "סגירת פקדים",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
@@ -231,8 +240,13 @@ const I18N = {
     assumePublicSheltersLabel: "מבני ציבור",
     assumptionsPlacementTitle: "מיקום",
     assumptionsWeightingTitle: "שקלול",
+    assumptionsBuildingTypesTitle: "סוגי מבנים",
     assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
     assumeWeightByPopulationLabel: "שקלול לפי צפיפות אוכלוסין",
+    assumeBuildingUseType1Label: "ציבורי",
+    assumeBuildingUseType2Label: "שימוש מעורב",
+    assumeBuildingUseType3Label: "מגורים",
+    assumeBuildingUseType4Label: "מסחרי",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
     clusterAreas: "אזורי אשכול",
     shelters: "מיגוניות",
@@ -322,6 +336,7 @@ const DEFAULT_ASSUMPTIONS = {
   publicShelters: false,
   onlyPublicLand: false,
   weightByPopulation: false,
+  buildingUseTypes: [1, 2, 3, 4],
 };
 const LAYER_DEFAULTS = {
   meguniot: true,
@@ -376,6 +391,10 @@ const assumeEducationShelters = document.getElementById("assumeEducationShelters
 const assumePublicShelters = document.getElementById("assumePublicShelters");
 const assumeOnlyPublicLand = document.getElementById("assumeOnlyPublicLand");
 const assumeWeightByPopulation = document.getElementById("assumeWeightByPopulation");
+const assumeBuildingUseType1 = document.getElementById("assumeBuildingUseType1");
+const assumeBuildingUseType2 = document.getElementById("assumeBuildingUseType2");
+const assumeBuildingUseType3 = document.getElementById("assumeBuildingUseType3");
+const assumeBuildingUseType4 = document.getElementById("assumeBuildingUseType4");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -501,10 +520,16 @@ function applyStaticTranslations() {
     assumePublicSheltersLabel: "assumePublicSheltersLabel",
     assumeOnlyPublicLandLabel: "assumeOnlyPublicLandLabel",
     assumeWeightByPopulationLabel: "assumeWeightByPopulationLabel",
+    assumptionsBuildingTypesTitle: "assumptionsBuildingTypesTitle",
+    assumeBuildingUseType1Label: "assumeBuildingUseType1Label",
+    assumeBuildingUseType2Label: "assumeBuildingUseType2Label",
+    assumeBuildingUseType3Label: "assumeBuildingUseType3Label",
+    assumeBuildingUseType4Label: "assumeBuildingUseType4Label",
     assumptionsHasShelterTitle: "assumptionsHasShelterTitle",
     assumptionsNeighborsTitle: "assumptionsNeighborsTitle",
     assumptionsPlacementTitle: "assumptionsPlacementTitle",
     assumptionsWeightingTitle: "assumptionsWeightingTitle",
+    prototypeBanner: "prototypeBanner",
     mobilePanelTitle: "mobilePanelTitle",
   };
   for (const [id, key] of Object.entries(textMap)) {
@@ -1116,13 +1141,26 @@ function getCurrentBucketData() {
 }
 
 function assumptionsEqual(a, b) {
+  const normalizeTypes = (raw) => {
+    const incoming = Array.isArray(raw) ? raw : [];
+    const normalized = incoming
+      .map((v) => Number(v))
+      .filter((v) => BUILDING_USE_TYPES.includes(v));
+    const dedupedSorted = Array.from(new Set(normalized)).sort((x, y) => x - y);
+    if (dedupedSorted.length) return dedupedSorted;
+    return [...BUILDING_USE_TYPES];
+  };
+  const aTypes = normalizeTypes(a?.buildingUseTypes);
+  const bTypes = normalizeTypes(b?.buildingUseTypes);
   return (
     Boolean(a?.post1992Sheltered) === Boolean(b?.post1992Sheltered) &&
     Boolean(a?.over3FloorsSheltered) === Boolean(b?.over3FloorsSheltered) &&
     Boolean(a?.educationShelters) === Boolean(b?.educationShelters) &&
     Boolean(a?.publicShelters) === Boolean(b?.publicShelters) &&
     Boolean(a?.onlyPublicLand) === Boolean(b?.onlyPublicLand) &&
-    Boolean(a?.weightByPopulation) === Boolean(b?.weightByPopulation)
+    Boolean(a?.weightByPopulation) === Boolean(b?.weightByPopulation) &&
+    aTypes.length === bTypes.length &&
+    aTypes.every((value, idx) => value === bTypes[idx])
   );
 }
 
@@ -1144,9 +1182,22 @@ function syncAssumptionInputs() {
   if (assumePublicShelters) assumePublicShelters.checked = Boolean(currentAssumptions.publicShelters);
   if (assumeOnlyPublicLand) assumeOnlyPublicLand.checked = Boolean(currentAssumptions.onlyPublicLand);
   if (assumeWeightByPopulation) assumeWeightByPopulation.checked = Boolean(currentAssumptions.weightByPopulation);
+  const selectedTypes = new Set(
+    normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes),
+  );
+  if (assumeBuildingUseType1) assumeBuildingUseType1.checked = selectedTypes.has(1);
+  if (assumeBuildingUseType2) assumeBuildingUseType2.checked = selectedTypes.has(2);
+  if (assumeBuildingUseType3) assumeBuildingUseType3.checked = selectedTypes.has(3);
+  if (assumeBuildingUseType4) assumeBuildingUseType4.checked = selectedTypes.has(4);
 }
 
 function readAssumptionsFromInputs() {
+  const selectedTypes = [
+    assumeBuildingUseType1?.checked ? 1 : null,
+    assumeBuildingUseType2?.checked ? 2 : null,
+    assumeBuildingUseType3?.checked ? 3 : null,
+    assumeBuildingUseType4?.checked ? 4 : null,
+  ].filter((v) => v !== null);
   return {
     post1992Sheltered: Boolean(assumePost1992Sheltered?.checked),
     over3FloorsSheltered: Boolean(assumeOver3FloorsSheltered?.checked),
@@ -1154,7 +1205,29 @@ function readAssumptionsFromInputs() {
     publicShelters: Boolean(assumePublicShelters?.checked),
     onlyPublicLand: Boolean(assumeOnlyPublicLand?.checked),
     weightByPopulation: Boolean(assumeWeightByPopulation?.checked),
+    buildingUseTypes: selectedTypes.length ? selectedTypes : [...BUILDING_USE_TYPES],
   };
+}
+
+function normalizeBuildingUseTypes(rawTypes) {
+  const normalized = (Array.isArray(rawTypes) ? rawTypes : [])
+    .map((v) => Number(v))
+    .filter((v) => BUILDING_USE_TYPES.includes(v));
+  const dedupedSorted = Array.from(new Set(normalized)).sort((a, b) => a - b);
+  if (dedupedSorted.length) return dedupedSorted;
+  return [...BUILDING_USE_TYPES];
+}
+
+function enforceWeightingBuildingTypeRule(nextAssumptions) {
+  const normalized = {
+    ...DEFAULT_ASSUMPTIONS,
+    ...nextAssumptions,
+    buildingUseTypes: normalizeBuildingUseTypes(nextAssumptions?.buildingUseTypes),
+  };
+  if (!normalized.weightByPopulation) return normalized;
+  const allowed = normalized.buildingUseTypes.filter((v) => WEIGHTED_ALLOWED_BUILDING_USE_TYPES.includes(v));
+  normalized.buildingUseTypes = allowed.length ? allowed : [...WEIGHTED_ALLOWED_BUILDING_USE_TYPES];
+  return normalized;
 }
 
 async function loadScenarioManifest() {
@@ -1178,7 +1251,7 @@ function resolveScenarioKey(assumptions) {
 }
 
 function setScenarioForAssumptions(assumptions) {
-  currentAssumptions = { ...assumptions };
+  currentAssumptions = enforceWeightingBuildingTypeRule(assumptions);
   currentScenarioKey = resolveScenarioKey(currentAssumptions);
   syncAssumptionInputs();
 }
@@ -2274,7 +2347,7 @@ async function loadAllData(reportLoadingStep = () => {}) {
   dataStore.miklatimSourceCrs = normalizeCrsName(
     dataStore.miklatim?.crs?.properties?.name || "",
   );
-  dataStore.buildings = await fetchJson(`${DATA_BASE}/buildings_built_year.geojson`);
+  dataStore.buildings = await fetchJson(`${DATA_BASE}/updated_all_buildings_data_with_use.geojson`);
   dataStore.buildingsSourceCrs = normalizeCrsName(
     dataStore.buildings?.crs?.properties?.name || "",
   );
@@ -2340,7 +2413,7 @@ function setPlacementMode(modeKey) {
 }
 
 async function applyAssumptions(nextAssumptions) {
-  setScenarioForAssumptions(nextAssumptions);
+  setScenarioForAssumptions(enforceWeightingBuildingTypeRule(nextAssumptions));
   await ensureScenarioDataLoaded();
   dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric] || null;
   coverageByIndex.clear();
@@ -2467,6 +2540,10 @@ function wireEvents() {
     assumePublicShelters,
     assumeOnlyPublicLand,
     assumeWeightByPopulation,
+    assumeBuildingUseType1,
+    assumeBuildingUseType2,
+    assumeBuildingUseType3,
+    assumeBuildingUseType4,
   ].filter(Boolean);
   for (const input of assumptionInputs) {
     input.addEventListener("change", () => {
