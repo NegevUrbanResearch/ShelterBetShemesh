@@ -108,6 +108,8 @@ class ScenarioAssumptions:
     over_3_floors_has_shelter: bool = False
     education_facilities_are_shelters: bool = False
     public_buildings_are_shelters: bool = False
+    only_place_on_public_land: bool = False
+    weight_by_population: bool = False
 
 
 def _configure_logging() -> None:
@@ -897,6 +899,81 @@ def _load_public_parcels(path: Path) -> gpd.GeoDataFrame:
     return gdf
 
 
+def _load_designated_public_land(path: Path) -> gpd.GeoDataFrame:
+    gdf = _load_geojson_with_real_crs(path).to_crs("EPSG:2039")
+    gdf = gdf[gdf.geometry.notna() & gdf.geometry.is_valid].copy()
+    if gdf.empty:
+        raise ValueError("Designated public land dataset is empty after filtering invalid geometries.")
+    return gdf
+
+
+def _filter_candidates_by_public_land(
+    candidates: list[CandidatePoint],
+    public_land: gpd.GeoDataFrame,
+) -> list[CandidatePoint]:
+    """Keep only candidates whose point falls within a designated public land polygon."""
+    sindex = public_land.sindex
+    filtered = []
+    for c in candidates:
+        possible = list(sindex.query(c.geometry_2039, predicate="intersects"))
+        if possible:
+            filtered.append(c)
+    logger.info(
+        "Public land filter: kept %d / %d candidates",
+        len(filtered), len(candidates),
+    )
+    for i, c in enumerate(filtered):
+        c.candidate_id = i
+    return filtered
+
+
+def _compute_population_weights(
+    buildings: gpd.GeoDataFrame,
+    population_data_path: Path,
+) -> dict[int, float]:
+    """Spatial-join population data onto target buildings and return per-building weights."""
+    pop_gdf = _load_geojson_with_real_crs(population_data_path).to_crs("EPSG:2039")
+    pop_gdf = pop_gdf[pop_gdf.geometry.notna() & pop_gdf.geometry.is_valid].copy()
+
+    ppu_col = _first_present(pop_gdf, ["people_per_unit"])
+    apt_col = _first_present(pop_gdf, ["Apartment_Number", "apartments", "units"])
+    if not ppu_col:
+        logger.warning("Population data missing people_per_unit column; falling back to uniform weights")
+        return {int(row.building_idx): 1.0 for row in buildings.itertuples()}
+
+    pop_gdf["pop_per_unit"] = pop_gdf[ppu_col].apply(lambda v: float(v) if pd.notna(v) else 0.0)
+    if apt_col:
+        pop_gdf["apt_count"] = pop_gdf[apt_col].apply(lambda v: max(float(v), 1.0) if pd.notna(v) and float(v) > 0 else 1.0)
+    else:
+        pop_gdf["apt_count"] = 1.0
+    pop_gdf["est_pop"] = pop_gdf["pop_per_unit"] * pop_gdf["apt_count"]
+
+    pop_centroids = pop_gdf.copy()
+    pop_centroids["geometry"] = pop_centroids.geometry.centroid
+
+    joined = gpd.sjoin_nearest(
+        buildings[["building_idx", "geometry"]],
+        pop_centroids[["est_pop", "geometry"]],
+        how="left",
+        max_distance=50.0,
+    )
+    joined = joined.sort_values("est_pop", ascending=False).drop_duplicates(subset=["building_idx"], keep="first")
+
+    weights: dict[int, float] = {}
+    for _, row in joined.iterrows():
+        est = row["est_pop"]
+        weights[int(row["building_idx"])] = max(float(est), 1.0) if pd.notna(est) and est > 0 else 1.0
+
+    for row in buildings.itertuples():
+        bidx = int(row.building_idx)
+        if bidx not in weights:
+            weights[bidx] = 1.0
+
+    pop_weighted = sum(1 for v in weights.values() if v > 1.0)
+    logger.info("Population weights: %d/%d buildings have weight > 1.0", pop_weighted, len(weights))
+    return weights
+
+
 def generate_candidate_sites(
     buildings: gpd.GeoDataFrame,
     graph: nx.MultiDiGraph,
@@ -1255,6 +1332,8 @@ def run_pipeline(
     education_facilities_path: Path | None = None,
     public_buildings_path: Path | None = None,
     output_subdir: str | None = None,
+    designated_public_land_path: Path | None = None,
+    buildings_population_path: Path | None = None,
 ) -> None:
     global OUTPUT_DIR
     base_output_dir = DATA_DIR / "meguniot_network"
@@ -1287,6 +1366,10 @@ def run_pipeline(
         required.append(education_facilities_path or DATA_DIR / "Education_Facilities.geojson")
     if assumptions.public_buildings_are_shelters:
         required.append(public_buildings_path or DATA_DIR / "buildings_on_מבני_ציבור.geojson")
+    if assumptions.only_place_on_public_land:
+        required.append(designated_public_land_path or DATA_DIR / "designated-public-land.geojson")
+    if assumptions.weight_by_population:
+        required.append(buildings_population_path or DATA_DIR / "all_buildings_data.geojson")
     if dem_path is not None:
         required.append(dem_path)
     _assert_input_files_exist(required)
@@ -1347,7 +1430,10 @@ def run_pipeline(
 
     # --- Building weights ---
     building_weights: dict[int, float] | None = None
-    if building_weight_field:
+    if assumptions.weight_by_population:
+        pop_path = buildings_population_path or DATA_DIR / "all_buildings_data.geojson"
+        building_weights = _compute_population_weights(buildings, pop_path)
+    elif building_weight_field:
         wt_col = _first_present(buildings, [building_weight_field])
         if wt_col:
             building_weights = {}
@@ -1366,6 +1452,12 @@ def run_pipeline(
         public_parcels_path=public_parcels_path,
     )
 
+    designated_land = None
+    if assumptions.only_place_on_public_land:
+        pub_land_path = designated_public_land_path or DATA_DIR / "designated-public-land.geojson"
+        designated_land = _load_designated_public_land(pub_land_path)
+        exact_candidates = _filter_candidates_by_public_land(exact_candidates, designated_land)
+
     building_tree, _ = _build_building_kdtree(buildings)
     cluster_candidates, cluster_members_by_candidate = _generate_cluster_mode_candidates(
         buildings=buildings,
@@ -1373,6 +1465,18 @@ def run_pipeline(
         max_candidates=DEFAULT_CLUSTER_CANDIDATE_POOL,
         ensemble_runs=cluster_ensemble_runs,
     )
+
+    if designated_land is not None:
+        old_members = dict(cluster_members_by_candidate)
+        kept = [c for c in cluster_candidates if designated_land.geometry.contains(c.geometry_2039).any()]
+        new_members: dict[int, list[int]] = {}
+        for i, c in enumerate(kept):
+            new_members[i] = old_members.get(c.candidate_id, [])
+            c.candidate_id = i
+        cluster_candidates = kept
+        cluster_members_by_candidate = new_members
+        logger.info("Public land filter (cluster): kept %d candidates", len(kept))
+
     mode_candidates: dict[PlacementMode, list[CandidatePoint]] = {
         PlacementMode.EXACT: exact_candidates,
         PlacementMode.CLUSTER: cluster_candidates,
@@ -1451,6 +1555,8 @@ def run_pipeline(
                     "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
                     "educationShelters": assumptions.education_facilities_are_shelters,
                     "publicShelters": assumptions.public_buildings_are_shelters,
+                    "onlyPublicLand": assumptions.only_place_on_public_land,
+                    "weightByPopulation": assumptions.weight_by_population,
                 },
                 "total_candidates_by_placement": {
                     PlacementMode.EXACT.value: len(exact_candidates),
@@ -1600,6 +1706,8 @@ def run_pipeline(
                             "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
                             "educationShelters": assumptions.education_facilities_are_shelters,
                             "publicShelters": assumptions.public_buildings_are_shelters,
+                            "onlyPublicLand": assumptions.only_place_on_public_land,
+                            "weightByPopulation": assumptions.weight_by_population,
                         },
                         "coverages": coverage_entries,
                     },
@@ -1704,6 +1812,8 @@ def run_pipeline(
                             "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
                             "educationShelters": assumptions.education_facilities_are_shelters,
                             "publicShelters": assumptions.public_buildings_are_shelters,
+                            "onlyPublicLand": assumptions.only_place_on_public_land,
+                            "weightByPopulation": assumptions.weight_by_population,
                         },
                         "statistics": stats,
                         "proposed_meguniot": proposed,
@@ -1816,6 +1926,8 @@ def run_pipeline(
             "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
             "educationShelters": assumptions.education_facilities_are_shelters,
             "publicShelters": assumptions.public_buildings_are_shelters,
+            "onlyPublicLand": assumptions.only_place_on_public_land,
+            "weightByPopulation": assumptions.weight_by_population,
         },
         "per_metric": {},
     }
@@ -1879,6 +1991,8 @@ def run_pipeline(
             "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
             "educationShelters": assumptions.education_facilities_are_shelters,
             "publicShelters": assumptions.public_buildings_are_shelters,
+            "onlyPublicLand": assumptions.only_place_on_public_land,
+            "weightByPopulation": assumptions.weight_by_population,
         },
         "elevation_model": elevation_model,
         "time_buckets": TIME_BUCKETS,
@@ -2012,6 +2126,16 @@ def main() -> None:
         help="Count public buildings as existing shelter supply.",
     )
     parser.add_argument(
+        "--only-place-on-public-land",
+        action="store_true",
+        help="Restrict new shelter placement to designated public land parcels.",
+    )
+    parser.add_argument(
+        "--weight-by-population",
+        action="store_true",
+        help="Weight building importance by estimated population (people_per_unit * apartments).",
+    )
+    parser.add_argument(
         "--education-facilities-path",
         type=Path,
         default=DATA_DIR / "Education_Facilities.geojson",
@@ -2022,6 +2146,18 @@ def main() -> None:
         type=Path,
         default=DATA_DIR / "buildings_on_מבני_ציבור.geojson",
         help="GeoJSON path for public buildings used as shelters when enabled.",
+    )
+    parser.add_argument(
+        "--designated-public-land-path",
+        type=Path,
+        default=DATA_DIR / "designated-public-land.geojson",
+        help="GeoJSON path for designated public land parcels.",
+    )
+    parser.add_argument(
+        "--buildings-population-path",
+        type=Path,
+        default=DATA_DIR / "all_buildings_data.geojson",
+        help="GeoJSON path for building population data (people_per_unit).",
     )
     parser.add_argument(
         "--output-subdir",
@@ -2037,6 +2173,8 @@ def main() -> None:
         over_3_floors_has_shelter=bool(args.assume_over_3_floors_has_shelter),
         education_facilities_are_shelters=bool(args.assume_education_facilities_are_shelters),
         public_buildings_are_shelters=bool(args.assume_public_buildings_are_shelters),
+        only_place_on_public_land=bool(args.only_place_on_public_land),
+        weight_by_population=bool(args.weight_by_population),
     )
     run_pipeline(
         walk_speed_mps=args.walk_speed_mps,
@@ -2056,6 +2194,8 @@ def main() -> None:
         education_facilities_path=args.education_facilities_path,
         public_buildings_path=args.public_buildings_path,
         output_subdir=args.output_subdir,
+        designated_public_land_path=args.designated_public_land_path,
+        buildings_population_path=args.buildings_population_path,
     )
 
 

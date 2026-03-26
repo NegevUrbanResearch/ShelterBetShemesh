@@ -93,6 +93,9 @@ const I18N = {
     assumeOver3FloorsShelteredLabel: "Above 3 floors",
     assumeEducationSheltersLabel: "Educational facilities",
     assumePublicSheltersLabel: "Public buildings",
+    assumptionsPlacementTitle: "Placement & Weighting",
+    assumeOnlyPublicLandLabel: "Only place on public land",
+    assumeWeightByPopulationLabel: "Weight by population density",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
       `Recommended ${modeLabel} (max ${maxRecommendations})`,
     clusterAreas: "cluster areas",
@@ -225,6 +228,9 @@ const I18N = {
     assumeOver3FloorsShelteredLabel: "מעל 3 קומות",
     assumeEducationSheltersLabel: "מוסדות חינוך",
     assumePublicSheltersLabel: "מבני ציבור",
+    assumptionsPlacementTitle: "מיקום ושקלול",
+    assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
+    assumeWeightByPopulationLabel: "שקלול לפי צפיפות אוכלוסין",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
     clusterAreas: "אזורי אשכול",
     shelters: "מיגוניות",
@@ -312,6 +318,8 @@ const DEFAULT_ASSUMPTIONS = {
   over3FloorsSheltered: false,
   educationShelters: false,
   publicShelters: false,
+  onlyPublicLand: false,
+  weightByPopulation: false,
 };
 const LAYER_DEFAULTS = {
   meguniot: true,
@@ -364,6 +372,8 @@ const assumePost1992Sheltered = document.getElementById("assumePost1992Sheltered
 const assumeOver3FloorsSheltered = document.getElementById("assumeOver3FloorsSheltered");
 const assumeEducationShelters = document.getElementById("assumeEducationShelters");
 const assumePublicShelters = document.getElementById("assumePublicShelters");
+const assumeOnlyPublicLand = document.getElementById("assumeOnlyPublicLand");
+const assumeWeightByPopulation = document.getElementById("assumeWeightByPopulation");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -487,8 +497,11 @@ function applyStaticTranslations() {
     assumeOver3FloorsShelteredLabel: "assumeOver3FloorsShelteredLabel",
     assumeEducationSheltersLabel: "assumeEducationSheltersLabel",
     assumePublicSheltersLabel: "assumePublicSheltersLabel",
+    assumeOnlyPublicLandLabel: "assumeOnlyPublicLandLabel",
+    assumeWeightByPopulationLabel: "assumeWeightByPopulationLabel",
     assumptionsHasShelterTitle: "assumptionsHasShelterTitle",
     assumptionsNeighborsTitle: "assumptionsNeighborsTitle",
+    assumptionsPlacementTitle: "assumptionsPlacementTitle",
     mobilePanelTitle: "mobilePanelTitle",
   };
   for (const [id, key] of Object.entries(textMap)) {
@@ -1104,7 +1117,9 @@ function assumptionsEqual(a, b) {
     Boolean(a?.post1992Sheltered) === Boolean(b?.post1992Sheltered) &&
     Boolean(a?.over3FloorsSheltered) === Boolean(b?.over3FloorsSheltered) &&
     Boolean(a?.educationShelters) === Boolean(b?.educationShelters) &&
-    Boolean(a?.publicShelters) === Boolean(b?.publicShelters)
+    Boolean(a?.publicShelters) === Boolean(b?.publicShelters) &&
+    Boolean(a?.onlyPublicLand) === Boolean(b?.onlyPublicLand) &&
+    Boolean(a?.weightByPopulation) === Boolean(b?.weightByPopulation)
   );
 }
 
@@ -1124,6 +1139,8 @@ function syncAssumptionInputs() {
   }
   if (assumeEducationShelters) assumeEducationShelters.checked = Boolean(currentAssumptions.educationShelters);
   if (assumePublicShelters) assumePublicShelters.checked = Boolean(currentAssumptions.publicShelters);
+  if (assumeOnlyPublicLand) assumeOnlyPublicLand.checked = Boolean(currentAssumptions.onlyPublicLand);
+  if (assumeWeightByPopulation) assumeWeightByPopulation.checked = Boolean(currentAssumptions.weightByPopulation);
 }
 
 function readAssumptionsFromInputs() {
@@ -1132,6 +1149,8 @@ function readAssumptionsFromInputs() {
     over3FloorsSheltered: Boolean(assumeOver3FloorsSheltered?.checked),
     educationShelters: Boolean(assumeEducationShelters?.checked),
     publicShelters: Boolean(assumePublicShelters?.checked),
+    onlyPublicLand: Boolean(assumeOnlyPublicLand?.checked),
+    weightByPopulation: Boolean(assumeWeightByPopulation?.checked),
   };
 }
 
@@ -2443,6 +2462,8 @@ function wireEvents() {
     assumeOver3FloorsSheltered,
     assumeEducationShelters,
     assumePublicShelters,
+    assumeOnlyPublicLand,
+    assumeWeightByPopulation,
   ].filter(Boolean);
   for (const input of assumptionInputs) {
     input.addEventListener("change", () => {

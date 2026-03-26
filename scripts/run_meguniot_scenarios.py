@@ -24,6 +24,8 @@ def scenario_key(assumptions: ScenarioAssumptions) -> str:
         f"_f{int(assumptions.over_3_floors_has_shelter)}"
         f"_e{int(assumptions.education_facilities_are_shelters)}"
         f"_u{int(assumptions.public_buildings_are_shelters)}"
+        f"_l{int(assumptions.only_place_on_public_land)}"
+        f"_w{int(assumptions.weight_by_population)}"
     )
 
 
@@ -51,23 +53,31 @@ def main() -> None:
     parser.add_argument(
         "--public-buildings-path", type=Path, default=DATA_DIR / "buildings_on_מבני_ציבור.geojson"
     )
+    parser.add_argument(
+        "--designated-public-land-path", type=Path, default=DATA_DIR / "designated-public-land.geojson"
+    )
+    parser.add_argument(
+        "--buildings-population-path", type=Path, default=DATA_DIR / "all_buildings_data.geojson"
+    )
     args = parser.parse_args()
 
     sources = {CandidateSource(s) for s in args.candidate_sources}
     scenarios = []
-    assumption_combinations = list(itertools.product([False, True], repeat=4))
+    assumption_combinations = list(itertools.product([False, True], repeat=6))
     progress = tqdm(
         assumption_combinations,
         desc="Running scenarios",
         total=len(assumption_combinations),
         unit="scenario",
     )
-    for post_1992, over_3, education, public in progress:
+    for post_1992, over_3, education, public, public_land, pop_weight in progress:
         assumptions = ScenarioAssumptions(
             post_1992_has_shelter=post_1992,
             over_3_floors_has_shelter=over_3,
             education_facilities_are_shelters=education,
             public_buildings_are_shelters=public,
+            only_place_on_public_land=public_land,
+            weight_by_population=pop_weight,
         )
         key = scenario_key(assumptions)
         progress.set_postfix_str(key)
@@ -89,6 +99,8 @@ def main() -> None:
             education_facilities_path=args.education_facilities_path,
             public_buildings_path=args.public_buildings_path,
             output_subdir=f"scenarios/{key}",
+            designated_public_land_path=args.designated_public_land_path,
+            buildings_population_path=args.buildings_population_path,
         )
         scenarios.append(
             {
@@ -98,13 +110,15 @@ def main() -> None:
                     "over3FloorsSheltered": assumptions.over_3_floors_has_shelter,
                     "educationShelters": assumptions.education_facilities_are_shelters,
                     "publicShelters": assumptions.public_buildings_are_shelters,
+                    "onlyPublicLand": assumptions.only_place_on_public_land,
+                    "weightByPopulation": assumptions.weight_by_population,
                 },
             }
         )
 
     manifest = {
         "version": 1,
-        "defaultScenarioKey": "p1_f0_e0_u0",
+        "defaultScenarioKey": "p1_f0_e0_u0_l0_w0",
         "scenarios": scenarios,
     }
     out_path = DATA_DIR / "meguniot_network" / "scenario_manifest.json"
