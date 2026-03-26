@@ -40,6 +40,7 @@ const FIXED_BUCKET_KEY = "5min";
 const ACCESSIBILITY_GRID_CELL_SIZE_PX = 8;
 const BUILDING_USE_TYPES = [1, 2, 3, 4];
 const WEIGHTED_ALLOWED_BUILDING_USE_TYPES = [2, 3];
+const WEIGHTING_DISABLED_BUILDING_USE_TYPES = [1, 4];
 const I18N = {
   en: {
     appTitle: "Access to Shelter - Beit Shemesh",
@@ -108,7 +109,10 @@ const I18N = {
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "No building types selected",
     assumeOnlyPublicLandLabel: "Only place on public land",
-    assumeWeightByPopulationLabel: "Weight by population density",
+    assumeWeightByPopulationLabel: "Weight by # residents",
+    weightingBuildingTypeRestrictionNotice:
+      "Resident weighting is on. Public and Commercial building types are turned off automatically.",
+    weightingBuildingTypeRestrictionDisabledHint: "Can't use with resident weighting",
     assumeBuildingUseType1Label: "Public",
     assumeBuildingUseType2Label: "Mixed use",
     assumeBuildingUseType3Label: "Residential",
@@ -221,6 +225,8 @@ const I18N = {
     </div>
   `,
     errorLoadingData: (message) => `Error loading data: ${message}`,
+    errorMissingScenarioAnalysis: (scenarioKey) =>
+      `Missing analysis output for scenario "${scenarioKey}". Please generate this scenario and try again.`,
   },
   he: {
     appTitle: "עיר מקלט - בית שמש",
@@ -289,7 +295,10 @@ const I18N = {
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
-    assumeWeightByPopulationLabel: "שקלול לפי צפיפות אוכלוסין",
+    assumeWeightByPopulationLabel: "שקלול לפי # תושבים",
+    weightingBuildingTypeRestrictionNotice:
+      "שקלול לפי תושבים פעיל. סוגי המבנים ציבורי ומסחרי כבויים אוטומטית.",
+    weightingBuildingTypeRestrictionDisabledHint: "לא ניתן לשימוש עם שקלול לפי תושבים",
     assumeBuildingUseType1Label: "ציבורי",
     assumeBuildingUseType2Label: "שימוש מעורב",
     assumeBuildingUseType3Label: "מגורים",
@@ -401,6 +410,8 @@ const I18N = {
     </div>
   `,
     errorLoadingData: (message) => `שגיאה בטעינת נתונים: ${message}`,
+    errorMissingScenarioAnalysis: (scenarioKey) =>
+      `חסרים קבצי ניתוח עבור התרחיש "${scenarioKey}". יש לייצר את התרחיש ואז לנסות שוב.`,
   },
 };
 
@@ -530,6 +541,8 @@ let scenarioManifest = [];
 let scenarioDataCache = {};
 let currentScenarioKey = null;
 let currentAssumptions = { ...DEFAULT_ASSUMPTIONS };
+let lastMissingScenarioPopupKey = null;
+let weightingRestrictionNoticeTimer = null;
 
 function t(key, ...args) {
   const value = I18N[currentLanguage]?.[key];
@@ -544,6 +557,71 @@ function setLoadingStatus(messageKeyOrText) {
     typeof messageKeyOrText === "string" &&
     Object.prototype.hasOwnProperty.call(I18N[currentLanguage] || {}, messageKeyOrText);
   loadingMessageEl.textContent = knownI18nKey ? t(messageKeyOrText) : String(messageKeyOrText ?? "");
+}
+
+function showWeightingRestrictionNotice(message) {
+  let noticeEl = document.getElementById("weightingRestrictionNotice");
+  if (!noticeEl) {
+    noticeEl = document.createElement("div");
+    noticeEl.id = "weightingRestrictionNotice";
+    noticeEl.className = "weighting-restriction-notice hidden";
+    document.body.appendChild(noticeEl);
+  }
+  noticeEl.textContent = String(message || "");
+  noticeEl.classList.remove("hidden");
+  noticeEl.classList.add("is-visible");
+  if (weightingRestrictionNoticeTimer) window.clearTimeout(weightingRestrictionNoticeTimer);
+  weightingRestrictionNoticeTimer = window.setTimeout(() => {
+    noticeEl.classList.remove("is-visible");
+    noticeEl.classList.add("hidden");
+  }, 2600);
+}
+
+function updateBuildingTypeWeightingState() {
+  const weightingEnabled = Boolean(currentAssumptions.weightByPopulation);
+  const disabledHint = t("weightingBuildingTypeRestrictionDisabledHint");
+  for (const option of buildingTypeOptionButtons) {
+    const typeValue = Number(option.dataset.useType);
+    const disabledByWeighting =
+      weightingEnabled && WEIGHTING_DISABLED_BUILDING_USE_TYPES.includes(typeValue);
+    option.classList.toggle("is-weighting-disabled", disabledByWeighting);
+    option.setAttribute("aria-disabled", String(disabledByWeighting));
+    if (disabledByWeighting) {
+      option.dataset.disabledReason = disabledHint;
+      option.setAttribute("title", disabledHint);
+    } else {
+      delete option.dataset.disabledReason;
+      option.removeAttribute("title");
+    }
+  }
+}
+
+function isMissingScenarioAnalysisError(error) {
+  const status = Number(error?.status);
+  const path = typeof error?.path === "string" ? error.path : "";
+  return status === 404 && path.includes("/scenarios/");
+}
+
+function extractScenarioKeyFromPath(path) {
+  if (typeof path !== "string") return null;
+  const marker = "/scenarios/";
+  const markerIdx = path.indexOf(marker);
+  if (markerIdx < 0) return null;
+  const after = path.slice(markerIdx + marker.length);
+  const [scenarioKey] = after.split("/");
+  return scenarioKey || null;
+}
+
+function handleScenarioUiError(error) {
+  console.error(error);
+  const message = t("errorLoadingData", error?.message || String(error));
+  if (statsEl) statsEl.textContent = message;
+  if (!isMissingScenarioAnalysisError(error)) return;
+  const scenarioKey = extractScenarioKeyFromPath(error?.path) || currentScenarioKey || "__legacy__";
+  const popupKey = `${scenarioKey}|${String(error?.path || "")}`;
+  if (lastMissingScenarioPopupKey === popupKey) return;
+  lastMissingScenarioPopupKey = popupKey;
+  window.alert(t("errorMissingScenarioAnalysis", scenarioKey));
 }
 
 function hideLoadingOverlay() {
@@ -630,6 +708,7 @@ function applyStaticTranslations() {
     }
   }
   updateBuildingTypesSummaryText();
+  updateBuildingTypeWeightingState();
 
   metricGraphBtn.textContent = t("metricGraphBtn");
   metricEuclideanBtn.textContent = t("metricEuclideanBtn");
@@ -1399,6 +1478,7 @@ function syncAssumptionInputs() {
   if (assumeOnlyPublicLand) assumeOnlyPublicLand.checked = Boolean(currentAssumptions.onlyPublicLand);
   if (assumeWeightByPopulation) assumeWeightByPopulation.checked = Boolean(currentAssumptions.weightByPopulation);
   setSelectedBuildingUseTypesInUi(normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes));
+  updateBuildingTypeWeightingState();
 }
 
 function readAssumptionsFromInputs() {
@@ -1470,6 +1550,7 @@ function setSelectedBuildingUseTypesInUi(selectedTypes) {
     option.setAttribute("aria-pressed", String(selected));
   }
   updateBuildingTypesSummaryText();
+  updateBuildingTypeWeightingState();
 }
 
 function getSelectedBuildingUseTypesFromUi() {
@@ -1515,6 +1596,7 @@ function resolveScenarioKey(assumptions) {
 function setScenarioForAssumptions(assumptions) {
   currentAssumptions = enforceWeightingBuildingTypeRule(assumptions);
   currentScenarioKey = resolveScenarioKey(currentAssumptions);
+  lastMissingScenarioPopupKey = null;
   syncAssumptionInputs();
 }
 
@@ -2642,21 +2724,28 @@ function renderStats() {
 }
 
 async function refreshView() {
-  await ensureBucketAuxData(getActiveBucketKey());
-  updateSliderBounds();
-  countValue.textContent = countRange.value;
-  renderExistingCoverageBuildings();
-  renderAccessibilityHeatmap();
-  renderRecommended();
-  renderSelectedShelterCoverage();
-  renderStats();
-  applyLayerVisibility();
+  try {
+    await ensureBucketAuxData(getActiveBucketKey());
+    updateSliderBounds();
+    countValue.textContent = countRange.value;
+    renderExistingCoverageBuildings();
+    renderAccessibilityHeatmap();
+    renderRecommended();
+    renderSelectedShelterCoverage();
+    renderStats();
+    applyLayerVisibility();
+  } catch (error) {
+    handleScenarioUiError(error);
+  }
 }
 
 async function fetchJson(path) {
   const response = await fetch(path);
   if (!response.ok) {
-    throw new Error(`Failed to fetch ${path}: ${response.status}`);
+    const error = new Error(`Failed to fetch ${path}: ${response.status}`);
+    error.path = path;
+    error.status = response.status;
+    throw error;
   }
   return response.json();
 }
@@ -2793,21 +2882,38 @@ function setPlacementMode(modeKey) {
 }
 
 async function applyAssumptions(nextAssumptions) {
-  setScenarioForAssumptions(enforceWeightingBuildingTypeRule(nextAssumptions));
-  await ensureScenarioDataLoaded();
-  dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric] || null;
-  coverageByIndex.clear();
-  coverageById.clear();
-  for (const b of dataStore.coverage?.buildings || []) {
-    coverageByIndex.set(Number(b.building_idx), b);
-    coverageById.set(Number(b.id), b);
+  try {
+    const previousWeightingEnabled = Boolean(currentAssumptions.weightByPopulation);
+    const nextWeightingEnabled = Boolean(nextAssumptions?.weightByPopulation);
+    const nextBuildingUseTypes = normalizeBuildingUseTypes(nextAssumptions?.buildingUseTypes);
+    const adjustedAssumptions = {
+      ...nextAssumptions,
+      buildingUseTypes: nextBuildingUseTypes,
+    };
+    if (previousWeightingEnabled && !nextWeightingEnabled) {
+      const restoredTypes = Array.from(
+        new Set([...nextBuildingUseTypes, ...WEIGHTING_DISABLED_BUILDING_USE_TYPES]),
+      ).sort((a, b) => a - b);
+      adjustedAssumptions.buildingUseTypes = restoredTypes;
+    }
+    setScenarioForAssumptions(adjustedAssumptions);
+    await ensureScenarioDataLoaded();
+    dataStore.coverage = dataStore.coverageByMetric[currentDistanceMetric] || null;
+    coverageByIndex.clear();
+    coverageById.clear();
+    for (const b of dataStore.coverage?.buildings || []) {
+      coverageByIndex.set(Number(b.building_idx), b);
+      coverageById.set(Number(b.id), b);
+    }
+    buildBuildingFeatureIndex();
+    resetAddedSheltersToZero();
+    clearSelection();
+    await refreshView();
+    renderExistingShelters();
+    applyLayerVisibility();
+  } catch (error) {
+    handleScenarioUiError(error);
   }
-  buildBuildingFeatureIndex();
-  resetAddedSheltersToZero();
-  clearSelection();
-  await refreshView();
-  renderExistingShelters();
-  applyLayerVisibility();
 }
 
 function wireEvents() {
@@ -2933,6 +3039,10 @@ function wireEvents() {
   });
   for (const option of buildingTypeOptionButtons) {
     option.addEventListener("click", () => {
+      if (option.classList.contains("is-weighting-disabled")) {
+        showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionDisabledHint"));
+        return;
+      }
       option.classList.toggle("is-selected");
       option.setAttribute("aria-pressed", String(option.classList.contains("is-selected")));
       void applyAssumptions(readAssumptionsFromInputs());
@@ -2945,6 +3055,10 @@ function wireEvents() {
   buildingTypesDeselectAllBtn?.addEventListener("click", () => {
     setSelectedBuildingUseTypesInUi([]);
     void applyAssumptions(readAssumptionsFromInputs());
+  });
+  assumeWeightByPopulation?.addEventListener("change", () => {
+    if (!assumeWeightByPopulation.checked) return;
+    showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionNotice"));
   });
   document.addEventListener("click", (event) => {
     if (!buildingTypesDropdown) return;
@@ -3012,7 +3126,7 @@ loadAllData((stepKey) => setLoadingStatus(stepKey))
     hideLoadingOverlay();
   })
   .catch((err) => {
-    console.error(err);
+    handleScenarioUiError(err);
     const message = t("errorLoadingData", err.message);
     statsEl.textContent = message;
     setLoadingStatus(message);
