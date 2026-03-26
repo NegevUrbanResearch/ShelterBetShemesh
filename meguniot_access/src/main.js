@@ -93,7 +93,8 @@ const I18N = {
     assumeOver3FloorsShelteredLabel: "Above 3 floors",
     assumeEducationSheltersLabel: "Educational facilities",
     assumePublicSheltersLabel: "Public buildings",
-    assumptionsPlacementTitle: "Placement & Weighting",
+    assumptionsPlacementTitle: "Placement",
+    assumptionsWeightingTitle: "Weighting",
     assumeOnlyPublicLandLabel: "Only place on public land",
     assumeWeightByPopulationLabel: "Weight by population density",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
@@ -228,7 +229,8 @@ const I18N = {
     assumeOver3FloorsShelteredLabel: "מעל 3 קומות",
     assumeEducationSheltersLabel: "מוסדות חינוך",
     assumePublicSheltersLabel: "מבני ציבור",
-    assumptionsPlacementTitle: "מיקום ושקלול",
+    assumptionsPlacementTitle: "מיקום",
+    assumptionsWeightingTitle: "שקלול",
     assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
     assumeWeightByPopulationLabel: "שקלול לפי צפיפות אוכלוסין",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
@@ -502,6 +504,7 @@ function applyStaticTranslations() {
     assumptionsHasShelterTitle: "assumptionsHasShelterTitle",
     assumptionsNeighborsTitle: "assumptionsNeighborsTitle",
     assumptionsPlacementTitle: "assumptionsPlacementTitle",
+    assumptionsWeightingTitle: "assumptionsWeightingTitle",
     mobilePanelTitle: "mobilePanelTitle",
   };
   for (const [id, key] of Object.entries(textMap)) {
