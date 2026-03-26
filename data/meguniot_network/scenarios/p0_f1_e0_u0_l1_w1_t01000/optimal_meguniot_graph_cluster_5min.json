@@ -1,0 +1,180 @@
+{
+  "schema_version": "5.0.0",
+  "distance_metric": "graph",
+  "placement_mode": "cluster",
+  "time_bucket": "5min",
+  "time_seconds": 300,
+  "elevation_model": {
+    "mode": "flat_speed",
+    "dem_file": null
+  },
+  "euclidean_access_radius_m": 100.0,
+  "optimization_method": "weighted_greedy_maximum_coverage",
+  "swap_improvement_enabled": false,
+  "candidate_generation": {
+    "sources": [
+      "cluster_ensemble_kmeans"
+    ],
+    "node_proximity_m": null,
+    "cluster_ensemble_runs": 150,
+    "total_candidates": 26
+  },
+  "assumptions": {
+    "post1992Sheltered": false,
+    "over3FloorsSheltered": true,
+    "educationShelters": false,
+    "publicShelters": false,
+    "onlyPublicLand": true,
+    "weightByPopulation": true,
+    "buildingUseTypes": [
+      2
+    ]
+  },
+  "statistics": {
+    "distance_metric": "graph",
+    "placement_mode": "cluster",
+    "time_bucket": "5min",
+    "time_seconds": 300,
+    "euclidean_access_radius_m": 100.0,
+    "walk_speed_mps_fallback": 1.3,
+    "emergency_crossing_radius_m": 22.0,
+    "total_target_buildings": 83,
+    "total_candidates_evaluated": 26,
+    "candidate_sources_used": [
+      "cluster_ensemble_kmeans"
+    ],
+    "covered_by_existing": 10,
+    "currently_uncovered": 73,
+    "additional_covered_by_proposed": 4,
+    "final_uncovered": 69,
+    "num_proposed_meguniot": 3,
+    "proposed_by_source": {
+      "cluster_candidates": 3
+    },
+    "max_proposed_limit": 200,
+    "stop_reason": "no_marginal_gain"
+  },
+  "proposed_meguniot": [
+    {
+      "rank": 1,
+      "distance_metric": "graph",
+      "placement_mode": "cluster",
+      "placement_semantics": "area_center",
+      "shelter_id": 6,
+      "candidate_id": 6,
+      "candidate_source": "cluster_candidates",
+      "source_id": null,
+      "building_idx": 2,
+      "coordinates": "31.736322,34.985377",
+      "lat": 31.73632179997801,
+      "lon": 34.98537703309063,
+      "nearest_building_dist_m": 53.04,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        2,
+        17,
+        21,
+        63,
+        74
+      ],
+      "marginal_covered_building_indices": [
+        2,
+        17,
+        21,
+        63,
+        74
+      ]
+    },
+    {
+      "rank": 2,
+      "distance_metric": "graph",
+      "placement_mode": "cluster",
+      "placement_semantics": "area_center",
+      "shelter_id": 1,
+      "candidate_id": 1,
+      "candidate_source": "cluster_candidates",
+      "source_id": null,
+      "building_idx": 65,
+      "coordinates": "31.741133,34.986398",
+      "lat": 31.741133323301575,
+      "lon": 34.986398261577634,
+      "nearest_building_dist_m": 40.18,
+      "newly_covered_buildings": 8,
+      "newly_covered_people_est": 56,
+      "covered_building_indices": [
+        12,
+        15,
+        39,
+        40,
+        43,
+        65,
+        70,
+        71
+      ],
+      "marginal_covered_building_indices": [
+        12,
+        15,
+        39,
+        40,
+        43,
+        65,
+        70,
+        71
+      ]
+    },
+    {
+      "rank": 3,
+      "distance_metric": "graph",
+      "placement_mode": "cluster",
+      "placement_semantics": "area_center",
+      "shelter_id": 5,
+      "candidate_id": 5,
+      "candidate_source": "cluster_candidates",
+      "source_id": null,
+      "building_idx": 76,
+      "coordinates": "31.745608,34.994554",
+      "lat": 31.745608457024286,
+      "lon": 34.994553616700586,
+      "nearest_building_dist_m": 61.6,
+      "newly_covered_buildings": 16,
+      "newly_covered_people_est": 112,
+      "covered_building_indices": [
+        0,
+        6,
+        11,
+        16,
+        19,
+        24,
+        25,
+        34,
+        45,
+        48,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "marginal_covered_building_indices": [
+        0,
+        6,
+        11,
+        16,
+        19,
+        24,
+        25,
+        34,
+        45,
+        48,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81
+      ]
+    }
+  ]
+}

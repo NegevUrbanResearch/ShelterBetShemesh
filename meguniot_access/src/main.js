@@ -99,6 +99,9 @@ const I18N = {
     assumptionsPlacementTitle: "Placement",
     assumptionsWeightingTitle: "Weighting",
     assumptionsBuildingTypesTitle: "Building types",
+    buildingTypesSelectAllLabel: "Select all",
+    buildingTypesDeselectAllLabel: "Deselect all",
+    buildingTypesNoneSelectedLabel: "No building types selected",
     assumeOnlyPublicLandLabel: "Only place on public land",
     assumeWeightByPopulationLabel: "Weight by population density",
     assumeBuildingUseType1Label: "Public",
@@ -132,6 +135,8 @@ const I18N = {
     coveragePhraseGraph: (minuteLabel) => `within ${minuteLabel} walking distance`,
     exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
       `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. You have added <strong>${shownLength}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. There remain <strong>${remainingUncovered}</strong> uncovered buildings.`,
+    statsNoBuildingTypes:
+      "No building types are selected, so no target buildings are included in this analysis and no new shelters are suggested.",
     buildingPopupCovered: (idx) => `<strong>Building #${idx}</strong><br>Covered by existing shelters`,
     buildingPopupUncovered: (idx) => `<strong>Building #${idx}</strong><br>Uncovered by existing shelters`,
     buildingAssumedShelteredPopup:
@@ -144,6 +149,30 @@ const I18N = {
     existingMiklatLabel: "Existing miklat",
     contourPopup: (heightMeters) => `<strong>Contour</strong><br>Elevation: ${heightMeters}m`,
     mapClickElevationPopup: (heightMeters) => `<strong>Approx elevation</strong><br>${heightMeters}m`,
+    buildingPopupTitle: (idx) => `Building #${idx}`,
+    buildingPopupStatusCovered: "Covered by existing shelters",
+    buildingPopupStatusUncovered: "Uncovered by existing shelters",
+    buildingPopupStatusAssumed: "Excluded from target buildings by assumptions",
+    buildingPopupTypeLabel: "Building type",
+    buildingPopupTypeStoryLabel: "Type story",
+    buildingPopupTypeUnknown: "Unknown",
+    buildingPopupTypeStory_1: "Public facility, likely no residential use",
+    buildingPopupTypeStory_2: "Mixed use, likely residential + public/commercial",
+    buildingPopupTypeStory_3: "Residential",
+    buildingPopupTypeStory_4: "Commercial/private non-residential",
+    buildingPopupMetaLabel: "Metadata",
+    buildingPopupAssumptionsLabel: "Assumption effects",
+    buildingPopupBuildYear: "Build year",
+    buildingPopupFloors: "Floors",
+    buildingPopupApartments: "Apartments",
+    buildingAssumptionPost1992: "Excluded by post-1992 sheltered assumption",
+    buildingAssumptionOver3Floors: "Excluded by over-3-floors sheltered assumption",
+    buildingAssumptionTypeFiltered: "Excluded by selected building types",
+    buildingAssumptionNoTypes: "No building types are selected",
+    buildingAssumptionWeightIgnored: "Excluded from population weighting for this type",
+    buildingAssumptionWeightPartial: "Partially weighted in population mode",
+    buildingAssumptionWeightFull: "Fully weighted in population mode",
+    buildingAssumptionNone: "No assumption filters currently affect this building",
     recommendedLabel: (rank) => `Recommended #${rank}`,
     modeLabelCluster: "Cluster area",
     modeLabelExact: "Exact point",
@@ -241,6 +270,9 @@ const I18N = {
     assumptionsPlacementTitle: "מיקום",
     assumptionsWeightingTitle: "שקלול",
     assumptionsBuildingTypesTitle: "סוגי מבנים",
+    buildingTypesSelectAllLabel: "בחר הכל",
+    buildingTypesDeselectAllLabel: "נקה הכל",
+    buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
     assumeWeightByPopulationLabel: "שקלול לפי צפיפות אוכלוסין",
     assumeBuildingUseType1Label: "ציבורי",
@@ -273,6 +305,8 @@ const I18N = {
     coveragePhraseGraph: (minuteLabel) => `בטווח הליכה של ${minuteLabel}`,
     exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
       `ב<strong>${modeLabel}</strong> יש <strong>${uncoveredNow}</strong> מבני מגורים ללא מיגון <strong>${coveragePhrase}</strong>. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים <strong>${coveragePhrase}</strong>. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
+    statsNoBuildingTypes:
+      "לא נבחרו סוגי מבנים, לכן אין מבני יעד בניתוח זה ולא מוצעות מיגוניות חדשות.",
     buildingPopupCovered: (idx) => `<strong>מבנה #${idx}</strong><br>מכוסה על ידי מיגון קיים`,
     buildingPopupUncovered: (idx) => `<strong>מבנה #${idx}</strong><br>ללא כיסוי על ידי מיגון קיים`,
     buildingAssumedShelteredPopup:
@@ -285,6 +319,30 @@ const I18N = {
     existingMiklatLabel: "מקלט קיים",
     contourPopup: (heightMeters) => `<strong>קו גובה</strong><br>גובה: ${heightMeters} מ'`,
     mapClickElevationPopup: (heightMeters) => `<strong>גובה משוער</strong><br>${heightMeters} מ'`,
+    buildingPopupTitle: (idx) => `מבנה #${idx}`,
+    buildingPopupStatusCovered: "מכוסה על ידי מיגון קיים",
+    buildingPopupStatusUncovered: "ללא כיסוי על ידי מיגון קיים",
+    buildingPopupStatusAssumed: "הוחרג ממבני היעד לפי הנחות",
+    buildingPopupTypeLabel: "סוג מבנה",
+    buildingPopupTypeStoryLabel: "פירוש הסיווג",
+    buildingPopupTypeUnknown: "לא ידוע",
+    buildingPopupTypeStory_1: "מבנה ציבור, ככל הנראה ללא שימוש למגורים",
+    buildingPopupTypeStory_2: "שימוש מעורב, ככל הנראה מגורים יחד עם שימוש נוסף",
+    buildingPopupTypeStory_3: "מגורים",
+    buildingPopupTypeStory_4: "מסחרי/פרטי ללא מגורים",
+    buildingPopupMetaLabel: "מטא-דאטה",
+    buildingPopupAssumptionsLabel: "השפעת ההנחות",
+    buildingPopupBuildYear: "שנת בנייה",
+    buildingPopupFloors: "קומות",
+    buildingPopupApartments: "דירות",
+    buildingAssumptionPost1992: "הוחרג לפי הנחת מבנים ממוגנים מ-1992 ואילך",
+    buildingAssumptionOver3Floors: "הוחרג לפי הנחת מבנים ממוגנים מעל 3 קומות",
+    buildingAssumptionTypeFiltered: "הוחרג לפי סינון סוגי המבנים שנבחרו",
+    buildingAssumptionNoTypes: "לא נבחרו סוגי מבנים",
+    buildingAssumptionWeightIgnored: "לא נכלל בשקלול אוכלוסייה עבור סוג זה",
+    buildingAssumptionWeightPartial: "נכלל חלקית בשקלול אוכלוסייה",
+    buildingAssumptionWeightFull: "נכלל במלואו בשקלול אוכלוסייה",
+    buildingAssumptionNone: "אין הנחות פעילות שמשפיעות כרגע על מבנה זה",
     recommendedLabel: (rank) => `מומלץ #${rank}`,
     modeLabelCluster: "אזור אשכול",
     modeLabelExact: "נקודה מדויקת",
@@ -391,10 +449,13 @@ const assumeEducationShelters = document.getElementById("assumeEducationShelters
 const assumePublicShelters = document.getElementById("assumePublicShelters");
 const assumeOnlyPublicLand = document.getElementById("assumeOnlyPublicLand");
 const assumeWeightByPopulation = document.getElementById("assumeWeightByPopulation");
-const assumeBuildingUseType1 = document.getElementById("assumeBuildingUseType1");
-const assumeBuildingUseType2 = document.getElementById("assumeBuildingUseType2");
-const assumeBuildingUseType3 = document.getElementById("assumeBuildingUseType3");
-const assumeBuildingUseType4 = document.getElementById("assumeBuildingUseType4");
+const buildingTypesDropdown = document.getElementById("buildingTypesDropdown");
+const buildingTypesDropdownToggle = document.getElementById("buildingTypesDropdownToggle");
+const buildingTypesDropdownMenu = document.getElementById("buildingTypesDropdownMenu");
+const buildingTypesDropdownSummary = document.getElementById("buildingTypesDropdownSummary");
+const buildingTypesSelectAllBtn = document.getElementById("buildingTypesSelectAllBtn");
+const buildingTypesDeselectAllBtn = document.getElementById("buildingTypesDeselectAllBtn");
+const buildingTypeOptionButtons = Array.from(document.querySelectorAll(".building-type-option"));
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -521,6 +582,8 @@ function applyStaticTranslations() {
     assumeOnlyPublicLandLabel: "assumeOnlyPublicLandLabel",
     assumeWeightByPopulationLabel: "assumeWeightByPopulationLabel",
     assumptionsBuildingTypesTitle: "assumptionsBuildingTypesTitle",
+    buildingTypesSelectAllLabel: "buildingTypesSelectAllLabel",
+    buildingTypesDeselectAllLabel: "buildingTypesDeselectAllLabel",
     assumeBuildingUseType1Label: "assumeBuildingUseType1Label",
     assumeBuildingUseType2Label: "assumeBuildingUseType2Label",
     assumeBuildingUseType3Label: "assumeBuildingUseType3Label",
@@ -541,6 +604,7 @@ function applyStaticTranslations() {
       el.textContent = t(key);
     }
   }
+  updateBuildingTypesSummaryText();
 
   metricGraphBtn.textContent = t("metricGraphBtn");
   metricEuclideanBtn.textContent = t("metricEuclideanBtn");
@@ -762,6 +826,33 @@ function isOver3FloorsOrApartments(feature) {
   return (Number.isFinite(floors) && floors > 3) || (Number.isFinite(apartments) && apartments > 3);
 }
 
+function getBuildingUseType(feature) {
+  const props = feature?.properties || {};
+  const raw = props["שימוש"] ?? props.use ?? props.USE ?? props.shimush;
+  const asNum = Number(raw);
+  if ([1, 2, 3, 4].includes(asNum)) return asNum;
+  return null;
+}
+
+function getBuildingUseLabelAndStory(useType) {
+  if (!useType) {
+    return {
+      label: t("buildingPopupTypeUnknown"),
+      story: "",
+    };
+  }
+  const labelByType = {
+    1: t("assumeBuildingUseType1Label"),
+    2: t("assumeBuildingUseType2Label"),
+    3: t("assumeBuildingUseType3Label"),
+    4: t("assumeBuildingUseType4Label"),
+  };
+  return {
+    label: labelByType[useType] || t("buildingPopupTypeUnknown"),
+    story: t(`buildingPopupTypeStory_${useType}`),
+  };
+}
+
 function isTargetBuildingFeature(feature) {
   const props = feature?.properties || {};
   const singleFamilyKey = [
@@ -788,6 +879,80 @@ function isTargetBuildingFeature(feature) {
   if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltAfter1992(feature);
   if (currentAssumptions.over3FloorsSheltered) exempt = exempt || isOver3FloorsOrApartments(feature);
   return !exempt;
+}
+
+function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
+  const props = feature?.properties || {};
+  const useType = getBuildingUseType(feature);
+  const useInfo = getBuildingUseLabelAndStory(useType);
+  const buildYear =
+    Number(coverage?.build_year) ||
+    getFirstNumericProperty(props, ["BuildYear", "build_year", "year_built", "year", "shnat_bnia", "shnat_bnaya"]);
+  const floors =
+    Number(coverage?.floors) || getFirstNumericProperty(props, ["Floors", "floors", "komot", "Floor_Number"]);
+  const apartments =
+    Number(coverage?.apartments) ||
+    getFirstNumericProperty(props, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot", "Apartment_Number"]);
+
+  const selectedTypes = normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes);
+  const assumptionEffects = [];
+  if (currentAssumptions.post1992Sheltered && isBuiltAfter1992(feature)) {
+    assumptionEffects.push(t("buildingAssumptionPost1992"));
+  }
+  if (currentAssumptions.over3FloorsSheltered && isOver3FloorsOrApartments(feature)) {
+    assumptionEffects.push(t("buildingAssumptionOver3Floors"));
+  }
+  if (!selectedTypes.length) {
+    assumptionEffects.push(t("buildingAssumptionNoTypes"));
+  } else if (useType && !selectedTypes.includes(useType)) {
+    assumptionEffects.push(t("buildingAssumptionTypeFiltered"));
+  }
+  if (currentAssumptions.weightByPopulation) {
+    if (useType === 2) assumptionEffects.push(t("buildingAssumptionWeightPartial"));
+    else if (useType === 3) assumptionEffects.push(t("buildingAssumptionWeightFull"));
+    else assumptionEffects.push(t("buildingAssumptionWeightIgnored"));
+  }
+  if (!assumptionEffects.length) {
+    assumptionEffects.push(t("buildingAssumptionNone"));
+  }
+
+  const metaRows = [
+    [t("buildingPopupTypeLabel"), useInfo.label],
+    [t("buildingPopupBuildYear"), Number.isFinite(buildYear) && buildYear > 0 ? String(buildYear) : t("buildingPopupTypeUnknown")],
+    [t("buildingPopupFloors"), Number.isFinite(floors) && floors > 0 ? String(floors) : t("buildingPopupTypeUnknown")],
+    [t("buildingPopupApartments"), Number.isFinite(apartments) && apartments >= 0 ? String(apartments) : t("buildingPopupTypeUnknown")],
+  ];
+  return `
+    <div class="shelter-selection-card" dir="${currentLanguage === "he" ? "rtl" : "ltr"}">
+      <div class="shelter-selection-title">${escapeHtml(t("buildingPopupTitle", idx))}</div>
+      <div class="shelter-selection-kicker">${escapeHtml(t(statusKey))}</div>
+      <div class="shelter-selection-meta">
+        <div class="shelter-selection-meta-title">${escapeHtml(t("buildingPopupMetaLabel"))}</div>
+        ${metaRows
+          .map(
+            ([label, value]) =>
+              `<div class="shelter-selection-meta-row"><span class="shelter-selection-meta-label">${escapeHtml(label)}</span><span class="shelter-selection-meta-value">${escapeHtml(value)}</span></div>`,
+          )
+          .join("")}
+        ${
+          useInfo.story
+            ? `<div class="shelter-selection-meta-row"><span class="shelter-selection-meta-label">${escapeHtml(
+                t("buildingPopupTypeStoryLabel"),
+              )}</span><span class="shelter-selection-meta-value">${escapeHtml(useInfo.story)}</span></div>`
+            : ""
+        }
+      </div>
+      <div class="shelter-selection-meta">
+        <div class="shelter-selection-meta-title">${escapeHtml(t("buildingPopupAssumptionsLabel"))}</div>
+        ${assumptionEffects
+          .map(
+            (effect) =>
+              `<div class="shelter-selection-meta-row"><span class="shelter-selection-meta-value">${escapeHtml(effect)}</span></div>`,
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
 }
 
 function isAssumedShelteredFeature(feature) {
@@ -1147,8 +1312,7 @@ function assumptionsEqual(a, b) {
       .map((v) => Number(v))
       .filter((v) => BUILDING_USE_TYPES.includes(v));
     const dedupedSorted = Array.from(new Set(normalized)).sort((x, y) => x - y);
-    if (dedupedSorted.length) return dedupedSorted;
-    return [...BUILDING_USE_TYPES];
+    return dedupedSorted;
   };
   const aTypes = normalizeTypes(a?.buildingUseTypes);
   const bTypes = normalizeTypes(b?.buildingUseTypes);
@@ -1182,22 +1346,11 @@ function syncAssumptionInputs() {
   if (assumePublicShelters) assumePublicShelters.checked = Boolean(currentAssumptions.publicShelters);
   if (assumeOnlyPublicLand) assumeOnlyPublicLand.checked = Boolean(currentAssumptions.onlyPublicLand);
   if (assumeWeightByPopulation) assumeWeightByPopulation.checked = Boolean(currentAssumptions.weightByPopulation);
-  const selectedTypes = new Set(
-    normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes),
-  );
-  if (assumeBuildingUseType1) assumeBuildingUseType1.checked = selectedTypes.has(1);
-  if (assumeBuildingUseType2) assumeBuildingUseType2.checked = selectedTypes.has(2);
-  if (assumeBuildingUseType3) assumeBuildingUseType3.checked = selectedTypes.has(3);
-  if (assumeBuildingUseType4) assumeBuildingUseType4.checked = selectedTypes.has(4);
+  setSelectedBuildingUseTypesInUi(normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes));
 }
 
 function readAssumptionsFromInputs() {
-  const selectedTypes = [
-    assumeBuildingUseType1?.checked ? 1 : null,
-    assumeBuildingUseType2?.checked ? 2 : null,
-    assumeBuildingUseType3?.checked ? 3 : null,
-    assumeBuildingUseType4?.checked ? 4 : null,
-  ].filter((v) => v !== null);
+  const selectedTypes = getSelectedBuildingUseTypesFromUi();
   return {
     post1992Sheltered: Boolean(assumePost1992Sheltered?.checked),
     over3FloorsSheltered: Boolean(assumeOver3FloorsSheltered?.checked),
@@ -1205,7 +1358,7 @@ function readAssumptionsFromInputs() {
     publicShelters: Boolean(assumePublicShelters?.checked),
     onlyPublicLand: Boolean(assumeOnlyPublicLand?.checked),
     weightByPopulation: Boolean(assumeWeightByPopulation?.checked),
-    buildingUseTypes: selectedTypes.length ? selectedTypes : [...BUILDING_USE_TYPES],
+    buildingUseTypes: selectedTypes,
   };
 }
 
@@ -1214,8 +1367,49 @@ function normalizeBuildingUseTypes(rawTypes) {
     .map((v) => Number(v))
     .filter((v) => BUILDING_USE_TYPES.includes(v));
   const dedupedSorted = Array.from(new Set(normalized)).sort((a, b) => a - b);
-  if (dedupedSorted.length) return dedupedSorted;
-  return [...BUILDING_USE_TYPES];
+  return dedupedSorted;
+}
+
+function updateBuildingTypesSummaryText() {
+  if (!buildingTypesDropdownSummary) return;
+  const selectedTypes = getSelectedBuildingUseTypesFromUi();
+  if (!selectedTypes.length) {
+    buildingTypesDropdownSummary.textContent = t("buildingTypesNoneSelectedLabel");
+    return;
+  }
+  const labels = selectedTypes.map((typeValue) => {
+    if (typeValue === 1) return t("assumeBuildingUseType1Label");
+    if (typeValue === 2) return t("assumeBuildingUseType2Label");
+    if (typeValue === 3) return t("assumeBuildingUseType3Label");
+    return t("assumeBuildingUseType4Label");
+  });
+  buildingTypesDropdownSummary.textContent = labels.join(", ");
+}
+
+function setBuildingTypesDropdownOpen(isOpen) {
+  if (!buildingTypesDropdown || !buildingTypesDropdownToggle || !buildingTypesDropdownMenu) return;
+  buildingTypesDropdown.classList.toggle("is-open", isOpen);
+  buildingTypesDropdownToggle.setAttribute("aria-expanded", String(isOpen));
+  buildingTypesDropdownMenu.classList.toggle("hidden", !isOpen);
+}
+
+function setSelectedBuildingUseTypesInUi(selectedTypes) {
+  const selectedSet = new Set(selectedTypes);
+  for (const option of buildingTypeOptionButtons) {
+    const typeValue = Number(option.dataset.useType);
+    const selected = selectedSet.has(typeValue);
+    option.classList.toggle("is-selected", selected);
+    option.setAttribute("aria-pressed", String(selected));
+  }
+  updateBuildingTypesSummaryText();
+}
+
+function getSelectedBuildingUseTypesFromUi() {
+  return buildingTypeOptionButtons
+    .filter((option) => option.classList.contains("is-selected"))
+    .map((option) => Number(option.dataset.useType))
+    .filter((v) => BUILDING_USE_TYPES.includes(v))
+    .sort((a, b) => a - b);
 }
 
 function enforceWeightingBuildingTypeRule(nextAssumptions) {
@@ -1226,7 +1420,7 @@ function enforceWeightingBuildingTypeRule(nextAssumptions) {
   };
   if (!normalized.weightByPopulation) return normalized;
   const allowed = normalized.buildingUseTypes.filter((v) => WEIGHTED_ALLOWED_BUILDING_USE_TYPES.includes(v));
-  normalized.buildingUseTypes = allowed.length ? allowed : [...WEIGHTED_ALLOWED_BUILDING_USE_TYPES];
+  normalized.buildingUseTypes = allowed;
   return normalized;
 }
 
@@ -1256,7 +1450,67 @@ function setScenarioForAssumptions(assumptions) {
   syncAssumptionInputs();
 }
 
+function hasNoSelectedBuildingTypes() {
+  return normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes).length === 0;
+}
+
+function buildEmptyScenarioPayload() {
+  const coverageByMetric = {};
+  const optimalByMetricModeBucket = {};
+  const shelterCoveragesByMetricModeBucket = {};
+  for (const metric of DISTANCE_METRIC_OPTIONS) {
+    coverageByMetric[metric.key] = {
+      distance_metric: metric.key,
+      buildings: [],
+      assumptions: { ...currentAssumptions },
+    };
+    optimalByMetricModeBucket[metric.key] = {};
+    shelterCoveragesByMetricModeBucket[metric.key] = {};
+    for (const mode of PLACEMENT_OPTIONS) {
+      optimalByMetricModeBucket[metric.key][mode.key] = {};
+      shelterCoveragesByMetricModeBucket[metric.key][mode.key] = {};
+      for (const bucket of BUCKET_OPTIONS) {
+        optimalByMetricModeBucket[metric.key][mode.key][bucket.key] = {
+          distance_metric: metric.key,
+          placement_mode: mode.key,
+          time_bucket: bucket.key,
+          time_seconds: bucket.seconds,
+          proposed_meguniot: [],
+          statistics: {
+            currently_uncovered: 0,
+            additional_covered_by_proposed: 0,
+            final_uncovered: 0,
+          },
+        };
+        shelterCoveragesByMetricModeBucket[metric.key][mode.key][bucket.key] = {
+          distance_metric: metric.key,
+          placement_mode: mode.key,
+          time_bucket: bucket.key,
+          time_seconds: bucket.seconds,
+          coverages: [],
+        };
+      }
+    }
+  }
+  return {
+    coverageByMetric,
+    optimalByMetricModeBucket,
+    shelterCoveragesByMetricModeBucket,
+  };
+}
+
 async function ensureScenarioDataLoaded() {
+  if (hasNoSelectedBuildingTypes()) {
+    const emptyKey = "__empty__";
+    if (!scenarioDataCache[emptyKey]) {
+      scenarioDataCache[emptyKey] = buildEmptyScenarioPayload();
+    }
+    const cachedEmpty = scenarioDataCache[emptyKey];
+    dataStore.coverageByMetric = cachedEmpty.coverageByMetric;
+    dataStore.optimalByMetricModeBucket = cachedEmpty.optimalByMetricModeBucket;
+    dataStore.shelterCoveragesByMetricModeBucket = cachedEmpty.shelterCoveragesByMetricModeBucket;
+    return;
+  }
   const scenarioKey = currentScenarioKey || "__legacy__";
   if (scenarioDataCache[scenarioKey]) {
     const cached = scenarioDataCache[scenarioKey];
@@ -1507,7 +1761,15 @@ function renderExistingCoverageBuildings() {
     const covered = Boolean(coverage?.[`covered_${bucket}`]);
     if (feature) {
       const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
-      layer.bindPopup(covered ? t("buildingPopupCovered", idx) : t("buildingPopupUncovered", idx));
+      layer.bindPopup(
+        buildBuildingPopupHtml(
+          feature,
+          idx,
+          covered ? "buildingPopupStatusCovered" : "buildingPopupStatusUncovered",
+          coverage,
+        ),
+        { className: "shelter-selection-popup" },
+      );
       layer.addTo(covered ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
       continue;
     }
@@ -1537,7 +1799,15 @@ function renderExistingCoverageBuildings() {
     if (!geometry) continue;
     const featureForRender = { type: "Feature", geometry, properties: feature?.properties || {} };
     const layer = createBuildingLayer(featureForRender, post1992Style, 2.3);
-    layer.bindPopup(t("buildingAssumedShelteredPopup"));
+    layer.bindPopup(
+      buildBuildingPopupHtml(
+        featureForRender,
+        getFeatureNumericId(feature, idKeys) ?? sourceIdx,
+        "buildingPopupStatusAssumed",
+        null,
+      ),
+      { className: "shelter-selection-popup" },
+    );
     layer.addTo(layers.post1992Buildings);
   }
 }
@@ -2221,6 +2491,10 @@ function applyLayerVisibility() {
 }
 
 function renderStats() {
+  if (hasNoSelectedBuildingTypes()) {
+    statsEl.textContent = t("statsNoBuildingTypes");
+    return;
+  }
   const bucketData = getCurrentBucketData();
   if (!bucketData) {
     statsEl.textContent = t("loadingData");
@@ -2540,16 +2814,39 @@ function wireEvents() {
     assumePublicShelters,
     assumeOnlyPublicLand,
     assumeWeightByPopulation,
-    assumeBuildingUseType1,
-    assumeBuildingUseType2,
-    assumeBuildingUseType3,
-    assumeBuildingUseType4,
   ].filter(Boolean);
   for (const input of assumptionInputs) {
     input.addEventListener("change", () => {
       void applyAssumptions(readAssumptionsFromInputs());
     });
   }
+  buildingTypesDropdownToggle?.addEventListener("click", () => {
+    const nextOpen = !buildingTypesDropdown?.classList.contains("is-open");
+    setBuildingTypesDropdownOpen(Boolean(nextOpen));
+  });
+  for (const option of buildingTypeOptionButtons) {
+    option.addEventListener("click", () => {
+      option.classList.toggle("is-selected");
+      option.setAttribute("aria-pressed", String(option.classList.contains("is-selected")));
+      void applyAssumptions(readAssumptionsFromInputs());
+    });
+  }
+  buildingTypesSelectAllBtn?.addEventListener("click", () => {
+    setSelectedBuildingUseTypesInUi([...BUILDING_USE_TYPES]);
+    void applyAssumptions(readAssumptionsFromInputs());
+  });
+  buildingTypesDeselectAllBtn?.addEventListener("click", () => {
+    setSelectedBuildingUseTypesInUi([]);
+    void applyAssumptions(readAssumptionsFromInputs());
+  });
+  document.addEventListener("click", (event) => {
+    if (!buildingTypesDropdown) return;
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (!buildingTypesDropdown.contains(target)) {
+      setBuildingTypesDropdownOpen(false);
+    }
+  });
 
   openGuideBtn.addEventListener("click", () => guideModal.classList.remove("hidden"));
   closeGuideBtn.addEventListener("click", () => guideModal.classList.add("hidden"));

@@ -1,0 +1,95 @@
+{
+  "schema_version": "5.0.0",
+  "distance_metric": "euclidean",
+  "time_buckets": {
+    "5min": 300
+  },
+  "placement_types": [
+    "exact",
+    "cluster"
+  ],
+  "euclidean_access_radius_m": 100.0,
+  "walk_speed_mps_fallback": 1.3,
+  "emergency_crossing_radius_m": 22.0,
+  "densify_interval_m": 25.0,
+  "building_access_radius_m": 80.0,
+  "densified_nodes_added": 43008,
+  "elevation_model": {
+    "mode": "flat_speed",
+    "dem_file": null
+  },
+  "candidate_sources_exact": [
+    "buildings",
+    "network_nodes"
+  ],
+  "assumptions": {
+    "post1992Sheltered": true,
+    "over3FloorsSheltered": true,
+    "educationShelters": true,
+    "publicShelters": false,
+    "onlyPublicLand": false,
+    "weightByPopulation": true,
+    "buildingUseTypes": [
+      2
+    ]
+  },
+  "total_candidates_by_placement": {
+    "exact": 67,
+    "cluster": 0
+  },
+  "total_target_buildings": 4,
+  "buildings": [
+    {
+      "id": 512,
+      "building_idx": 0,
+      "lon": 34.9824314207435,
+      "lat": 31.741290778760057,
+      "build_year": 1990,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 97.4,
+      "covered_5min": true
+    },
+    {
+      "id": 599,
+      "building_idx": 1,
+      "lon": 34.98447003426066,
+      "lat": 31.74217978489249,
+      "build_year": 1980,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 61.1,
+      "nearest_shelter_distance_m": 35.2,
+      "covered_5min": true
+    },
+    {
+      "id": 996,
+      "building_idx": 2,
+      "lon": 34.990963026314766,
+      "lat": 31.750597865119236,
+      "build_year": 1965,
+      "floors": 3,
+      "apartments": 1,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 47.2,
+      "nearest_shelter_distance_m": 44.3,
+      "covered_5min": true
+    },
+    {
+      "id": 1177,
+      "building_idx": 3,
+      "lon": 34.99261120814509,
+      "lat": 31.74480468828631,
+      "build_year": 1980,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 149.8,
+      "covered_5min": false
+    }
+  ]
+}

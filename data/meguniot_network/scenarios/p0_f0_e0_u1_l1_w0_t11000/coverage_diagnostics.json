@@ -1,0 +1,55 @@
+{
+  "schema_version": "5.0.0",
+  "euclidean_access_radius_m": 100.0,
+  "densify_interval_m": 25.0,
+  "building_access_radius_m": 80.0,
+  "densified_nodes_added": 43008,
+  "cluster_ensemble_runs": 150,
+  "max_new_shelters_per_mode": 200,
+  "swap_improvement_enabled": false,
+  "building_weight_field": null,
+  "assumptions": {
+    "post1992Sheltered": false,
+    "over3FloorsSheltered": false,
+    "educationShelters": false,
+    "publicShelters": true,
+    "onlyPublicLand": true,
+    "weightByPopulation": false,
+    "buildingUseTypes": [
+      1,
+      2
+    ]
+  },
+  "per_metric": {
+    "graph": {
+      "access_time_stats": {
+        "median_seconds": 0.0,
+        "p90_seconds": 160.7,
+        "p95_seconds": 225.3,
+        "max_seconds": 296.8
+      },
+      "per_bucket": {
+        "5min": {
+          "buildings_covered_by_2plus_shelters": 350,
+          "buildings_covered_by_1_shelter": 82,
+          "buildings_with_no_coverage": 84
+        }
+      }
+    },
+    "euclidean": {
+      "access_time_stats": {
+        "median_seconds": 0.0,
+        "p90_seconds": 160.7,
+        "p95_seconds": 225.3,
+        "max_seconds": 296.8
+      },
+      "per_bucket": {
+        "5min": {
+          "buildings_covered_by_2plus_shelters": 422,
+          "buildings_covered_by_1_shelter": 48,
+          "buildings_with_no_coverage": 46
+        }
+      }
+    }
+  }
+}

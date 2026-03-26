@@ -18,7 +18,7 @@ Live site: [https://negevurbanresearch.github.io/ShelterBetShemesh/](https://neg
 
 The backend currently:
 
-- Loads `data/buildings_built_year.geojson` and filters target buildings:
+- Loads `data/updated_all_buildings_data_with_use.geojson` and filters target buildings:
   - pre-1992
   - (`<=3` floors OR `<=3` apartments) using `more_tha_3` where available
   - residential/single-family using defensive field mapping

@@ -1,0 +1,91 @@
+{
+  "schema_version": "5.0.0",
+  "distance_metric": "euclidean",
+  "placement_mode": "cluster",
+  "time_bucket": "5min",
+  "time_seconds": 300,
+  "elevation_model": {
+    "mode": "flat_speed",
+    "dem_file": null
+  },
+  "euclidean_access_radius_m": 100.0,
+  "optimization_method": "lazy_greedy_maximum_coverage",
+  "swap_improvement_enabled": false,
+  "candidate_generation": {
+    "sources": [
+      "cluster_ensemble_kmeans"
+    ],
+    "node_proximity_m": null,
+    "cluster_ensemble_runs": 150,
+    "total_candidates": 7
+  },
+  "assumptions": {
+    "post1992Sheltered": true,
+    "over3FloorsSheltered": true,
+    "educationShelters": true,
+    "publicShelters": true,
+    "onlyPublicLand": true,
+    "weightByPopulation": false,
+    "buildingUseTypes": [
+      1,
+      3
+    ]
+  },
+  "statistics": {
+    "distance_metric": "euclidean",
+    "placement_mode": "cluster",
+    "time_bucket": "5min",
+    "time_seconds": 300,
+    "euclidean_access_radius_m": 100.0,
+    "walk_speed_mps_fallback": 1.3,
+    "emergency_crossing_radius_m": 22.0,
+    "total_target_buildings": 327,
+    "total_candidates_evaluated": 7,
+    "candidate_sources_used": [
+      "cluster_ensemble_kmeans"
+    ],
+    "covered_by_existing": 227,
+    "currently_uncovered": 100,
+    "additional_covered_by_proposed": 1,
+    "final_uncovered": 99,
+    "num_proposed_meguniot": 1,
+    "proposed_by_source": {
+      "cluster_candidates": 1
+    },
+    "max_proposed_limit": 200,
+    "stop_reason": "no_marginal_gain"
+  },
+  "proposed_meguniot": [
+    {
+      "rank": 1,
+      "distance_metric": "euclidean",
+      "placement_mode": "cluster",
+      "placement_semantics": "area_center",
+      "shelter_id": 1,
+      "candidate_id": 1,
+      "candidate_source": "cluster_candidates",
+      "source_id": null,
+      "building_idx": 76,
+      "coordinates": "31.739206,34.986511",
+      "lat": 31.739206445111105,
+      "lon": 34.986510680081196,
+      "nearest_building_dist_m": 56.45,
+      "newly_covered_buildings": 5,
+      "newly_covered_people_est": 35,
+      "covered_building_indices": [
+        69,
+        75,
+        76,
+        78,
+        83
+      ],
+      "marginal_covered_building_indices": [
+        69,
+        75,
+        76,
+        78,
+        83
+      ]
+    }
+  ]
+}

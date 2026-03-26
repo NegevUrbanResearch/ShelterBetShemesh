@@ -59,6 +59,11 @@ DEFAULT_WALK_SPEED_MPS = 1.3
 DEFAULT_EMERGENCY_CROSSING_RADIUS_M = 22.0
 DEFAULT_DENSIFY_INTERVAL_M = 25.0
 DEFAULT_BUILDING_ACCESS_RADIUS_M = 80.0
+BUILDING_USE_TYPES = {1, 2, 3, 4, 5}
+SELECTABLE_BUILDING_USE_TYPES = {1, 2, 3, 4}
+DEFAULT_BUILDING_USE_TYPES = frozenset(SELECTABLE_BUILDING_USE_TYPES)
+DEFAULT_WEIGHTED_BUILDING_USE_TYPES = frozenset({2, 3})
+DEFAULT_BUILDINGS_PATH = DATA_DIR / "updated_all_buildings_data_with_use.geojson"
 
 logger = logging.getLogger("meguniot_backend")
 
@@ -110,6 +115,7 @@ class ScenarioAssumptions:
     public_buildings_are_shelters: bool = False
     only_place_on_public_land: bool = False
     weight_by_population: bool = False
+    selected_building_use_types: frozenset[int] = DEFAULT_BUILDING_USE_TYPES
 
 
 def _configure_logging() -> None:
@@ -271,6 +277,22 @@ def _to_int_safe(val: Any, default: int = 0) -> int:
         return default
 
 
+def _normalize_building_use_type(val: Any) -> int:
+    parsed = _to_int_safe(val, 5)
+    if parsed in BUILDING_USE_TYPES:
+        return parsed
+    return 5
+
+
+def _normalize_selected_building_use_types(values: Iterable[int] | None) -> frozenset[int]:
+    if values is None:
+        return DEFAULT_BUILDING_USE_TYPES
+    normalized = {int(v) for v in values if int(v) in SELECTABLE_BUILDING_USE_TYPES}
+    if not normalized:
+        return DEFAULT_BUILDING_USE_TYPES
+    return frozenset(normalized)
+
+
 def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.GeoDataFrame:
     gdf = _load_geojson_with_real_crs(path).to_crs("EPSG:2039")
     gdf = _ensure_non_empty_points(gdf, "buildings")
@@ -279,9 +301,9 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
         gdf,
         ["BuildYear", "build_year", "year_built", "year", "shnat_bnia", "shnat_bnaya"],
     )
-    floors_col = _first_present(gdf, ["Floors", "floors", "komot"])
+    floors_col = _first_present(gdf, ["Floors", "floors", "komot", "Floor_Number"])
     apartments_col = _first_present(
-        gdf, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot"]
+        gdf, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot", "Apartment_Number"]
     )
     before_1992_col = _first_present(
         gdf, ["Before_199", "Before_1992", "before_1992", "before1992", "lifney_1992"]
@@ -295,6 +317,7 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
     residential_col = _first_present(
         gdf, ["residential", "is_residential", "res", "miyuad_mgourim", "megurim"]
     )
+    building_use_col = _first_present(gdf, ["שימוש", "use", "USE", "shimush"])
 
     gdf["build_year_norm"] = gdf[year_col].apply(_to_int_safe) if year_col else 0
     gdf["floors_norm"] = gdf[floors_col].apply(_to_int_safe) if floors_col else 0
@@ -307,6 +330,10 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
         gdf["over_3_floors_norm"] = gdf[over_3_floors_col].apply(_to_boolish)
     else:
         gdf["over_3_floors_norm"] = (gdf["floors_norm"] > 3) | (gdf["apartments_norm"] > 3)
+    if building_use_col:
+        gdf["building_use_type_norm"] = gdf[building_use_col].apply(_normalize_building_use_type)
+    else:
+        gdf["building_use_type_norm"] = 5
 
     residential_mask = pd.Series(True, index=gdf.index)
     if single_family_col:
@@ -319,7 +346,8 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
         exempt_mask |= ~gdf["before_1992_norm"]
     if assumptions.over_3_floors_has_shelter:
         exempt_mask |= gdf["over_3_floors_norm"]
-    target_mask = residential_mask & ~exempt_mask
+    selected_types = _normalize_selected_building_use_types(assumptions.selected_building_use_types)
+    target_mask = residential_mask & ~exempt_mask & gdf["building_use_type_norm"].isin(selected_types)
     target = gdf[target_mask].copy().reset_index(drop=True)
     if target.empty:
         raise ValueError("No target buildings found after filtering criteria.")
@@ -930,8 +958,10 @@ def _filter_candidates_by_public_land(
 def _compute_population_weights(
     buildings: gpd.GeoDataFrame,
     population_data_path: Path,
+    assumptions: ScenarioAssumptions,
+    designated_public_land_path: Path | None,
 ) -> dict[int, float]:
-    """Spatial-join population data onto target buildings and return per-building weights."""
+    """Compute per-building weights using building use type and resident estimates."""
     pop_gdf = _load_geojson_with_real_crs(population_data_path).to_crs("EPSG:2039")
     pop_gdf = pop_gdf[pop_gdf.geometry.notna() & pop_gdf.geometry.is_valid].copy()
 
@@ -959,18 +989,55 @@ def _compute_population_weights(
     )
     joined = joined.sort_values("est_pop", ascending=False).drop_duplicates(subset=["building_idx"], keep="first")
 
-    weights: dict[int, float] = {}
+    base_weights: dict[int, float] = {}
     for _, row in joined.iterrows():
         est = row["est_pop"]
-        weights[int(row["building_idx"])] = max(float(est), 1.0) if pd.notna(est) and est > 0 else 1.0
+        base_weights[int(row["building_idx"])] = max(float(est), 1.0) if pd.notna(est) and est > 0 else 1.0
 
     for row in buildings.itertuples():
         bidx = int(row.building_idx)
-        if bidx not in weights:
+        if bidx not in base_weights:
+            base_weights[bidx] = 1.0
+
+    on_public_land_by_idx: dict[int, bool] = {int(row.building_idx): False for row in buildings.itertuples()}
+    if designated_public_land_path is not None and designated_public_land_path.exists():
+        public_land = _load_designated_public_land(designated_public_land_path)
+        joined_public = gpd.sjoin(
+            buildings[["building_idx", "geometry"]],
+            public_land[["geometry"]],
+            how="left",
+            predicate="intersects",
+        )
+        for row in joined_public.itertuples():
+            if pd.notna(row.index_right):
+                on_public_land_by_idx[int(row.building_idx)] = True
+
+    weights: dict[int, float] = {}
+    for row in buildings.itertuples():
+        bidx = int(row.building_idx)
+        base_est = float(base_weights.get(bidx, 1.0))
+        use_type = int(getattr(row, "building_use_type_norm", 5))
+        if use_type in {1, 4}:
             weights[bidx] = 1.0
+            continue
+        if use_type == 2:
+            weights[bidx] = max(base_est * 0.5, 1.0)
+            continue
+        if use_type == 3:
+            weights[bidx] = max(base_est, 1.0)
+            continue
+        if use_type == 5 and on_public_land_by_idx.get(bidx, False):
+            weights[bidx] = 1.0
+            continue
+        weights[bidx] = max(base_est, 1.0)
 
     pop_weighted = sum(1 for v in weights.values() if v > 1.0)
-    logger.info("Population weights: %d/%d buildings have weight > 1.0", pop_weighted, len(weights))
+    logger.info(
+        "Population weights: %d/%d buildings have weight > 1.0 (building_types=%s)",
+        pop_weighted,
+        len(weights),
+        sorted(int(v) for v in assumptions.selected_building_use_types),
+    )
     return weights
 
 
@@ -1346,6 +1413,20 @@ def run_pipeline(
         raise ValueError("emergency_crossing_radius_m must be non-negative.")
     if cluster_ensemble_runs <= 0:
         raise ValueError("cluster_ensemble_runs must be positive.")
+    selected_types = _normalize_selected_building_use_types(assumptions.selected_building_use_types)
+    if assumptions.weight_by_population:
+        selected_types = frozenset(t for t in selected_types if t in DEFAULT_WEIGHTED_BUILDING_USE_TYPES)
+        if not selected_types:
+            selected_types = DEFAULT_WEIGHTED_BUILDING_USE_TYPES
+    assumptions = ScenarioAssumptions(
+        post_1992_has_shelter=assumptions.post_1992_has_shelter,
+        over_3_floors_has_shelter=assumptions.over_3_floors_has_shelter,
+        education_facilities_are_shelters=assumptions.education_facilities_are_shelters,
+        public_buildings_are_shelters=assumptions.public_buildings_are_shelters,
+        only_place_on_public_land=assumptions.only_place_on_public_land,
+        weight_by_population=assumptions.weight_by_population,
+        selected_building_use_types=selected_types,
+    )
 
     effective_max_new_shelters = (
         MAX_SHELTERS_PER_MODE
@@ -1361,7 +1442,7 @@ def run_pipeline(
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     _cleanup_stale_bucket_outputs()
 
-    required = [DATA_DIR / "buildings_built_year.geojson", DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson"]
+    required = [DEFAULT_BUILDINGS_PATH, DATA_DIR / "Miguniot.geojson", DATA_DIR / "Miklatim.geojson"]
     if assumptions.education_facilities_are_shelters:
         required.append(education_facilities_path or DATA_DIR / "Education_Facilities.geojson")
     if assumptions.public_buildings_are_shelters:
@@ -1369,12 +1450,12 @@ def run_pipeline(
     if assumptions.only_place_on_public_land:
         required.append(designated_public_land_path or DATA_DIR / "designated-public-land.geojson")
     if assumptions.weight_by_population:
-        required.append(buildings_population_path or DATA_DIR / "all_buildings_data.geojson")
+        required.append(buildings_population_path or DEFAULT_BUILDINGS_PATH)
     if dem_path is not None:
         required.append(dem_path)
     _assert_input_files_exist(required)
 
-    buildings = load_target_buildings(DATA_DIR / "buildings_built_year.geojson", assumptions=assumptions)
+    buildings = load_target_buildings(DEFAULT_BUILDINGS_PATH, assumptions=assumptions)
     shelters = load_existing_shelters(
         DATA_DIR / "Miguniot.geojson",
         DATA_DIR / "Miklatim.geojson",
@@ -1431,8 +1512,13 @@ def run_pipeline(
     # --- Building weights ---
     building_weights: dict[int, float] | None = None
     if assumptions.weight_by_population:
-        pop_path = buildings_population_path or DATA_DIR / "all_buildings_data.geojson"
-        building_weights = _compute_population_weights(buildings, pop_path)
+        pop_path = buildings_population_path or DEFAULT_BUILDINGS_PATH
+        building_weights = _compute_population_weights(
+            buildings,
+            pop_path,
+            assumptions=assumptions,
+            designated_public_land_path=designated_public_land_path or DATA_DIR / "designated-public-land.geojson",
+        )
     elif building_weight_field:
         wt_col = _first_present(buildings, [building_weight_field])
         if wt_col:
@@ -1557,6 +1643,7 @@ def run_pipeline(
                     "publicShelters": assumptions.public_buildings_are_shelters,
                     "onlyPublicLand": assumptions.only_place_on_public_land,
                     "weightByPopulation": assumptions.weight_by_population,
+                    "buildingUseTypes": sorted(int(v) for v in assumptions.selected_building_use_types),
                 },
                 "total_candidates_by_placement": {
                     PlacementMode.EXACT.value: len(exact_candidates),
@@ -1708,6 +1795,7 @@ def run_pipeline(
                             "publicShelters": assumptions.public_buildings_are_shelters,
                             "onlyPublicLand": assumptions.only_place_on_public_land,
                             "weightByPopulation": assumptions.weight_by_population,
+                            "buildingUseTypes": sorted(int(v) for v in assumptions.selected_building_use_types),
                         },
                         "coverages": coverage_entries,
                     },
@@ -1814,6 +1902,7 @@ def run_pipeline(
                             "publicShelters": assumptions.public_buildings_are_shelters,
                             "onlyPublicLand": assumptions.only_place_on_public_land,
                             "weightByPopulation": assumptions.weight_by_population,
+                            "buildingUseTypes": sorted(int(v) for v in assumptions.selected_building_use_types),
                         },
                         "statistics": stats,
                         "proposed_meguniot": proposed,
@@ -1928,6 +2017,7 @@ def run_pipeline(
             "publicShelters": assumptions.public_buildings_are_shelters,
             "onlyPublicLand": assumptions.only_place_on_public_land,
             "weightByPopulation": assumptions.weight_by_population,
+            "buildingUseTypes": sorted(int(v) for v in assumptions.selected_building_use_types),
         },
         "per_metric": {},
     }
@@ -1993,6 +2083,7 @@ def run_pipeline(
             "publicShelters": assumptions.public_buildings_are_shelters,
             "onlyPublicLand": assumptions.only_place_on_public_land,
             "weightByPopulation": assumptions.weight_by_population,
+            "buildingUseTypes": sorted(int(v) for v in assumptions.selected_building_use_types),
         },
         "elevation_model": elevation_model,
         "time_buckets": TIME_BUCKETS,
@@ -2156,8 +2247,16 @@ def main() -> None:
     parser.add_argument(
         "--buildings-population-path",
         type=Path,
-        default=DATA_DIR / "all_buildings_data.geojson",
+        default=DEFAULT_BUILDINGS_PATH,
         help="GeoJSON path for building population data (people_per_unit).",
+    )
+    parser.add_argument(
+        "--building-types",
+        nargs="+",
+        type=int,
+        choices=[1, 2, 3, 4],
+        default=[1, 2, 3, 4],
+        help="Building-use categories to include in target analysis (1..4).",
     )
     parser.add_argument(
         "--output-subdir",
@@ -2175,6 +2274,7 @@ def main() -> None:
         public_buildings_are_shelters=bool(args.assume_public_buildings_are_shelters),
         only_place_on_public_land=bool(args.only_place_on_public_land),
         weight_by_population=bool(args.weight_by_population),
+        selected_building_use_types=_normalize_selected_building_use_types(args.building_types),
     )
     run_pipeline(
         walk_speed_mps=args.walk_speed_mps,

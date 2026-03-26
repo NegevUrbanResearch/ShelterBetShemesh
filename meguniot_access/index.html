@@ -110,28 +110,44 @@
                   <span class="checkbox-checkmark">✓</span>
                 </label>
               </section>
-              <section class="assumption-group">
+              <section class="assumption-group assumption-group-full assumption-group-divider">
                 <h4 id="assumptionsBuildingTypesTitle" class="assumption-group-title">Building types</h4>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeBuildingUseType1" class="checkbox-toggle" checked />
-                  <span id="assumeBuildingUseType1Label" class="checkbox-label assumption-toggle-label">Public</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeBuildingUseType2" class="checkbox-toggle" checked />
-                  <span id="assumeBuildingUseType2Label" class="checkbox-label assumption-toggle-label">Mixed use</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeBuildingUseType3" class="checkbox-toggle" checked />
-                  <span id="assumeBuildingUseType3Label" class="checkbox-label assumption-toggle-label">Residential</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeBuildingUseType4" class="checkbox-toggle" checked />
-                  <span id="assumeBuildingUseType4Label" class="checkbox-label assumption-toggle-label">Commercial</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
+                <div id="buildingTypesSelector" class="building-types-selector">
+                  <div id="buildingTypesDropdown" class="building-types-dropdown">
+                    <button id="buildingTypesDropdownToggle" class="building-types-dropdown-toggle" type="button" aria-expanded="false">
+                      <span id="buildingTypesDropdownSummary">Public, Mixed use, Residential, Commercial</span>
+                      <span class="drawer-chevron" aria-hidden="true">▾</span>
+                    </button>
+                    <div id="buildingTypesDropdownMenu" class="building-types-dropdown-menu hidden">
+                      <div class="building-types-actions">
+                        <button id="buildingTypesSelectAllBtn" class="btn btn-ghost btn-compact" type="button">
+                          <span id="buildingTypesSelectAllLabel">Select all</span>
+                        </button>
+                        <button id="buildingTypesDeselectAllBtn" class="btn btn-ghost btn-compact" type="button">
+                          <span id="buildingTypesDeselectAllLabel">Deselect all</span>
+                        </button>
+                      </div>
+                      <div class="building-types-options" role="group" aria-label="Building types">
+                        <button class="building-type-option is-selected" type="button" data-use-type="1" aria-pressed="true">
+                          <span id="assumeBuildingUseType1Label">Public</span>
+                          <span class="building-type-option-check">✓</span>
+                        </button>
+                        <button class="building-type-option is-selected" type="button" data-use-type="2" aria-pressed="true">
+                          <span id="assumeBuildingUseType2Label">Mixed use</span>
+                          <span class="building-type-option-check">✓</span>
+                        </button>
+                        <button class="building-type-option is-selected" type="button" data-use-type="3" aria-pressed="true">
+                          <span id="assumeBuildingUseType3Label">Residential</span>
+                          <span class="building-type-option-check">✓</span>
+                        </button>
+                        <button class="building-type-option is-selected" type="button" data-use-type="4" aria-pressed="true">
+                          <span id="assumeBuildingUseType4Label">Commercial</span>
+                          <span class="building-type-option-check">✓</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </section>
             </div>
           </div>

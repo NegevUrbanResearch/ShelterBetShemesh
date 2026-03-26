@@ -1,0 +1,291 @@
+{
+  "schema_version": "5.0.0",
+  "distance_metric": "graph",
+  "time_buckets": {
+    "5min": 300
+  },
+  "placement_types": [
+    "exact",
+    "cluster"
+  ],
+  "euclidean_access_radius_m": 100.0,
+  "walk_speed_mps_fallback": 1.3,
+  "emergency_crossing_radius_m": 22.0,
+  "densify_interval_m": 25.0,
+  "building_access_radius_m": 80.0,
+  "densified_nodes_added": 43008,
+  "elevation_model": {
+    "mode": "flat_speed",
+    "dem_file": null
+  },
+  "candidate_sources_exact": [
+    "buildings",
+    "network_nodes"
+  ],
+  "assumptions": {
+    "post1992Sheltered": true,
+    "over3FloorsSheltered": true,
+    "educationShelters": true,
+    "publicShelters": true,
+    "onlyPublicLand": false,
+    "weightByPopulation": false,
+    "buildingUseTypes": [
+      1,
+      4
+    ]
+  },
+  "total_candidates_by_placement": {
+    "exact": 192,
+    "cluster": 9
+  },
+  "total_target_buildings": 19,
+  "buildings": [
+    {
+      "id": 542,
+      "building_idx": 0,
+      "lon": 34.98757733197474,
+      "lat": 31.748932930845562,
+      "build_year": 1984,
+      "floors": 2,
+      "apartments": 0,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 86.4,
+      "covered_5min": false
+    },
+    {
+      "id": 719,
+      "building_idx": 1,
+      "lon": 34.99482882589628,
+      "lat": 31.755442913294868,
+      "build_year": 1970,
+      "floors": 2,
+      "apartments": 1,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 110.9,
+      "covered_5min": false
+    },
+    {
+      "id": 959,
+      "building_idx": 2,
+      "lon": 34.98341206851099,
+      "lat": 31.74913805750513,
+      "build_year": 1970,
+      "floors": 3,
+      "apartments": 0,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 0.0,
+      "nearest_shelter_distance_m": 0.0,
+      "covered_5min": true
+    },
+    {
+      "id": 1015,
+      "building_idx": 3,
+      "lon": 34.99543312658278,
+      "lat": 31.754640996867835,
+      "build_year": 1970,
+      "floors": 2,
+      "apartments": 2,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 108.7,
+      "covered_5min": false
+    },
+    {
+      "id": 1209,
+      "building_idx": 4,
+      "lon": 34.99173317312813,
+      "lat": 31.75029836449102,
+      "build_year": 1970,
+      "floors": 2,
+      "apartments": 0,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 0.0,
+      "nearest_shelter_distance_m": 0.0,
+      "covered_5min": true
+    },
+    {
+      "id": 1254,
+      "building_idx": 5,
+      "lon": 34.98303897929801,
+      "lat": 31.752250344085592,
+      "build_year": 1990,
+      "floors": 2,
+      "apartments": 0,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 0.0,
+      "nearest_shelter_distance_m": 0.0,
+      "covered_5min": true
+    },
+    {
+      "id": 1410,
+      "building_idx": 6,
+      "lon": 34.98748067331935,
+      "lat": 31.749436407417196,
+      "build_year": 1960,
+      "floors": 2,
+      "apartments": 0,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 180.6,
+      "nearest_shelter_distance_m": 65.9,
+      "covered_5min": true
+    },
+    {
+      "id": 1626,
+      "building_idx": 7,
+      "lon": 34.985436944029516,
+      "lat": 31.74848895848325,
+      "build_year": 1980,
+      "floors": 3,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 71.7,
+      "nearest_shelter_distance_m": 37.7,
+      "covered_5min": true
+    },
+    {
+      "id": 1723,
+      "building_idx": 8,
+      "lon": 34.98890235385083,
+      "lat": 31.752645261214404,
+      "build_year": 1956,
+      "floors": 2,
+      "apartments": 1,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 0.0,
+      "nearest_shelter_distance_m": 0.0,
+      "covered_5min": true
+    },
+    {
+      "id": 1931,
+      "building_idx": 9,
+      "lon": 34.98683093895983,
+      "lat": 31.746473272089286,
+      "build_year": 1970,
+      "floors": 1,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 107.9,
+      "nearest_shelter_distance_m": 30.3,
+      "covered_5min": true
+    },
+    {
+      "id": 3762,
+      "building_idx": 10,
+      "lon": 34.976561510913186,
+      "lat": 31.738434484467714,
+      "build_year": 1983,
+      "floors": 2,
+      "apartments": 2,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 267.0,
+      "nearest_shelter_distance_m": 49.3,
+      "covered_5min": true
+    },
+    {
+      "id": 4763,
+      "building_idx": 11,
+      "lon": 34.98617641628355,
+      "lat": 31.748249473405643,
+      "build_year": 1960,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 136.0,
+      "nearest_shelter_distance_m": 70.8,
+      "covered_5min": true
+    },
+    {
+      "id": 5235,
+      "building_idx": 12,
+      "lon": 34.982914291954444,
+      "lat": 31.752726243791393,
+      "build_year": 1990,
+      "floors": 2,
+      "apartments": 1,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 6.3,
+      "nearest_shelter_distance_m": 8.3,
+      "covered_5min": true
+    },
+    {
+      "id": 5240,
+      "building_idx": 13,
+      "lon": 34.98157505450518,
+      "lat": 31.75275831550626,
+      "build_year": 1950,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 209.3,
+      "nearest_shelter_distance_m": 107.1,
+      "covered_5min": true
+    },
+    {
+      "id": 5253,
+      "building_idx": 14,
+      "lon": 34.98154473992539,
+      "lat": 31.75285863587626,
+      "build_year": 1950,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": 287.1,
+      "nearest_shelter_distance_m": 117.8,
+      "covered_5min": true
+    },
+    {
+      "id": 5455,
+      "building_idx": 15,
+      "lon": 34.99210094549856,
+      "lat": 31.755809081177905,
+      "build_year": 1990,
+      "floors": 2,
+      "apartments": 3,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 207.2,
+      "covered_5min": false
+    },
+    {
+      "id": 5457,
+      "building_idx": 16,
+      "lon": 34.994629415342764,
+      "lat": 31.75590059420641,
+      "build_year": 1979,
+      "floors": 2,
+      "apartments": 2,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 152.7,
+      "covered_5min": false
+    },
+    {
+      "id": 5458,
+      "building_idx": 17,
+      "lon": 34.99336872838907,
+      "lat": 31.755954065483706,
+      "build_year": 1991,
+      "floors": 2,
+      "apartments": 2,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 178.0,
+      "covered_5min": false
+    },
+    {
+      "id": 5479,
+      "building_idx": 18,
+      "lon": 34.9925738775791,
+      "lat": 31.756558551899435,
+      "build_year": 1970,
+      "floors": 3,
+      "apartments": 2,
+      "before_1992": true,
+      "nearest_shelter_walk_seconds": null,
+      "nearest_shelter_distance_m": 275.3,
+      "covered_5min": false
+    }
+  ]
+}

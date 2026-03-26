@@ -1,0 +1,107 @@
+{
+  "schema_version": "5.0.0",
+  "walk_speed_mps_fallback": 1.3,
+  "euclidean_access_radius_m": 100.0,
+  "emergency_crossing_radius_m": 22.0,
+  "densify_interval_m": 25.0,
+  "building_access_radius_m": 80.0,
+  "cluster_ensemble_runs": 150,
+  "max_new_shelters_per_mode": 200,
+  "swap_improvement_enabled": false,
+  "building_weight_field": null,
+  "assumptions": {
+    "post1992Sheltered": false,
+    "over3FloorsSheltered": true,
+    "educationShelters": true,
+    "publicShelters": false,
+    "onlyPublicLand": true,
+    "weightByPopulation": true,
+    "buildingUseTypes": [
+      2,
+      3
+    ]
+  },
+  "elevation_model": {
+    "mode": "flat_speed",
+    "dem_file": null
+  },
+  "time_buckets": {
+    "5min": 300
+  },
+  "distance_metrics": [
+    "graph",
+    "euclidean"
+  ],
+  "placement_types": [
+    "exact",
+    "cluster"
+  ],
+  "total_target_buildings": 1395,
+  "candidate_generation_by_placement": {
+    "exact": {
+      "sources": [
+        "buildings",
+        "network_nodes"
+      ],
+      "node_proximity_m": 150.0,
+      "total_candidates": 528
+    },
+    "cluster": {
+      "sources": [
+        "cluster_ensemble_kmeans"
+      ],
+      "cluster_ensemble_runs": 150,
+      "total_candidates": 11
+    }
+  },
+  "results_by_metric_and_placement": {
+    "graph": {
+      "exact": [
+        {
+          "time_bucket": "5min",
+          "time_seconds": 300,
+          "currently_uncovered": 913,
+          "additional_covered_by_proposed": 322,
+          "num_proposed_meguniot": 64,
+          "final_uncovered": 591,
+          "stop_reason": "no_marginal_gain"
+        }
+      ],
+      "cluster": [
+        {
+          "time_bucket": "5min",
+          "time_seconds": 300,
+          "currently_uncovered": 913,
+          "additional_covered_by_proposed": 16,
+          "num_proposed_meguniot": 2,
+          "final_uncovered": 897,
+          "stop_reason": "no_marginal_gain"
+        }
+      ]
+    },
+    "euclidean": {
+      "exact": [
+        {
+          "time_bucket": "5min",
+          "time_seconds": 300,
+          "currently_uncovered": 688,
+          "additional_covered_by_proposed": 344,
+          "num_proposed_meguniot": 58,
+          "final_uncovered": 344,
+          "stop_reason": "no_marginal_gain"
+        }
+      ],
+      "cluster": [
+        {
+          "time_bucket": "5min",
+          "time_seconds": 300,
+          "currently_uncovered": 688,
+          "additional_covered_by_proposed": 17,
+          "num_proposed_meguniot": 3,
+          "final_uncovered": 671,
+          "stop_reason": "no_marginal_gain"
+        }
+      ]
+    }
+  }
+}
