@@ -70,6 +70,7 @@ const I18N = {
     legendPost1992: "Buildings assumed sheltered",
     legendUncovered: "Uncovered buildings (existing conditions)",
     legendCoveredBase: "Buildings covered by existing shelters",
+    legendNotRelevant: "Not relevant for selected building-type criteria",
     legendCoveredSelected: "Covered by selected shelter",
     legendTopography: "Topography contour lines",
     legendTopographyScaleTitle: "",
@@ -82,6 +83,7 @@ const I18N = {
     layerRecommendedLabel: "Recommended meguniot",
     layerTopographyLabel: "Topography (contours)",
     layerPost1992BuildingsLabel: "Buildings assumed sheltered",
+    layerNotRelevantBuildingsLabel: "Not relevant by building type",
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
     layerCoveredLabel: "Covered by selected shelter",
@@ -156,6 +158,7 @@ const I18N = {
     buildingPopupStatusCovered: "Covered by existing shelters",
     buildingPopupStatusUncovered: "Uncovered by existing shelters",
     buildingPopupStatusAssumed: "Excluded from target buildings by assumptions",
+    buildingPopupStatusNotRelevant: "Not relevant for selected building-type criteria",
     buildingPopupTypeLabel: "Building type",
     buildingPopupTypeStoryLabel: "Type story",
     buildingPopupTypeUnknown: "Unknown",
@@ -176,6 +179,10 @@ const I18N = {
     buildingAssumptionWeightPartial: "Partially weighted in population mode",
     buildingAssumptionWeightFull: "Fully weighted in population mode",
     buildingAssumptionNone: "No assumption filters currently affect this building",
+    buildingTypesCriteriaLabel: "Building-type criteria",
+    buildingTypesCriteriaNone: "No building types selected",
+    buildingNotRelevantHoverTitle: "Not relevant for selected building-type criteria",
+    buildingNotRelevantHoverCriteriaPrefix: "Criteria",
     recommendedLabel: (rank) => `Recommended #${rank}`,
     modeLabelCluster: "Cluster area",
     modeLabelExact: "Exact point",
@@ -244,6 +251,7 @@ const I18N = {
     legendPost1992: "מבנים שמוגדרים כממוגנים לפי הנחות",
     legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
+    legendNotRelevant: "מבנים לא רלוונטיים לקריטריוני סוג המבנה שנבחרו",
     legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
     legendTopography: "קווי גובה טופוגרפיים",
     legendTopographyScaleTitle: "",
@@ -256,6 +264,7 @@ const I18N = {
     layerRecommendedLabel: "מיגוניות מומלצות",
     layerTopographyLabel: "טופוגרפיה (קווי גובה)",
     layerPost1992BuildingsLabel: "מבנים שמוגדרים כממוגנים לפי הנחות",
+    layerNotRelevantBuildingsLabel: "מבנים לא רלוונטיים לפי סוג מבנה",
     layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
     layerCoveredLabel: "מכוסים על ידי מיגונית שנבחרה",
@@ -329,6 +338,7 @@ const I18N = {
     buildingPopupStatusCovered: "מכוסה על ידי מיגון קיים",
     buildingPopupStatusUncovered: "ללא כיסוי על ידי מיגון קיים",
     buildingPopupStatusAssumed: "הוחרג ממבני היעד לפי הנחות",
+    buildingPopupStatusNotRelevant: "לא רלוונטי לקריטריוני סוג המבנה שנבחרו",
     buildingPopupTypeLabel: "סוג מבנה",
     buildingPopupTypeStoryLabel: "פירוש הסיווג",
     buildingPopupTypeUnknown: "לא ידוע",
@@ -349,6 +359,10 @@ const I18N = {
     buildingAssumptionWeightPartial: "נכלל חלקית בשקלול אוכלוסייה",
     buildingAssumptionWeightFull: "נכלל במלואו בשקלול אוכלוסייה",
     buildingAssumptionNone: "אין הנחות פעילות שמשפיעות כרגע על מבנה זה",
+    buildingTypesCriteriaLabel: "קריטריון סוגי מבנים",
+    buildingTypesCriteriaNone: "לא נבחרו סוגי מבנים",
+    buildingNotRelevantHoverTitle: "לא רלוונטי לקריטריוני סוגי המבנים שנבחרו",
+    buildingNotRelevantHoverCriteriaPrefix: "קריטריון",
     recommendedLabel: (rank) => `מומלץ #${rank}`,
     modeLabelCluster: "אזור אשכול",
     modeLabelExact: "נקודה מדויקת",
@@ -408,6 +422,7 @@ const LAYER_DEFAULTS = {
   recommended: true,
   topography: true,
   post1992Buildings: true,
+  notRelevantBuildings: true,
   uncoveredBuildings: true,
   coveredBuildingsBase: true,
   covered: true,
@@ -469,6 +484,7 @@ const layerMiklatim = document.getElementById("layerMiklatim");
 const layerRecommended = document.getElementById("layerRecommended");
 const layerTopography = document.getElementById("layerTopography");
 const layerPost1992Buildings = document.getElementById("layerPost1992Buildings");
+const layerNotRelevantBuildings = document.getElementById("layerNotRelevantBuildings");
 const layerUncoveredBuildings = document.getElementById("layerUncoveredBuildings");
 const layerCoveredBuildingsBase = document.getElementById("layerCoveredBuildingsBase");
 const layerCovered = document.getElementById("layerCovered");
@@ -566,6 +582,7 @@ function applyStaticTranslations() {
     legendPost1992: "legendPost1992",
     legendUncovered: "legendUncovered",
     legendCoveredBase: "legendCoveredBase",
+    legendNotRelevant: "legendNotRelevant",
     legendCoveredSelected: "legendCoveredSelected",
     legendTopography: "legendTopography",
     legendTopographyScaleTitle: "legendTopographyScaleTitle",
@@ -578,6 +595,7 @@ function applyStaticTranslations() {
     layerRecommendedLabel: "layerRecommendedLabel",
     layerTopographyLabel: "layerTopographyLabel",
     layerPost1992BuildingsLabel: "layerPost1992BuildingsLabel",
+    layerNotRelevantBuildingsLabel: "layerNotRelevantBuildingsLabel",
     layerUncoveredBuildingsLabel: "layerUncoveredBuildingsLabel",
     layerCoveredBuildingsBaseLabel: "layerCoveredBuildingsBaseLabel",
     layerCoveredLabel: "layerCoveredLabel",
@@ -679,6 +697,7 @@ const layers = {
   recommended: L.layerGroup().addTo(map),
   topography: L.layerGroup().addTo(map),
   post1992Buildings: L.layerGroup().addTo(map),
+  notRelevantBuildings: L.layerGroup().addTo(map),
   uncoveredBuildings: L.layerGroup().addTo(map),
   coveredBuildingsBase: L.layerGroup().addTo(map),
   selectedShelterArea: L.layerGroup().addTo(map),
@@ -860,6 +879,29 @@ function getBuildingUseLabelAndStory(useType) {
   };
 }
 
+function getSelectedBuildingTypeLabels() {
+  return normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes).map((typeValue) => {
+    if (typeValue === 1) return t("assumeBuildingUseType1Label");
+    if (typeValue === 2) return t("assumeBuildingUseType2Label");
+    if (typeValue === 3) return t("assumeBuildingUseType3Label");
+    return t("assumeBuildingUseType4Label");
+  });
+}
+
+function getBuildingTypesCriteriaText() {
+  const labels = getSelectedBuildingTypeLabels();
+  if (!labels.length) return t("buildingTypesCriteriaNone");
+  return labels.join(", ");
+}
+
+function isRelevantBySelectedBuildingTypes(feature) {
+  const selectedTypes = normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes);
+  if (!selectedTypes.length) return false;
+  const useType = getBuildingUseType(feature);
+  if (!useType) return false;
+  return selectedTypes.includes(useType);
+}
+
 function isTargetBuildingFeature(feature) {
   const props = feature?.properties || {};
   const singleFamilyKey = [
@@ -929,6 +971,9 @@ function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
     [t("buildingPopupFloors"), Number.isFinite(floors) && floors > 0 ? String(floors) : t("buildingPopupTypeUnknown")],
     [t("buildingPopupApartments"), Number.isFinite(apartments) && apartments >= 0 ? String(apartments) : t("buildingPopupTypeUnknown")],
   ];
+  if (statusKey === "buildingPopupStatusNotRelevant") {
+    metaRows.push([t("buildingTypesCriteriaLabel"), getBuildingTypesCriteriaText()]);
+  }
   return `
     <div class="shelter-selection-card" dir="${currentLanguage === "he" ? "rtl" : "ltr"}">
       <div class="shelter-selection-title">${escapeHtml(t("buildingPopupTitle", idx))}</div>
@@ -1754,6 +1799,7 @@ function buildBuildingFeatureIndex() {
 
 function renderExistingCoverageBuildings() {
   layers.post1992Buildings.clearLayers();
+  layers.notRelevantBuildings.clearLayers();
   layers.uncoveredBuildings.clearLayers();
   layers.coveredBuildingsBase.clearLayers();
   const bucket = getActiveBucketKey();
@@ -1778,11 +1824,48 @@ function renderExistingCoverageBuildings() {
     fillOpacity: 0.56,
     opacity: 0.98,
   };
+  const notRelevantStyle = {
+    color: "#6f7882",
+    weight: 1.15,
+    fillColor: "#98a1ab",
+    fillOpacity: 0.3,
+    opacity: 0.92,
+  };
+  const addNotRelevantBuilding = (featureForRender, renderIdx) => {
+    const notRelevantLayer = createBuildingLayer(featureForRender, notRelevantStyle, 2.2);
+    notRelevantLayer.bindPopup(
+      buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusNotRelevant", null),
+      {
+        className: "shelter-selection-popup",
+      },
+    );
+    const criteriaText = escapeHtml(getBuildingTypesCriteriaText());
+    notRelevantLayer.bindTooltip(
+      `${escapeHtml(t("buildingNotRelevantHoverTitle"))}<br>${escapeHtml(t("buildingNotRelevantHoverCriteriaPrefix"))}: ${criteriaText}`,
+      {
+        sticky: true,
+        direction: "top",
+      },
+    );
+    notRelevantLayer.addTo(layers.notRelevantBuildings);
+  };
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
     const feature = buildingFeatureByIndex.get(Number(idx));
     const covered = Boolean(coverage?.[`covered_${bucket}`]);
     if (feature) {
+      if (isAssumedShelteredFeature(feature)) {
+        const layer = createBuildingLayer(feature, post1992Style, 2.3);
+        layer.bindPopup(buildBuildingPopupHtml(feature, idx, "buildingPopupStatusAssumed", coverage), {
+          className: "shelter-selection-popup",
+        });
+        layer.addTo(layers.post1992Buildings);
+        continue;
+      }
+      if (!isRelevantBySelectedBuildingTypes(feature)) {
+        addNotRelevantBuilding(feature, idx);
+        continue;
+      }
       const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
       layer.bindPopup(
         buildBuildingPopupHtml(
@@ -1817,21 +1900,19 @@ function renderExistingCoverageBuildings() {
     if (matchedSourceBuildingFeatureIndexes.has(sourceIdx)) continue;
     const featureId = getFeatureNumericId(feature, idKeys);
     if (featureId !== null && coverageById.has(Number(featureId))) continue;
-    if (!isAssumedShelteredFeature(feature)) continue;
     const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
     if (!geometry) continue;
     const featureForRender = { type: "Feature", geometry, properties: feature?.properties || {} };
-    const layer = createBuildingLayer(featureForRender, post1992Style, 2.3);
-    layer.bindPopup(
-      buildBuildingPopupHtml(
-        featureForRender,
-        getFeatureNumericId(feature, idKeys) ?? sourceIdx,
-        "buildingPopupStatusAssumed",
-        null,
-      ),
-      { className: "shelter-selection-popup" },
-    );
-    layer.addTo(layers.post1992Buildings);
+    const renderIdx = getFeatureNumericId(feature, idKeys) ?? sourceIdx;
+    if (isAssumedShelteredFeature(feature)) {
+      const assumedLayer = createBuildingLayer(featureForRender, post1992Style, 2.3);
+      assumedLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusAssumed", null), {
+        className: "shelter-selection-popup",
+      });
+      assumedLayer.addTo(layers.post1992Buildings);
+      continue;
+    }
+    addNotRelevantBuilding(featureForRender, renderIdx);
   }
 }
 
@@ -2473,6 +2554,7 @@ function applyLayerVisibility() {
       layers.recommended,
       layers.topography,
       layers.post1992Buildings,
+      layers.notRelevantBuildings,
       layers.uncoveredBuildings,
       layers.coveredBuildingsBase,
       layers.selectedShelterArea,
@@ -2494,6 +2576,7 @@ function applyLayerVisibility() {
     ["recommended", layers.recommended],
     ["topography", layers.topography],
     ["post1992Buildings", layers.post1992Buildings],
+    ["notRelevantBuildings", layers.notRelevantBuildings],
     ["uncoveredBuildings", layers.uncoveredBuildings],
     ["coveredBuildingsBase", layers.coveredBuildingsBase],
   ];
@@ -2800,6 +2883,7 @@ function wireEvents() {
     [layerRecommended, "recommended"],
     [layerTopography, "topography"],
     [layerPost1992Buildings, "post1992Buildings"],
+    [layerNotRelevantBuildings, "notRelevantBuildings"],
     [layerUncoveredBuildings, "uncoveredBuildings"],
     [layerCoveredBuildingsBase, "coveredBuildingsBase"],
     [layerCovered, "covered"],
