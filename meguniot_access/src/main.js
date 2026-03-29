@@ -77,7 +77,7 @@ const I18N = {
     legendTopographyScaleTitle: "",
     legendTopographyScaleLow: "Low",
     legendTopographyScaleHigh: "High",
-    layersSummary: "Layers",
+    layersSummary: "Manage layers",
     baseMapLabel: "Base map",
     layerMeguniotLabel: "Existing meguniot",
     layerMiklatimLabel: "Existing miklatim",
@@ -263,7 +263,7 @@ const I18N = {
     legendTopographyScaleTitle: "",
     legendTopographyScaleLow: "נמוך",
     legendTopographyScaleHigh: "גבוה",
-    layersSummary: "שכבות",
+    layersSummary: "ניהול שכבות",
     baseMapLabel: "מפת בסיס",
     layerMeguniotLabel: "מיגוניות קיימות",
     layerMiklatimLabel: "מקלטים קיימים",
@@ -450,6 +450,30 @@ const RECOMMENDED_SHELTER_BLUE = {
   buildingFill: "#9ed2ff",
   areaStroke: "#2c7ec7",
   areaFill: "#b6deff",
+};
+const EDUCATION_SHELTER_PURPLE = {
+  markerStroke: "#4e2a84",
+  markerFill: "#9b6cff",
+  buildingStroke: "#5a3291",
+  buildingFill: "#b996ff",
+  areaStroke: "#5e3993",
+  areaFill: "#c4a7ff",
+};
+const PUBLIC_SHELTER_BROWN = {
+  markerStroke: "#6e4219",
+  markerFill: "#b8793b",
+  buildingStroke: "#7c4f22",
+  buildingFill: "#cf9a62",
+  areaStroke: "#805126",
+  areaFill: "#dbb183",
+};
+const EXISTING_MIKLAT_GREEN = {
+  markerStroke: "#1f6f2f",
+  markerFill: "#52b36a",
+  buildingStroke: "#237b35",
+  buildingFill: "#74c989",
+  areaStroke: "#28843a",
+  areaFill: "#8fd8a1",
 };
 
 proj4.defs(
@@ -765,7 +789,7 @@ for (const basemap of BASE_MAP_OPTIONS) {
 }
 baseMapSelect.value = "light";
 
-const map = L.map("map", { preferCanvas: true, zoomControl: false }).setView([31.745, 34.99], 13);
+const map = L.map("map", { preferCanvas: true, zoomControl: false }).setView([31.745, 34.99], 15);
 L.control.zoom({ position: "bottomright" }).addTo(map);
 const baseMapLayers = new Map();
 let currentBaseMapLayer = null;
@@ -815,6 +839,27 @@ const matchedSourceBuildingFeatureIndexes = new Set();
 
 const existingIcon = L.icon({
   iconUrl: "assets/existing.svg",
+  iconSize: [20, 24],
+  iconAnchor: [10, 24],
+  popupAnchor: [0, -22],
+  className: "custom-icon",
+});
+const existingMiklatIcon = L.icon({
+  iconUrl: "assets/existing-green.svg",
+  iconSize: [20, 24],
+  iconAnchor: [10, 24],
+  popupAnchor: [0, -22],
+  className: "custom-icon",
+});
+const existingEducationIcon = L.icon({
+  iconUrl: "assets/existing-purple.svg",
+  iconSize: [20, 24],
+  iconAnchor: [10, 24],
+  popupAnchor: [0, -22],
+  className: "custom-icon",
+});
+const existingPublicIcon = L.icon({
+  iconUrl: "assets/existing-brown.svg",
   iconSize: [20, 24],
   iconAnchor: [10, 24],
   popupAnchor: [0, -22],
@@ -1094,6 +1139,7 @@ function isAssumedShelteredFeature(feature) {
 
 function createBuildingLayer(feature, style, radius = 3) {
   return L.geoJSON(feature, {
+    interactive: true,
     style: () => style,
     pointToLayer: (_feature, latlng) =>
       L.circleMarker(latlng, {
@@ -1103,8 +1149,27 @@ function createBuildingLayer(feature, style, radius = 3) {
         fillColor: style.fillColor,
         fillOpacity: style.fillOpacity,
         opacity: style.opacity ?? 1,
+        interactive: true,
       }),
   });
+}
+
+function createShelterMarkerWithPalette(latLng, icon = existingIcon) {
+  return L.marker(latLng, { icon });
+}
+
+function addShelterSourceBuildingLayer(targetLayer, feature, sourceCrs, palette) {
+  const geometry = geometryToWgs(feature?.geometry, sourceCrs);
+  if (!geometry || !palette || !targetLayer) return;
+  const sourceFeature = { type: "Feature", geometry, properties: feature?.properties || {} };
+  const style = {
+    color: palette.buildingStroke,
+    weight: 1.6,
+    fillColor: palette.buildingFill,
+    fillOpacity: 0.34,
+    opacity: 0.96,
+  };
+  createBuildingLayer(sourceFeature, style, 4).addTo(targetLayer);
 }
 
 function escapeHtml(value) {
@@ -1163,8 +1228,10 @@ function getPopupLabels() {
       source: "מקור",
       newlyCovered: "כיסוי חדש",
       coveredBuildings: "מבנים מכוסים",
+      coveredHousingUnits: "יחידות דיור מכוסות",
       metadata: "פרטי מיגונית",
       buildingsSuffix: "מבנים",
+      housingUnitsSuffix: "יחידות דיור",
       yes: "כן",
       no: "לא",
       unknown: "לא ידוע",
@@ -1197,25 +1264,82 @@ function getPopupLabels() {
     source: "Source",
     newlyCovered: "Newly covered",
     coveredBuildings: "Covered buildings",
+    coveredHousingUnits: "Covered housing units",
     metadata: "Shelter details",
     buildingsSuffix: "buildings",
+    housingUnitsSuffix: "housing units",
     yes: "Yes",
     no: "No",
     unknown: "Unknown",
   };
 }
 
-function renderShelterSelectionPopup(title, coveredCount, rows = []) {
+function getBuildingApartmentsForCoverageIndex(buildingIdx) {
+  const normalizedIdx = Number(buildingIdx);
+  if (!Number.isFinite(normalizedIdx)) return null;
+  const coverage = coverageByIndex.get(normalizedIdx);
+  const coverageApartments = Number(coverage?.apartments);
+  if (Number.isFinite(coverageApartments) && coverageApartments >= 0) return coverageApartments;
+  const feature = buildingFeatureByIndex.get(normalizedIdx);
+  return getFirstNumericProperty(feature?.properties, [
+    "Apartments",
+    "apartments",
+    "units",
+    "diyot",
+    "dirhot",
+    "deyrot",
+    "Apartment_Number",
+  ]);
+}
+
+function getCoveredHousingUnitsByIndices(indices) {
+  if (!Array.isArray(indices)) return null;
+  let total = 0;
+  for (const idx of indices) {
+    const apartments = Number(getBuildingApartmentsForCoverageIndex(idx));
+    if (!Number.isFinite(apartments) || apartments < 0) continue;
+    total += apartments;
+  }
+  return total;
+}
+
+function buildCoverageStatsFromCoverageMatch(match, fallbackCoveredIndices = null) {
+  const coveredIndices = Array.isArray(match?.covered_building_indices)
+    ? match.covered_building_indices
+    : Array.isArray(fallbackCoveredIndices)
+      ? fallbackCoveredIndices
+      : [];
+  const coveredBuildingsCountRaw = Number(match?.covered_buildings_count);
+  const coveredBuildingsCount = Number.isFinite(coveredBuildingsCountRaw) ? coveredBuildingsCountRaw : coveredIndices.length;
+  return {
+    coveredBuildingsCount,
+    coveredHousingUnits: getCoveredHousingUnitsByIndices(coveredIndices),
+  };
+}
+
+function renderShelterSelectionPopup(title, coverageStats, rows = []) {
   const labels = getPopupLabels();
-  const metaRows = rows
+  const coveredBuildingsCount = Number(coverageStats?.coveredBuildingsCount);
+  const coveredHousingUnits = Number(coverageStats?.coveredHousingUnits);
+  const numberFormatter = new Intl.NumberFormat(currentLanguage === "he" ? "he-IL" : "en-US");
+  const housingUnitsRow =
+    Number.isFinite(coveredHousingUnits) && coveredHousingUnits >= 0
+      ? [
+          {
+            label: labels.coveredHousingUnits,
+            value: `${numberFormatter.format(coveredHousingUnits)} ${labels.housingUnitsSuffix}`,
+          },
+        ]
+      : [];
+  const metaRows = [...housingUnitsRow, ...rows]
     .filter((row) => row?.label && row?.value)
     .map(
       (row) =>
         `<div class="shelter-selection-meta-row"><span class="shelter-selection-meta-label">${escapeHtml(row.label)}</span><span class="shelter-selection-meta-value">${escapeHtml(row.value)}</span></div>`,
     )
     .join("");
-  const countDisplay = Number.isFinite(coveredCount)
-    ? `${new Intl.NumberFormat(currentLanguage === "he" ? "he-IL" : "en-US").format(coveredCount)} ${labels.buildingsSuffix}`
+  const countDisplay = Number.isFinite(coveredBuildingsCount)
+    ? `${numberFormatter.format(coveredBuildingsCount)} ${labels.buildingsSuffix}`
     : labels.unknown;
   return `
     <div class="shelter-selection-card" dir="${currentLanguage === "he" ? "rtl" : "ltr"}">
@@ -1348,14 +1472,17 @@ function buildShelterPopupData(sourceKind, feature, shelterId) {
   return { title: labels.titlePublic, rows: [...defaultPublicRows, ...fallbackRows] };
 }
 
-function getShelterCoveredBuildingCount(shelterKind, shelterId) {
+function getShelterCoverageStats(shelterKind, shelterId, fallbackCoveredIndices = null) {
   const payload = getCurrentShelterCoveragePayload();
   const allCoverages = Array.isArray(payload?.coverages) ? payload.coverages : [];
   const match = allCoverages.find((coverage) => {
     return coverage?.shelter_kind === shelterKind && Number(coverage?.shelter_id) === Number(shelterId);
   });
-  if (!match) return null;
-  return Array.isArray(match.covered_building_indices) ? match.covered_building_indices.length : 0;
+  if (!match) {
+    if (!Array.isArray(fallbackCoveredIndices)) return null;
+    return buildCoverageStatsFromCoverageMatch(null, fallbackCoveredIndices);
+  }
+  return buildCoverageStatsFromCoverageMatch(match, fallbackCoveredIndices);
 }
 
 function getCoveragePointLatLng(coverage, idx) {
@@ -1788,9 +1915,8 @@ function configureMobilePanelDefaults() {
   if (mobilePanelConfigured || !controlStack) return;
   const drawerPanels = controlStack.querySelectorAll(".drawer-panel");
   for (const panel of drawerPanels) {
-    const toggle = panel.querySelector(":scope > .drawer-toggle");
-    const keepOpen = toggle?.getAttribute("aria-controls") === "step3Content";
-    setDrawerOpen(panel, keepOpen);
+    const startsOpen = panel.classList.contains("is-open");
+    setDrawerOpen(panel, startsOpen);
   }
   mobilePanelConfigured = true;
 }
@@ -2171,6 +2297,9 @@ function getSelectedCoverageMatches() {
 }
 
 function getSelectionPalette(shelter) {
+  if (shelter?.sourceKind === "education") return EDUCATION_SHELTER_PURPLE;
+  if (shelter?.sourceKind === "public") return PUBLIC_SHELTER_BROWN;
+  if (shelter?.sourceKind === "miklat") return EXISTING_MIKLAT_GREEN;
   return shelter?.kind === "recommended" ? RECOMMENDED_SHELTER_BLUE : EXISTING_SHELTER_BLUE;
 }
 
@@ -2232,8 +2361,8 @@ function contourStyleForElevation(height) {
   const isMajor = hasHeight && Math.abs(height % 50) < 0.0001;
   return {
     color: isMajor ? "#aeb9ca" : "#9aa8bc",
-    weight: isMajor ? 1.75 : 1.15,
-    opacity: isMajor ? 0.9 : 0.72,
+    weight: isMajor ? 0.85 : 0.5,
+    opacity: isMajor ? 0.78 : 0.56,
     lineCap: "round",
     lineJoin: "round",
     dashArray: null,
@@ -2373,8 +2502,8 @@ function renderExistingShelters() {
     marker.bindPopup(
       () => {
         const popup = buildShelterPopupData("miguniot", feature, shelterId);
-        const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
-        return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+        const coverageStats = getShelterCoverageStats("existing", shelterId);
+        return renderShelterSelectionPopup(popup.title, coverageStats, popup.rows);
       },
       { className: "shelter-selection-popup" },
     );
@@ -2385,6 +2514,7 @@ function renderExistingShelters() {
           id: shelterId,
           lat: latLng[0],
           lon: latLng[1],
+          sourceKind: "megunit",
           label: t("existingMegunitLabel"),
         },
       ),
@@ -2396,12 +2526,12 @@ function renderExistingShelters() {
     const latLng = geometryToLatLng(feature, dataStore.miklatimSourceCrs);
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
-    const marker = L.marker(latLng, { icon: existingIcon });
+    const marker = createShelterMarkerWithPalette(latLng, existingMiklatIcon);
     marker.bindPopup(
       () => {
         const popup = buildShelterPopupData("miklatim", feature, shelterId);
-        const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
-        return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+        const coverageStats = getShelterCoverageStats("existing", shelterId);
+        return renderShelterSelectionPopup(popup.title, coverageStats, popup.rows);
       },
       { className: "shelter-selection-popup" },
     );
@@ -2412,6 +2542,7 @@ function renderExistingShelters() {
           id: shelterId,
           lat: latLng[0],
           lon: latLng[1],
+          sourceKind: "miklat",
           label: t("existingMiklatLabel"),
         },
       ),
@@ -2427,12 +2558,13 @@ function renderExistingShelters() {
       const latLng = featureToLatLng(feature, dataStore.educationFacilitiesSourceCrs);
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
-      const marker = L.marker(latLng, { icon: existingIcon });
+      addShelterSourceBuildingLayer(layers.existingMiklatim, feature, dataStore.educationFacilitiesSourceCrs, EDUCATION_SHELTER_PURPLE);
+      const marker = createShelterMarkerWithPalette(latLng, existingEducationIcon);
       marker.bindPopup(
         () => {
           const popup = buildShelterPopupData("education", feature, shelterId);
-          const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
-          return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+          const coverageStats = getShelterCoverageStats("existing", shelterId);
+          return renderShelterSelectionPopup(popup.title, coverageStats, popup.rows);
         },
         { className: "shelter-selection-popup" },
       );
@@ -2442,6 +2574,7 @@ function renderExistingShelters() {
           id: shelterId,
           lat: latLng[0],
           lon: latLng[1],
+          sourceKind: "education",
           label: t("existingMiklatLabel"),
         }),
       );
@@ -2457,12 +2590,13 @@ function renderExistingShelters() {
       const latLng = featureToLatLng(feature, dataStore.publicBuildingsSourceCrs);
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
-      const marker = L.marker(latLng, { icon: existingIcon });
+      addShelterSourceBuildingLayer(layers.existingMiklatim, feature, dataStore.publicBuildingsSourceCrs, PUBLIC_SHELTER_BROWN);
+      const marker = createShelterMarkerWithPalette(latLng, existingPublicIcon);
       marker.bindPopup(
         () => {
           const popup = buildShelterPopupData("public", feature, shelterId);
-          const coveredCount = getShelterCoveredBuildingCount("existing", shelterId);
-          return renderShelterSelectionPopup(popup.title, coveredCount, popup.rows);
+          const coverageStats = getShelterCoverageStats("existing", shelterId);
+          return renderShelterSelectionPopup(popup.title, coverageStats, popup.rows);
         },
         { className: "shelter-selection-popup" },
       );
@@ -2472,6 +2606,7 @@ function renderExistingShelters() {
           id: shelterId,
           lat: latLng[0],
           lon: latLng[1],
+          sourceKind: "public",
           label: t("existingMiklatLabel"),
         }),
       );
@@ -2492,8 +2627,11 @@ function renderRecommended() {
     const marker = L.marker([rec.lat, rec.lon], { icon: recommendedIcon });
     marker.bindPopup(
       () => {
-        const coveredCount = getShelterCoveredBuildingCount("recommended", shelterId) ?? fullCount;
-        return renderShelterSelectionPopup(labels.titleRecommended, coveredCount, [
+        const coverageStats = getShelterCoverageStats("recommended", shelterId, rec.covered_building_indices) || {
+          coveredBuildingsCount: fullCount,
+          coveredHousingUnits: getCoveredHousingUnitsByIndices(rec.covered_building_indices),
+        };
+        return renderShelterSelectionPopup(labels.titleRecommended, coverageStats, [
           { label: labels.rank, value: String(rec.rank) },
           { label: labels.mode, value: modeLabel },
           { label: labels.source, value: rec.candidate_source || (isClusterMode() ? "cluster_ensemble_kmeans" : "building") },
