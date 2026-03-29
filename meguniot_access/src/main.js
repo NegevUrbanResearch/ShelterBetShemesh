@@ -99,6 +99,7 @@ const I18N = {
     buildingTypesMoreSelectedLabel: (extraCount) => `+${extraCount} more`,
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "No building types selected",
+    buildingFilterAllLabel: "All",
     assumeOnlyPublicLandLabel: "Only place on public land",
     assumeWeightByPopulationLabel: "Weight by # residents",
     weightingBuildingTypeRestrictionNotice:
@@ -278,6 +279,7 @@ const I18N = {
     buildingTypesMoreSelectedLabel: (extraCount) => `+${extraCount} נוספים`,
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
+    buildingFilterAllLabel: "הכל",
     assumeOnlyPublicLandLabel: "מיקום פתרונות מיגון רק בשטחים ציבוריים",
     assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד מוערך",
     weightingBuildingTypeRestrictionNotice:
@@ -476,10 +478,8 @@ const countLabel = document.querySelector('label[for="countRange"]');
 const statsEl = document.getElementById("stats");
 const downloadCsvBtn = document.getElementById("downloadCsv");
 const downloadGeojsonBtn = document.getElementById("downloadGeojson");
-const metricGraphBtn = document.getElementById("metricGraphBtn");
 const metricEuclideanBtn = document.getElementById("metricEuclideanBtn");
 const modeExactBtn = document.getElementById("modeExactBtn");
-const modeClusterBtn = document.getElementById("modeClusterBtn");
 const baseMapSelect = document.getElementById("baseMapSelect");
 const assumePost1992Sheltered = document.getElementById("assumePost1992Sheltered");
 const assumeOver3FloorsSheltered = document.getElementById("assumeOver3FloorsSheltered");
@@ -487,14 +487,8 @@ const assumeEducationShelters = document.getElementById("assumeEducationShelters
 const assumePublicShelters = document.getElementById("assumePublicShelters");
 const assumeOnlyPublicLand = document.getElementById("assumeOnlyPublicLand");
 const assumeWeightByPopulation = document.getElementById("assumeWeightByPopulation");
-const buildingTypesDropdown = document.getElementById("buildingTypesDropdown");
-const buildingTypesDropdownToggle = document.getElementById("buildingTypesDropdownToggle");
-const buildingTypesDropdownMenu = document.getElementById("buildingTypesDropdownMenu");
-const buildingTypesDropdownSummary = document.getElementById("buildingTypesDropdownSummary");
-const buildingTypesSelectedCount = document.getElementById("buildingTypesSelectedCount");
-const buildingTypesSelectAllBtn = document.getElementById("buildingTypesSelectAllBtn");
-const buildingTypesDeselectAllBtn = document.getElementById("buildingTypesDeselectAllBtn");
-const buildingTypeOptionButtons = Array.from(document.querySelectorAll(".building-type-option"));
+const buildingFilterResidential = document.getElementById("buildingFilterResidential");
+const buildingFilterNonResidential = document.getElementById("buildingFilterNonResidential");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -586,19 +580,10 @@ function showWeightingRestrictionNotice(message) {
 function updateBuildingTypeWeightingState() {
   const weightingEnabled = Boolean(currentAssumptions.weightByPopulation);
   const disabledHint = t("weightingBuildingTypeRestrictionDisabledHint");
-  for (const option of buildingTypeOptionButtons) {
-    const typeValue = Number(option.dataset.useType);
-    const disabledByWeighting =
-      weightingEnabled && WEIGHTING_DISABLED_BUILDING_USE_TYPES.includes(typeValue);
-    option.classList.toggle("is-weighting-disabled", disabledByWeighting);
-    option.setAttribute("aria-disabled", String(disabledByWeighting));
-    if (disabledByWeighting) {
-      option.dataset.disabledReason = disabledHint;
-      option.setAttribute("title", disabledHint);
-    } else {
-      delete option.dataset.disabledReason;
-      option.removeAttribute("title");
-    }
+  if (buildingFilterNonResidential) {
+    buildingFilterNonResidential.disabled = weightingEnabled;
+    buildingFilterNonResidential.title = weightingEnabled ? disabledHint : "";
+    if (weightingEnabled) buildingFilterNonResidential.checked = false;
   }
 }
 
@@ -649,7 +634,6 @@ function applyStaticTranslations() {
     appTitle: "appTitle",
     appSubtitle: "appSubtitle",
     step1Title: "step1Title",
-    step2Title: "step2Title",
     step3Title: "step3Title",
     step4Title: "step4Title",
     heatmapToggleLabel: "heatmapToggleLabel",
@@ -691,11 +675,8 @@ function applyStaticTranslations() {
     assumeOnlyPublicLandLabel: "assumeOnlyPublicLandLabel",
     assumeWeightByPopulationLabel: "assumeWeightByPopulationLabel",
     assumptionsBuildingTypesTitle: "assumptionsBuildingTypesTitle",
-    buildingTypesSelectAllLabel: "buildingTypesSelectAllLabel",
-    buildingTypesDeselectAllLabel: "buildingTypesDeselectAllLabel",
-    assumeBuildingUseType1Label: "assumeBuildingUseType1Label",
+    buildingFilterAllLabel: "buildingFilterAllLabel",
     assumeBuildingUseType2Label: "assumeBuildingUseType2Label",
-    assumeBuildingUseType3Label: "assumeBuildingUseType3Label",
     assumeBuildingUseType4Label: "assumeBuildingUseType4Label",
     assumptionsHasShelterTitle: "assumptionsHasShelterTitle",
     assumptionsNeighborsTitle: "assumptionsNeighborsTitle",
@@ -713,11 +694,10 @@ function applyStaticTranslations() {
       el.textContent = t(key);
     }
   }
-  updateBuildingTypesSummaryText();
   updateBuildingTypeWeightingState();
 
-  metricEuclideanBtn?.textContent = t("metricEuclideanBtn");
-  modeExactBtn?.textContent = t("modeExactBtn");
+  if (metricEuclideanBtn) metricEuclideanBtn.textContent = t("metricEuclideanBtn");
+  if (modeExactBtn) modeExactBtn.textContent = t("modeExactBtn");
 
   openGuideBtn.setAttribute("aria-label", t("infoAriaLabel"));
   closeGuideBtn.setAttribute("aria-label", t("closeHelpAriaLabel"));
@@ -726,8 +706,6 @@ function applyStaticTranslations() {
   if (mobileControlsBtn) mobileControlsBtn.textContent = t("mobileControlsBtn");
   if (mobilePanelTitle) mobilePanelTitle.textContent = t("mobilePanelTitle");
   document.querySelector(".guide-tabs")?.setAttribute("aria-label", t("guideTabsAriaLabel"));
-  document.querySelectorAll('.mode-toggle[role="group"]')?.[0]?.setAttribute("aria-label", t("distanceMetricLabel"));
-  document.querySelectorAll('.mode-toggle[role="group"]')?.[1]?.setAttribute("aria-label", t("placementModeLabel"));
 }
 
 function repopulateLocalizedOptions() {
@@ -1506,7 +1484,7 @@ function downloadBlob(content, filename, mimeType) {
 }
 
 function isClusterMode() {
-  return currentPlacementMode === "cluster";
+  return false;
 }
 
 function getActiveBucketKey() {
@@ -1584,61 +1562,18 @@ function normalizeBuildingUseTypes(rawTypes) {
   return dedupedSorted;
 }
 
-function updateBuildingTypesSummaryText() {
-  if (!buildingTypesDropdownSummary) return;
-  const selectedTypes = getSelectedBuildingUseTypesFromUi();
-  const selectedCount = selectedTypes.length;
-  const totalCount = BUILDING_USE_TYPES.length;
-  if (buildingTypesSelectedCount) {
-    buildingTypesSelectedCount.textContent = t("buildingTypesCountLabel", selectedCount, totalCount);
-  }
-  if (!selectedTypes.length) {
-    buildingTypesDropdownSummary.textContent = t("buildingTypesNoneSelectedLabel");
-    buildingTypesDropdownToggle?.setAttribute("aria-label", t("buildingTypesNoneSelectedLabel"));
-    return;
-  }
-  if (selectedCount === totalCount) {
-    buildingTypesDropdownSummary.textContent = t("buildingTypesAllSelectedLabel");
-    buildingTypesDropdownToggle?.setAttribute("aria-label", t("buildingTypesAllSelectedLabel"));
-    return;
-  }
-  const labels = selectedTypes.map((typeValue) => {
-    if (typeValue === 2) return t("assumeBuildingUseType2Label");
-    return t("assumeBuildingUseType4Label");
-  });
-  const preview =
-    labels.length > 3
-      ? `${labels.slice(0, 3).join(", ")} ${t("buildingTypesMoreSelectedLabel", labels.length - 3)}`
-      : labels.join(", ");
-  buildingTypesDropdownSummary.textContent = preview;
-  buildingTypesDropdownToggle?.setAttribute("aria-label", labels.join(", "));
-}
-
-function setBuildingTypesDropdownOpen(isOpen) {
-  if (!buildingTypesDropdown || !buildingTypesDropdownToggle || !buildingTypesDropdownMenu) return;
-  buildingTypesDropdown.classList.toggle("is-open", isOpen);
-  buildingTypesDropdownToggle.setAttribute("aria-expanded", String(isOpen));
-  buildingTypesDropdownMenu.classList.toggle("hidden", !isOpen);
-}
-
 function setSelectedBuildingUseTypesInUi(selectedTypes) {
   const selectedSet = new Set(selectedTypes);
-  for (const option of buildingTypeOptionButtons) {
-    const typeValue = Number(option.dataset.useType);
-    const selected = selectedSet.has(typeValue);
-    option.classList.toggle("is-selected", selected);
-    option.setAttribute("aria-pressed", String(selected));
-  }
-  updateBuildingTypesSummaryText();
+  if (buildingFilterResidential) buildingFilterResidential.checked = selectedSet.has(2);
+  if (buildingFilterNonResidential) buildingFilterNonResidential.checked = selectedSet.has(4);
   updateBuildingTypeWeightingState();
 }
 
 function getSelectedBuildingUseTypesFromUi() {
-  return buildingTypeOptionButtons
-    .filter((option) => option.classList.contains("is-selected"))
-    .map((option) => Number(option.dataset.useType))
-    .filter((v) => BUILDING_USE_TYPES.includes(v))
-    .sort((a, b) => a - b);
+  const selected = [];
+  if (buildingFilterResidential?.checked) selected.push(2);
+  if (buildingFilterNonResidential?.checked) selected.push(4);
+  return selected;
 }
 
 function enforceWeightingBuildingTypeRule(nextAssumptions) {
@@ -2180,38 +2115,27 @@ function reportProjectionStatus() {
 }
 
 function toCsv(rows) {
-  const headers = isClusterMode()
-    ? ["rank", "lat", "lon", "coordinates", "candidate_source", "placement_mode"]
-    : [
-        "rank",
-        "time_bucket",
-        "time_seconds",
-        "lat",
-        "lon",
-        "coordinates",
-        "newly_covered_buildings",
-        "newly_covered_people_est",
-      ];
+  const headers = [
+    "rank",
+    "time_bucket",
+    "time_seconds",
+    "lat",
+    "lon",
+    "coordinates",
+    "newly_covered_buildings",
+    "newly_covered_people_est",
+  ];
   const body = rows.map((row) =>
-    (isClusterMode()
-      ? [
-          row.rank,
-          row.lat,
-          row.lon,
-          row.coordinates,
-          row.candidate_source,
-          row.placement_mode || "cluster",
-        ]
-      : [
-          row.rank,
-          row.time_bucket,
-          row.time_seconds,
-          row.lat,
-          row.lon,
-          row.coordinates,
-          row.newly_covered_buildings,
-          row.newly_covered_people_est,
-        ])
+    [
+      row.rank,
+      row.time_bucket,
+      row.time_seconds,
+      row.lat,
+      row.lon,
+      row.coordinates,
+      row.newly_covered_buildings,
+      row.newly_covered_people_est,
+    ]
       .map(csvCell)
       .join(","),
   );
@@ -2571,7 +2495,7 @@ function renderExistingShelters() {
 function renderRecommended() {
   layers.recommended.clearLayers();
   const rows = recommendationsForCurrentView();
-  const modeLabel = currentPlacementMode === "cluster" ? t("modeLabelCluster") : t("modeLabelExact");
+  const modeLabel = t("modeLabelExact");
   const labels = getPopupLabels();
   for (const rec of rows) {
     const shelterId = rec.shelter_id ?? rec.candidate_id ?? rec.building_idx;
@@ -2587,7 +2511,7 @@ function renderRecommended() {
         return renderShelterSelectionPopup(labels.titleRecommended, coverageStats, [
           { label: labels.rank, value: String(rec.rank) },
           { label: labels.mode, value: modeLabel },
-          { label: labels.source, value: rec.candidate_source || (isClusterMode() ? "cluster_ensemble_kmeans" : "building") },
+          { label: labels.source, value: rec.candidate_source || "building" },
           { label: labels.newlyCovered, value: `${marginalCount} ${labels.buildingsSuffix}` },
         ]);
       },
@@ -2788,23 +2712,13 @@ function renderStats() {
   }
   const stats = bucketData.statistics;
   const shown = recommendationsForCurrentView();
-  const minuteLabel = getBucketLabel(getActiveBucketKey());
-  const metricLabel =
-    currentDistanceMetric === "euclidean" ? t("metricLabelEuclidean") : t("metricLabelGraph");
-
-  if (isClusterMode()) {
-    statsEl.innerHTML = t("clusterStats", shown.length, metricLabel);
-    return;
-  }
+  const metricLabel = t("metricLabelEuclidean");
 
   const marginalCoverage = shown.reduce((sum, row) => sum + row.newly_covered_buildings, 0);
   const uncoveredNow = Number(stats.currently_uncovered) || 0;
   const remainingUncovered = Math.max(0, uncoveredNow - marginalCoverage);
   const modeLabel = t("exactModeLabel", metricLabel);
-  const coveragePhrase =
-    currentDistanceMetric === "euclidean"
-      ? t("coveragePhraseEuclidean")
-      : t("coveragePhraseGraph", minuteLabel);
+  const coveragePhrase = t("coveragePhraseEuclidean");
 
   statsEl.innerHTML = t(
     "exactStats",
@@ -2955,7 +2869,6 @@ function setDistanceMetric(metricKey) {
     coverageById.set(Number(b.id), b);
   }
   buildBuildingFeatureIndex();
-  metricGraphBtn?.classList.toggle("active-toggle", metricKey === "graph");
   metricEuclideanBtn?.classList.toggle("active-toggle", metricKey === "euclidean");
   clearSelection();
   void refreshView();
@@ -2966,7 +2879,6 @@ function setPlacementMode(modeKey) {
   if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
   currentPlacementMode = modeKey;
   modeExactBtn?.classList.toggle("active-toggle", modeKey === "exact");
-  modeClusterBtn?.classList.toggle("active-toggle", modeKey === "cluster");
   bucketControls?.classList.add("hidden-control");
   if (bucketSelect) {
     bucketSelect.disabled = true;
@@ -3020,10 +2932,6 @@ function wireEvents() {
     if (accessibilityHeatmapEnabled) setAccessibilityHeatmap(false);
     void refreshView();
   });
-  metricGraphBtn?.addEventListener("click", () => setDistanceMetric("graph"));
-  metricEuclideanBtn?.addEventListener("click", () => setDistanceMetric("euclidean"));
-  modeExactBtn?.addEventListener("click", () => setPlacementMode("exact"));
-  modeClusterBtn?.addEventListener("click", () => setPlacementMode("cluster"));
   baseMapSelect?.addEventListener("change", () => setBaseMap(baseMapSelect.value));
   map.on("click", handleMapClickForElevation);
   map.on("zoomend moveend", () => {
@@ -3037,7 +2945,7 @@ function wireEvents() {
     const rows = recommendationsForCurrentView();
     const activeBucket = getActiveBucketKey();
     const label = activeBucket;
-    const suffix = isClusterMode() ? "clusters" : label;
+    const suffix = label;
     downloadBlob(
       toCsv(rows),
       `recommended_meguniot_${currentDistanceMetric}_${currentPlacementMode}_${suffix}.csv`,
@@ -3051,25 +2959,18 @@ function wireEvents() {
     const features = rows.map((r) => ({
       type: "Feature",
       geometry: { type: "Point", coordinates: [r.lon, r.lat] },
-      properties: isClusterMode()
-        ? {
-            rank: r.rank,
-            placement_mode: "cluster",
-            candidate_source: r.candidate_source,
-            coordinates: r.coordinates,
-          }
-        : {
-            rank: r.rank,
-            time_bucket: r.time_bucket,
-            time_seconds: r.time_seconds,
-            coordinates: r.coordinates,
-            newly_covered_buildings: r.newly_covered_buildings,
-            newly_covered_people_est: r.newly_covered_people_est,
-          },
+      properties: {
+        rank: r.rank,
+        time_bucket: r.time_bucket,
+        time_seconds: r.time_seconds,
+        coordinates: r.coordinates,
+        newly_covered_buildings: r.newly_covered_buildings,
+        newly_covered_people_est: r.newly_covered_people_est,
+      },
     }));
     const activeBucket = getActiveBucketKey();
     const label = activeBucket;
-    const suffix = isClusterMode() ? "clusters" : label;
+    const suffix = label;
     downloadBlob(
       JSON.stringify({ type: "FeatureCollection", features }, null, 2),
       `recommended_meguniot_${currentDistanceMetric}_${currentPlacementMode}_${suffix}.geojson`,
@@ -3127,45 +3028,19 @@ function wireEvents() {
       void applyAssumptions(readAssumptionsFromInputs());
     });
   }
-  buildingTypesDropdownToggle?.addEventListener("click", () => {
-    const nextOpen = !buildingTypesDropdown?.classList.contains("is-open");
-    setBuildingTypesDropdownOpen(Boolean(nextOpen));
-  });
-  for (const option of buildingTypeOptionButtons) {
-    option.addEventListener("click", () => {
-      if (option.classList.contains("is-weighting-disabled")) {
-        showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionDisabledHint"));
-        return;
-      }
-      option.classList.toggle("is-selected");
-      option.setAttribute("aria-pressed", String(option.classList.contains("is-selected")));
-      void applyAssumptions(readAssumptionsFromInputs());
-    });
-  }
-  buildingTypesSelectAllBtn?.addEventListener("click", () => {
-    setSelectedBuildingUseTypesInUi([...BUILDING_USE_TYPES]);
+  buildingFilterResidential?.addEventListener("change", () => {
     void applyAssumptions(readAssumptionsFromInputs());
   });
-  buildingTypesDeselectAllBtn?.addEventListener("click", () => {
-    setSelectedBuildingUseTypesInUi([]);
+  buildingFilterNonResidential?.addEventListener("change", () => {
+    if (buildingFilterNonResidential.disabled) {
+      buildingFilterNonResidential.checked = false;
+      showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionDisabledHint"));
+    }
     void applyAssumptions(readAssumptionsFromInputs());
   });
   assumeWeightByPopulation?.addEventListener("change", () => {
     if (!assumeWeightByPopulation.checked) return;
     showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionNotice"));
-  });
-  document.addEventListener("click", (event) => {
-    if (!buildingTypesDropdown) return;
-    const target = event.target;
-    if (!(target instanceof Node)) return;
-    if (!buildingTypesDropdown.contains(target)) {
-      setBuildingTypesDropdownOpen(false);
-    }
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && buildingTypesDropdown?.classList.contains("is-open")) {
-      setBuildingTypesDropdownOpen(false);
-    }
   });
 
   openGuideBtn.addEventListener("click", () => guideModal.classList.remove("hidden"));
