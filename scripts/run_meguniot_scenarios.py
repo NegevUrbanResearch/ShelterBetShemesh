@@ -25,24 +25,11 @@ REQUIRED_SCENARIO_OUTPUT_FILES = (
     "output_schema.json",
     "building_shelter_audit.json",
     "coverage_diagnostics.json",
-    "building_coverage_network_graph.json",
     "building_coverage_network_euclidean.json",
-    "optimal_meguniot_graph_exact_5min.json",
-    "optimal_meguniot_graph_cluster_5min.json",
     "optimal_meguniot_euclidean_exact_5min.json",
-    "optimal_meguniot_euclidean_cluster_5min.json",
-    "recommended_meguniot_graph_exact_5min.csv",
-    "recommended_meguniot_graph_cluster_5min.csv",
     "recommended_meguniot_euclidean_exact_5min.csv",
-    "recommended_meguniot_euclidean_cluster_5min.csv",
-    "recommended_meguniot_graph_exact_5min.geojson",
-    "recommended_meguniot_graph_cluster_5min.geojson",
     "recommended_meguniot_euclidean_exact_5min.geojson",
-    "recommended_meguniot_euclidean_cluster_5min.geojson",
-    "shelter_coverages_graph_exact_5min.json",
-    "shelter_coverages_graph_cluster_5min.json",
     "shelter_coverages_euclidean_exact_5min.json",
-    "shelter_coverages_euclidean_cluster_5min.json",
 )
 
 
@@ -114,11 +101,12 @@ def _run_single_scenario(job: dict[str, Any]) -> str:
 
 def _build_assumption_grid() -> list[ScenarioAssumptions]:
     assumption_combinations = list(itertools.product([False, True], repeat=6))
+    selectable_types = [2, 4]
     building_type_subsets: list[frozenset[int]] = []
-    for mask in range(1, 1 << 4):
-        selected = frozenset(i + 1 for i in range(4) if mask & (1 << i))
+    for mask in range(1, 1 << len(selectable_types)):
+        selected = frozenset(selectable_types[i] for i in range(len(selectable_types)) if mask & (1 << i))
         building_type_subsets.append(selected)
-    weighted_subsets = [frozenset({2}), frozenset({3}), frozenset({2, 3})]
+    weighted_subsets = [frozenset({2})]
 
     scenarios: list[ScenarioAssumptions] = []
     for post_1992, over_3, education, public, public_land, pop_weight in assumption_combinations:
@@ -158,7 +146,7 @@ def main() -> None:
         "--candidate-sources",
         nargs="+",
         default=["buildings", "network_nodes"],
-        choices=["buildings", "network_nodes", "public_parcels", "cluster_candidates"],
+        choices=["buildings", "network_nodes", "public_parcels"],
     )
     parser.add_argument("--node-proximity-m", type=float, default=150.0)
     parser.add_argument("--public-parcels", type=Path, default=None)
@@ -275,7 +263,7 @@ def main() -> None:
 
     manifest = {
         "version": 1,
-        "defaultScenarioKey": "p1_f0_e0_u0_l0_w0_t11110",
+        "defaultScenarioKey": "p1_f0_e0_u0_l0_w0_t01010",
         "scenarios": scenarios,
     }
     out_path = DATA_DIR / "meguniot_network" / "scenario_manifest.json"

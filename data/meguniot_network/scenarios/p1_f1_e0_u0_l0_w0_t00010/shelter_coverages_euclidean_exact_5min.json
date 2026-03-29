@@ -53,9 +53,11 @@
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        7
+        5,
+        34,
+        38
       ],
-      "covered_buildings_count": 1
+      "covered_buildings_count": 3
     },
     {
       "distance_metric": "euclidean",
@@ -66,7 +68,7 @@
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        5
+        9
       ],
       "covered_buildings_count": 1
     },
@@ -199,8 +201,10 @@
       "shelter_type": "miklat",
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covered_building_indices": [],
-      "covered_buildings_count": 0
+      "covered_building_indices": [
+        4
+      ],
+      "covered_buildings_count": 1
     },
     {
       "distance_metric": "euclidean",
@@ -210,8 +214,10 @@
       "shelter_type": "miklat",
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covered_building_indices": [],
-      "covered_buildings_count": 0
+      "covered_building_indices": [
+        27
+      ],
+      "covered_buildings_count": 1
     },
     {
       "distance_metric": "euclidean",
@@ -221,8 +227,11 @@
       "shelter_type": "miklat",
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covered_building_indices": [],
-      "covered_buildings_count": 0
+      "covered_building_indices": [
+        27,
+        28
+      ],
+      "covered_buildings_count": 2
     },
     {
       "distance_metric": "euclidean",
@@ -243,8 +252,10 @@
       "shelter_type": "miklat",
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covered_building_indices": [],
-      "covered_buildings_count": 0
+      "covered_building_indices": [
+        24
+      ],
+      "covered_buildings_count": 1
     },
     {
       "distance_metric": "euclidean",
@@ -255,7 +266,7 @@
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        6
+        10
       ],
       "covered_buildings_count": 1
     },
@@ -323,9 +334,10 @@
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        4
+        8,
+        26
       ],
-      "covered_buildings_count": 1
+      "covered_buildings_count": 2
     },
     {
       "distance_metric": "euclidean",
@@ -380,7 +392,7 @@
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        6
+        10
       ],
       "covered_buildings_count": 1
     },
@@ -425,8 +437,10 @@
       "shelter_type": "miklat",
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covered_building_indices": [],
-      "covered_buildings_count": 0
+      "covered_building_indices": [
+        13
+      ],
+      "covered_buildings_count": 1
     },
     {
       "distance_metric": "euclidean",
@@ -524,8 +538,11 @@
       "shelter_type": "miklat",
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covered_building_indices": [],
-      "covered_buildings_count": 0
+      "covered_building_indices": [
+        32,
+        33
+      ],
+      "covered_buildings_count": 2
     },
     {
       "distance_metric": "euclidean",
@@ -542,17 +559,19 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "shelter_kind": "recommended",
-      "shelter_id": 62,
-      "candidate_id": 62,
-      "candidate_source": "network_nodes",
+      "shelter_id": 18,
+      "candidate_id": 18,
+      "candidate_source": "buildings",
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        10,
-        12,
-        13
+        18,
+        20,
+        21,
+        23,
+        25
       ],
-      "covered_buildings_count": 3
+      "covered_buildings_count": 5
     },
     {
       "distance_metric": "euclidean",
@@ -565,9 +584,42 @@
       "time_seconds": 300,
       "covered_building_indices": [
         0,
-        3
+        6,
+        7
       ],
-      "covered_buildings_count": 2
+      "covered_buildings_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 41,
+      "candidate_id": 41,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        40,
+        41,
+        42
+      ],
+      "covered_buildings_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 165,
+      "candidate_id": 165,
+      "candidate_source": "network_nodes",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        43,
+        45,
+        46
+      ],
+      "covered_buildings_count": 3
     },
     {
       "distance_metric": "euclidean",
@@ -580,7 +632,7 @@
       "time_seconds": 300,
       "covered_building_indices": [
         1,
-        11
+        44
       ],
       "covered_buildings_count": 2
     },
@@ -588,14 +640,45 @@
       "distance_metric": "euclidean",
       "placement_mode": "exact",
       "shelter_kind": "recommended",
-      "shelter_id": 8,
-      "candidate_id": 8,
+      "shelter_id": 29,
+      "candidate_id": 29,
       "candidate_source": "buildings",
       "time_bucket": "5min",
       "time_seconds": 300,
       "covered_building_indices": [
-        8,
-        9
+        29,
+        31
+      ],
+      "covered_buildings_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 36,
+      "candidate_id": 36,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        36,
+        37,
+        38
+      ],
+      "covered_buildings_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 168,
+      "candidate_id": 168,
+      "candidate_source": "network_nodes",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        19,
+        22
       ],
       "covered_buildings_count": 2
     },
@@ -610,6 +693,146 @@
       "time_seconds": 300,
       "covered_building_indices": [
         2
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 3,
+      "candidate_id": 3,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        3
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 11,
+      "candidate_id": 11,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        11
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 12,
+      "candidate_id": 12,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        12
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 14,
+      "candidate_id": 14,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        14
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 15,
+      "candidate_id": 15,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        15
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 16,
+      "candidate_id": 16,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        16
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 17,
+      "candidate_id": 17,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        17
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 30,
+      "candidate_id": 30,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        30
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 35,
+      "candidate_id": 35,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        35
+      ],
+      "covered_buildings_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "placement_mode": "exact",
+      "shelter_kind": "recommended",
+      "shelter_id": 39,
+      "candidate_id": 39,
+      "candidate_source": "buildings",
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covered_building_indices": [
+        39
       ],
       "covered_buildings_count": 1
     }

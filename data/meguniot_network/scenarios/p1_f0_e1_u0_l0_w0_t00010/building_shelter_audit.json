@@ -4,8 +4,32 @@
   "description": "Per-building list of existing shelters that can reach it within each time bucket and distance metric",
   "records": [
     {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
       "building_idx": 0,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        82,
+        83,
+        97,
+        190
+      ],
+      "covering_shelter_count": 4
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 1,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        38,
+        39
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 2,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -14,23 +38,7 @@
       "covering_shelter_count": 1
     },
     {
-      "distance_metric": "graph",
-      "building_idx": 1,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 2,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
       "building_idx": 3,
       "time_bucket": "5min",
       "time_seconds": 300,
@@ -38,7 +46,7 @@
       "covering_shelter_count": 0
     },
     {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
       "building_idx": 4,
       "time_bucket": "5min",
       "time_seconds": 300,
@@ -46,99 +54,99 @@
       "covering_shelter_count": 0
     },
     {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
       "building_idx": 5,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        26
-      ],
-      "covering_shelter_count": 1
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 6,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        13
-      ],
-      "covering_shelter_count": 1
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 7,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        26
-      ],
-      "covering_shelter_count": 1
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 8,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        44,
-        715,
-        835,
-        847,
-        867
-      ],
-      "covering_shelter_count": 5
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 9,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        22,
-        425,
-        817
-      ],
-      "covering_shelter_count": 3
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 10,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        31,
-        32,
-        139,
-        144,
-        437,
-        701,
-        768,
-        770
-      ],
-      "covering_shelter_count": 8
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 11,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
       "covering_shelter_count": 0
     },
     {
-      "distance_metric": "graph",
-      "building_idx": 12,
+      "distance_metric": "euclidean",
+      "building_idx": 6,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 7,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 8,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
-        26
+        223,
+        224,
+        230,
+        231,
+        265,
+        266,
+        276,
+        511,
+        513,
+        520,
+        588,
+        690,
+        697,
+        710,
+        829
       ],
-      "covering_shelter_count": 1
+      "covering_shelter_count": 15
     },
     {
-      "distance_metric": "graph",
-      "building_idx": 13,
+      "distance_metric": "euclidean",
+      "building_idx": 9,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 10,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        15,
+        47,
+        50,
+        88,
+        209,
+        241,
+        242,
+        243,
+        244,
+        247,
+        258,
+        264,
+        267,
+        268,
+        272,
+        293,
+        294,
+        324,
+        454,
+        471,
+        472,
+        786,
+        806,
+        824,
+        841,
+        854
+      ],
+      "covering_shelter_count": 26
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 11,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -153,166 +161,71 @@
       "covering_shelter_count": 7
     },
     {
-      "distance_metric": "graph",
-      "building_idx": 14,
+      "distance_metric": "euclidean",
+      "building_idx": 12,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
-        2,
-        165,
-        180,
-        787
-      ],
-      "covering_shelter_count": 4
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 15,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        165,
-        180
+        15,
+        17
       ],
       "covering_shelter_count": 2
     },
     {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
+      "building_idx": 13,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 14,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 15,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        16,
+        79,
+        108,
+        109,
+        190
+      ],
+      "covering_shelter_count": 5
+    },
+    {
+      "distance_metric": "euclidean",
       "building_idx": 16,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
-        7
+        638
       ],
       "covering_shelter_count": 1
     },
     {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
       "building_idx": 17,
       "time_bucket": "5min",
       "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
+      "covering_shelter_ids": [
+        638,
+        743,
+        798
+      ],
+      "covering_shelter_count": 3
     },
     {
-      "distance_metric": "graph",
+      "distance_metric": "euclidean",
       "building_idx": 18,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 19,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 20,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 21,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 22,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        158
-      ],
-      "covering_shelter_count": 1
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 23,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "graph",
-      "building_idx": 24,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 0,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [
-        158
-      ],
-      "covering_shelter_count": 1
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 1,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 2,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 3,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 4,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 5,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 6,
-      "time_bucket": "5min",
-      "time_seconds": 300,
-      "covering_shelter_ids": [],
-      "covering_shelter_count": 0
-    },
-    {
-      "distance_metric": "euclidean",
-      "building_idx": 7,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -322,7 +235,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 8,
+      "building_idx": 19,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -334,7 +247,26 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 9,
+      "building_idx": 20,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 21,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        84,
+        85
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 22,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -346,7 +278,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 10,
+      "building_idx": 23,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -362,7 +294,21 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 11,
+      "building_idx": 24,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        245,
+        246,
+        430,
+        431,
+        790
+      ],
+      "covering_shelter_count": 5
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 25,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -370,7 +316,390 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 12,
+      "building_idx": 26,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 27,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        123,
+        233,
+        235,
+        236,
+        278
+      ],
+      "covering_shelter_count": 5
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 28,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        102,
+        121,
+        160
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 29,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 30,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 31,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        218,
+        245,
+        246,
+        323,
+        400,
+        401,
+        704
+      ],
+      "covering_shelter_count": 7
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 32,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        219,
+        252,
+        253,
+        254,
+        685,
+        686,
+        757
+      ],
+      "covering_shelter_count": 7
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 33,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        216,
+        217,
+        220,
+        743,
+        798
+      ],
+      "covering_shelter_count": 5
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 34,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        216,
+        217,
+        220,
+        743,
+        798
+      ],
+      "covering_shelter_count": 5
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 35,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        743,
+        798
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 36,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        743,
+        798
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 37,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        224,
+        230,
+        231,
+        276,
+        511,
+        513,
+        520,
+        588,
+        690,
+        697,
+        710,
+        829
+      ],
+      "covering_shelter_count": 12
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 38,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        129,
+        182,
+        225,
+        238,
+        239,
+        327,
+        370,
+        371,
+        372,
+        383,
+        426,
+        603,
+        832,
+        833
+      ],
+      "covering_shelter_count": 14
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 39,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        35
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 40,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 41,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 42,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 43,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 44,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 45,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 46,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        101,
+        107,
+        142,
+        155,
+        356,
+        357,
+        432,
+        739,
+        740,
+        741
+      ],
+      "covering_shelter_count": 10
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 47,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        441,
+        480
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 48,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 49,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 50,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 51,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 52,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        48,
+        127
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 53,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        158
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 54,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 55,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        158
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 56,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        158
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 57,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 58,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        158
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 59,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        19
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 60,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        158
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 61,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -380,7 +709,275 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 13,
+      "building_idx": 62,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        26
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 63,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        16,
+        17,
+        158
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 64,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        17
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 65,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        84,
+        85
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 66,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        13
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 67,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        84,
+        85
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 68,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        30,
+        438
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 69,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 70,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 71,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 72,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 73,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 74,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        49,
+        106,
+        348
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 75,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        49,
+        106,
+        348
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 76,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        49,
+        106,
+        348
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 77,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        106
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 78,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 79,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        106
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 80,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        106
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 81,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        106
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 82,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        98,
+        666
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 83,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        106
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 84,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        106
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 85,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        485,
+        592
+      ],
+      "covering_shelter_count": 2
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 86,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        44,
+        715,
+        835,
+        846,
+        847,
+        867
+      ],
+      "covering_shelter_count": 6
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 87,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        44,
+        835,
+        867
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 88,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -396,7 +993,17 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 14,
+      "building_idx": 89,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        855
+      ],
+      "covering_shelter_count": 1
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 90,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -404,7 +1011,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 15,
+      "building_idx": 91,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -412,7 +1019,67 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 16,
+      "building_idx": 92,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        2,
+        165,
+        167,
+        170,
+        180,
+        207,
+        787
+      ],
+      "covering_shelter_count": 7
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 93,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        46,
+        52,
+        59
+      ],
+      "covering_shelter_count": 3
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 94,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 95,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 96,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 97,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 98,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -422,7 +1089,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 17,
+      "building_idx": 99,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -430,7 +1097,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 18,
+      "building_idx": 100,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -438,7 +1105,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 19,
+      "building_idx": 101,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -446,7 +1113,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 20,
+      "building_idx": 102,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -454,7 +1121,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 21,
+      "building_idx": 103,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -462,7 +1129,23 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 22,
+      "building_idx": 104,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 105,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [],
+      "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 106,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [
@@ -473,7 +1156,7 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 23,
+      "building_idx": 107,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
@@ -481,11 +1164,21 @@
     },
     {
       "distance_metric": "euclidean",
-      "building_idx": 24,
+      "building_idx": 108,
       "time_bucket": "5min",
       "time_seconds": 300,
       "covering_shelter_ids": [],
       "covering_shelter_count": 0
+    },
+    {
+      "distance_metric": "euclidean",
+      "building_idx": 109,
+      "time_bucket": "5min",
+      "time_seconds": 300,
+      "covering_shelter_ids": [
+        13
+      ],
+      "covering_shelter_count": 1
     }
   ]
 }

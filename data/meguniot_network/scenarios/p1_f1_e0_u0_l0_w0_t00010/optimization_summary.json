@@ -28,14 +28,12 @@
     "5min": 300
   },
   "distance_metrics": [
-    "graph",
     "euclidean"
   ],
   "placement_types": [
-    "exact",
-    "cluster"
+    "exact"
   ],
-  "total_target_buildings": 14,
+  "total_target_buildings": 47,
   "candidate_generation_by_placement": {
     "exact": {
       "sources": [
@@ -43,62 +41,20 @@
         "network_nodes"
       ],
       "node_proximity_m": 150.0,
-      "total_candidates": 97
-    },
-    "cluster": {
-      "sources": [
-        "cluster_ensemble_kmeans"
-      ],
-      "cluster_ensemble_runs": 150,
-      "total_candidates": 3
+      "total_candidates": 360
     }
   },
   "results_by_metric_and_placement": {
-    "graph": {
-      "exact": [
-        {
-          "time_bucket": "5min",
-          "time_seconds": 300,
-          "currently_uncovered": 7,
-          "additional_covered_by_proposed": 7,
-          "num_proposed_meguniot": 5,
-          "final_uncovered": 0,
-          "stop_reason": "full_coverage_achieved"
-        }
-      ],
-      "cluster": [
-        {
-          "time_bucket": "5min",
-          "time_seconds": 300,
-          "currently_uncovered": 7,
-          "additional_covered_by_proposed": 4,
-          "num_proposed_meguniot": 2,
-          "final_uncovered": 3,
-          "stop_reason": "no_marginal_gain"
-        }
-      ]
-    },
     "euclidean": {
       "exact": [
         {
           "time_bucket": "5min",
           "time_seconds": 300,
-          "currently_uncovered": 10,
-          "additional_covered_by_proposed": 10,
-          "num_proposed_meguniot": 5,
+          "currently_uncovered": 33,
+          "additional_covered_by_proposed": 33,
+          "num_proposed_meguniot": 19,
           "final_uncovered": 0,
           "stop_reason": "full_coverage_achieved"
-        }
-      ],
-      "cluster": [
-        {
-          "time_bucket": "5min",
-          "time_seconds": 300,
-          "currently_uncovered": 10,
-          "additional_covered_by_proposed": 4,
-          "num_proposed_meguniot": 2,
-          "final_uncovered": 6,
-          "stop_reason": "no_marginal_gain"
         }
       ]
     }

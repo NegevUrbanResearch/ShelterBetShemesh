@@ -1,12 +1,6 @@
 const BUCKET_OPTIONS = [{ key: "5min", seconds: 300 }];
-const DISTANCE_METRIC_OPTIONS = [
-  { key: "graph" },
-  { key: "euclidean" },
-];
-const PLACEMENT_OPTIONS = [
-  { key: "exact" },
-  { key: "cluster" },
-];
+const DISTANCE_METRIC_OPTIONS = [{ key: "euclidean" }];
+const PLACEMENT_OPTIONS = [{ key: "exact" }];
 const BASE_MAP_OPTIONS = [
   {
     key: "streets",
@@ -38,9 +32,9 @@ const BASE_MAP_OPTIONS = [
 ];
 const FIXED_BUCKET_KEY = "5min";
 const ACCESSIBILITY_GRID_CELL_SIZE_PX = 8;
-const BUILDING_USE_TYPES = [1, 2, 3, 4];
-const WEIGHTED_ALLOWED_BUILDING_USE_TYPES = [2, 3];
-const WEIGHTING_DISABLED_BUILDING_USE_TYPES = [1, 4];
+const BUILDING_USE_TYPES = [2, 4];
+const WEIGHTED_ALLOWED_BUILDING_USE_TYPES = [2];
+const WEIGHTING_DISABLED_BUILDING_USE_TYPES = [4];
 const I18N = {
   en: {
     appTitle: "Access to Shelter - Beit Shemesh",
@@ -54,9 +48,8 @@ const I18N = {
     mobileCloseAriaLabel: "Close controls",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
-    step2Title: '<span class="step-chip">2</span><span class="step-title-text">Analysis setup</span>',
-    step3Title: '<span class="step-chip">3</span><span class="step-title-text">Add shelters</span>',
-    step4Title: '<span class="step-chip">4</span><span class="step-title-text">Local impact</span>',
+    step3Title: '<span class="step-chip">2</span><span class="step-title-text">Add shelters</span>',
+    step4Title: '<span class="step-chip">3</span><span class="step-title-text">Local impact</span>',
     heatmapToggleLabel: "Accessibility heatmap (distance to nearest shelter)",
     accessibilityHeatmapHint: "Green = closer | Red = farther",
     distanceMetricLabel: "Distance",
@@ -88,10 +81,8 @@ const I18N = {
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
     layerCoveredLabel: "Covered by selected shelter",
-    metricGraphBtn: "Walking distance",
     metricEuclideanBtn: "Euclidean",
     modeExactBtn: "Exact",
-    modeClusterBtn: "Cluster",
     countRangeLabel: "Recommended shelters",
     assumptionsHasShelterTitle: "Has Shelter",
     assumptionsNeighborsTitle: "Shelter Neighbors",
@@ -111,12 +102,10 @@ const I18N = {
     assumeOnlyPublicLandLabel: "Only place on public land",
     assumeWeightByPopulationLabel: "Weight by # residents",
     weightingBuildingTypeRestrictionNotice:
-      "Resident weighting is on. Public and Commercial building types are turned off automatically.",
+      "Resident weighting is on. Non-residential building category is turned off automatically.",
     weightingBuildingTypeRestrictionDisabledHint: "Can't use with resident weighting",
-    assumeBuildingUseType1Label: "Public",
-    assumeBuildingUseType2Label: "Mixed use",
-    assumeBuildingUseType3Label: "Residential",
-    assumeBuildingUseType4Label: "Commercial",
+    assumeBuildingUseType2Label: "Residential (incl. mixed use)",
+    assumeBuildingUseType4Label: "Non-residential (public + commercial)",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) =>
       `Recommended ${modeLabel} (max ${maxRecommendations})`,
     clusterAreas: "cluster areas",
@@ -166,10 +155,8 @@ const I18N = {
     buildingPopupTypeLabel: "Building type",
     buildingPopupTypeStoryLabel: "Type story",
     buildingPopupTypeUnknown: "Unknown",
-    buildingPopupTypeStory_1: "Public facility, likely no residential use",
-    buildingPopupTypeStory_2: "Mixed use, likely residential + public/commercial",
-    buildingPopupTypeStory_3: "Residential",
-    buildingPopupTypeStory_4: "Commercial/private non-residential",
+    buildingPopupTypeStory_2: "Residential (including mixed use)",
+    buildingPopupTypeStory_4: "Non-residential (public + commercial)",
     buildingPopupMetaLabel: "Metadata",
     buildingPopupAssumptionsLabel: "Assumption effects",
     buildingPopupBuildYear: "Build year",
@@ -180,8 +167,7 @@ const I18N = {
     buildingAssumptionTypeFiltered: "Excluded by selected building types",
     buildingAssumptionNoTypes: "No building types are selected",
     buildingAssumptionWeightIgnored: "Excluded from population weighting for this type",
-    buildingAssumptionWeightPartial: "Partially weighted in population mode",
-    buildingAssumptionWeightFull: "Fully weighted in population mode",
+    buildingAssumptionWeightFull: "Weighted in population mode",
     buildingAssumptionNone: "No assumption filters currently affect this building",
     buildingTypesCriteriaLabel: "Building-type criteria",
     buildingTypesCriteriaNone: "No building types selected",
@@ -204,11 +190,10 @@ const I18N = {
     <div class="guide-block">
       <h3>How to Use</h3>
       <ul>
-        <li><strong>1.</strong> Choose <strong>Euclidean</strong> or <strong>Graph distance</strong> to define how accessibility is measured.</li>
-        <li><strong>2.</strong> Choose <strong>Exact placement</strong> or <strong>Cluster placement</strong> to set recommendation style.</li>
-        <li><strong>3.</strong> Add recommended shelters with the slider to test different intervention sizes.</li>
-        <li><strong>4.</strong> Inspect updated statistics, then click shelters on the map to explore local coverage change.</li>
-        <li><strong>5.</strong> Use legend <strong>Layers</strong> to manage map visibility and base map context.</li>
+        <li><strong>1.</strong> Set assumptions and choose target building categories.</li>
+        <li><strong>2.</strong> Add recommended shelters with the slider to test different intervention sizes.</li>
+        <li><strong>3.</strong> Inspect updated statistics, then click shelters on the map to explore local coverage change.</li>
+        <li><strong>4.</strong> Use legend <strong>Layers</strong> to manage map visibility and base map context.</li>
       </ul>
     </div>
   `,
@@ -218,9 +203,9 @@ const I18N = {
       <ul>
         <li><strong>0.</strong> Assumption toggles define what is treated as already sheltered and which additional facilities are counted as shelter supply.</li>
         <li><strong>1.</strong> Building and shelter layers are harmonized to a shared map coordinate system.</li>
-        <li><strong>2.</strong> Existing accessibility is computed per building under graph or euclidean distance logic.</li>
-        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points or cluster guidance.</li>
-        <li><strong>4.</strong> Statistics and map layers update interactively as you change mode and shelter count.</li>
+        <li><strong>2.</strong> Existing accessibility is computed per building using euclidean distance logic.</li>
+        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points.</li>
+        <li><strong>4.</strong> Statistics and map layers update interactively as you change shelter count.</li>
       </ul>
     </div>
   `,
@@ -240,9 +225,8 @@ const I18N = {
     mobileCloseAriaLabel: "סגירת פקדים",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
-    step2Title: '<span class="step-chip">2</span><span class="step-title-text">הגדרות ניתוח</span>',
-    step3Title: '<span class="step-chip">3</span><span class="step-title-text">הוספת מיגוניות</span>',
-    step4Title: '<span class="step-chip">4</span><span class="step-title-text">השפעה מקומית</span>',
+    step3Title: '<span class="step-chip">2</span><span class="step-title-text">הוספת מיגוניות</span>',
+    step4Title: '<span class="step-chip">3</span><span class="step-title-text">השפעה מקומית</span>',
     heatmapToggleLabel: "מפת חום לנגישות (מרחק למיגון הקרוב ביותר)",
     accessibilityHeatmapHint: "ירוק = קרוב יותר | אדום = רחוק יותר",
     distanceMetricLabel: "מרחק",
@@ -297,12 +281,10 @@ const I18N = {
     assumeOnlyPublicLandLabel: "מיקום פתרונות מיגון רק בשטחים ציבוריים",
     assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד מוערך",
     weightingBuildingTypeRestrictionNotice:
-      "שקלול לפי תושבים פעיל. סוגי המבנים ציבורי ומסחרי כבויים אוטומטית.",
+      "שקלול לפי תושבים פעיל. קטגוריית לא-למגורים כבויה אוטומטית.",
     weightingBuildingTypeRestrictionDisabledHint: "לא ניתן לשימוש עם שקלול לפי תושבים",
-    assumeBuildingUseType1Label: "ציבורי",
-    assumeBuildingUseType2Label: "שימוש מעורב",
-    assumeBuildingUseType3Label: "מגורים",
-    assumeBuildingUseType4Label: "מסחרי",
+    assumeBuildingUseType2Label: "מגורים (כולל שימוש מעורב)",
+    assumeBuildingUseType4Label: "לא למגורים (ציבורי + מסחרי)",
     countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
     clusterAreas: "אזורי אשכול",
     shelters: "מיגוניות",
@@ -425,7 +407,7 @@ const DEFAULT_ASSUMPTIONS = {
   publicShelters: false,
   onlyPublicLand: true,
   weightByPopulation: false,
-  buildingUseTypes: [1, 2, 3, 4],
+  buildingUseTypes: [2, 4],
 };
 const LAYER_DEFAULTS = {
   meguniot: true,
@@ -734,10 +716,8 @@ function applyStaticTranslations() {
   updateBuildingTypesSummaryText();
   updateBuildingTypeWeightingState();
 
-  metricGraphBtn.textContent = t("metricGraphBtn");
-  metricEuclideanBtn.textContent = t("metricEuclideanBtn");
-  modeExactBtn.textContent = t("modeExactBtn");
-  modeClusterBtn.textContent = t("modeClusterBtn");
+  metricEuclideanBtn?.textContent = t("metricEuclideanBtn");
+  modeExactBtn?.textContent = t("modeExactBtn");
 
   openGuideBtn.setAttribute("aria-label", t("infoAriaLabel"));
   closeGuideBtn.setAttribute("aria-label", t("closeHelpAriaLabel"));
@@ -980,8 +960,9 @@ function getBuildingUseType(feature) {
   const props = feature?.properties || {};
   const raw = props["שימוש"] ?? props.use ?? props.USE ?? props.shimush;
   const asNum = Number(raw);
-  if ([1, 2, 3, 4].includes(asNum)) return asNum;
-  return null;
+  if ([2, 3].includes(asNum)) return 2;
+  if ([1, 4].includes(asNum)) return 4;
+  return 4;
 }
 
 function getBuildingUseLabelAndStory(useType) {
@@ -992,9 +973,7 @@ function getBuildingUseLabelAndStory(useType) {
     };
   }
   const labelByType = {
-    1: t("assumeBuildingUseType1Label"),
     2: t("assumeBuildingUseType2Label"),
-    3: t("assumeBuildingUseType3Label"),
     4: t("assumeBuildingUseType4Label"),
   };
   return {
@@ -1005,9 +984,7 @@ function getBuildingUseLabelAndStory(useType) {
 
 function getSelectedBuildingTypeLabels() {
   return normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes).map((typeValue) => {
-    if (typeValue === 1) return t("assumeBuildingUseType1Label");
     if (typeValue === 2) return t("assumeBuildingUseType2Label");
-    if (typeValue === 3) return t("assumeBuildingUseType3Label");
     return t("assumeBuildingUseType4Label");
   });
 }
@@ -1027,27 +1004,6 @@ function isRelevantBySelectedBuildingTypes(feature) {
 }
 
 function isTargetBuildingFeature(feature) {
-  const props = feature?.properties || {};
-  const singleFamilyKey = [
-    "single_family",
-    "singlefamily",
-    "private_house",
-    "tzmod_krka",
-    "tzamud_karka",
-  ].find((key) => Object.prototype.hasOwnProperty.call(props, key));
-  const residentialKey = [
-    "residential",
-    "is_residential",
-    "res",
-    "miyuad_mgourim",
-    "megurim",
-  ].find((key) => Object.prototype.hasOwnProperty.call(props, key));
-
-  let residential = true;
-  if (singleFamilyKey) residential = residential && toBoolish(props[singleFamilyKey]);
-  if (residentialKey) residential = residential && toBoolish(props[residentialKey]);
-  if (!residential) return false;
-
   let exempt = false;
   if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltAfter1992(feature);
   if (currentAssumptions.over3FloorsSheltered) exempt = exempt || isOver3FloorsOrApartments(feature);
@@ -1081,8 +1037,7 @@ function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
     assumptionEffects.push(t("buildingAssumptionTypeFiltered"));
   }
   if (currentAssumptions.weightByPopulation) {
-    if (useType === 2) assumptionEffects.push(t("buildingAssumptionWeightPartial"));
-    else if (useType === 3) assumptionEffects.push(t("buildingAssumptionWeightFull"));
+    if (useType === 2) assumptionEffects.push(t("buildingAssumptionWeightFull"));
     else assumptionEffects.push(t("buildingAssumptionWeightIgnored"));
   }
   if (!assumptionEffects.length) {
@@ -1648,9 +1603,7 @@ function updateBuildingTypesSummaryText() {
     return;
   }
   const labels = selectedTypes.map((typeValue) => {
-    if (typeValue === 1) return t("assumeBuildingUseType1Label");
     if (typeValue === 2) return t("assumeBuildingUseType2Label");
-    if (typeValue === 3) return t("assumeBuildingUseType3Label");
     return t("assumeBuildingUseType4Label");
   });
   const preview =

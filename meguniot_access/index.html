@@ -57,6 +57,7 @@
       <div id="mobilePanelBackdrop" class="mobile-panel-backdrop hidden"></div>
 
       <aside class="control-stack">
+        <select id="bucketSelect" class="hidden" aria-hidden="true"></select>
         <div class="mobile-panel-head hidden-control">
           <h2 id="mobilePanelTitle" class="mobile-panel-title">פקדים</h2>
           <button id="mobilePanelCloseBtn" class="btn btn-close" type="button" aria-label="סגירה">✕</button>
@@ -115,8 +116,8 @@
                   <div id="buildingTypesDropdown" class="building-types-dropdown">
                     <button id="buildingTypesDropdownToggle" class="building-types-dropdown-toggle" type="button" aria-expanded="false">
                       <span class="building-types-toggle-main">
-                        <span id="buildingTypesDropdownSummary">Public, Mixed use, Residential, Commercial</span>
-                        <span id="buildingTypesSelectedCount" class="building-types-selected-count">4/4</span>
+                        <span id="buildingTypesDropdownSummary">Residential, Non-residential</span>
+                        <span id="buildingTypesSelectedCount" class="building-types-selected-count">2/2</span>
                       </span>
                       <span class="drawer-chevron" aria-hidden="true">▾</span>
                     </button>
@@ -130,20 +131,12 @@
                         </button>
                       </div>
                       <div class="building-types-options" role="group" aria-label="Building types">
-                        <button class="building-type-option is-selected" type="button" data-use-type="1" aria-pressed="true">
-                          <span id="assumeBuildingUseType1Label">Public</span>
-                          <span class="building-type-option-check">✓</span>
-                        </button>
                         <button class="building-type-option is-selected" type="button" data-use-type="2" aria-pressed="true">
-                          <span id="assumeBuildingUseType2Label">Mixed use</span>
-                          <span class="building-type-option-check">✓</span>
-                        </button>
-                        <button class="building-type-option is-selected" type="button" data-use-type="3" aria-pressed="true">
-                          <span id="assumeBuildingUseType3Label">Residential</span>
+                          <span id="assumeBuildingUseType2Label">Residential (incl. mixed use)</span>
                           <span class="building-type-option-check">✓</span>
                         </button>
                         <button class="building-type-option is-selected" type="button" data-use-type="4" aria-pressed="true">
-                          <span id="assumeBuildingUseType4Label">Commercial</span>
+                          <span id="assumeBuildingUseType4Label">Non-residential (public + commercial)</span>
                           <span class="building-type-option-check">✓</span>
                         </button>
                       </div>
@@ -170,46 +163,9 @@
           </div>
         </section>
 
-        <section id="analysisModeControls" class="control-step-panel glass drawer-panel">
-          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="false" aria-controls="step2Content">
-            <h3 id="step2Title" class="control-step-title"><span class="step-chip">2</span> בחירת מצב ניתוח</h3>
-            <span class="drawer-chevron" aria-hidden="true">▾</span>
-          </button>
-          <div id="step2Content" class="drawer-content">
-            <div class="analysis-grid">
-              <div class="analysis-choice">
-                <label id="distanceMetricLabel">מדד מרחק</label>
-                <div class="mode-toggle" role="group" aria-label="מדד מרחק">
-                  <button id="metricGraphBtn" class="btn btn-toggle" type="button">
-                    מרחק גרפי
-                  </button>
-                  <button id="metricEuclideanBtn" class="btn btn-toggle active-toggle" type="button">
-                    קו אווירי 100 מ'
-                  </button>
-                </div>
-              </div>
-              <div class="analysis-choice analysis-choice-divider">
-                <label id="placementModeLabel">מצב מיקום</label>
-                <div class="mode-toggle" role="group" aria-label="מצב מיקום">
-                  <button id="modeExactBtn" class="btn btn-toggle active-toggle" type="button">
-                    מיקום מדויק
-                  </button>
-                  <button id="modeClusterBtn" class="btn btn-toggle" type="button">
-                    מיקום באשכולות
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div id="bucketControls">
-              <label id="timeBucketLabel" for="bucketSelect">חלון זמן</label>
-              <select id="bucketSelect"></select>
-            </div>
-          </div>
-        </section>
-
         <section class="control-step-panel glass drawer-panel">
           <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="false" aria-controls="step3Content">
-            <h3 id="step3Title" class="control-step-title"><span class="step-chip">3</span> הוספת מיגוניות</h3>
+            <h3 id="step3Title" class="control-step-title"><span class="step-chip">2</span> הוספת מיגוניות</h3>
             <span class="drawer-chevron" aria-hidden="true">▾</span>
           </button>
           <div id="step3Content" class="drawer-content">
@@ -227,7 +183,7 @@
 
         <section id="coverageDisplayControls" class="control-step-panel glass drawer-panel">
           <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="false" aria-controls="step4Content">
-            <h3 id="step4Title" class="control-step-title"><span class="step-chip">4</span> בדיקת שינוי</h3>
+            <h3 id="step4Title" class="control-step-title"><span class="step-chip">3</span> בדיקת שינוי</h3>
             <span class="drawer-chevron" aria-hidden="true">▾</span>
           </button>
           <div id="step4Content" class="drawer-content">

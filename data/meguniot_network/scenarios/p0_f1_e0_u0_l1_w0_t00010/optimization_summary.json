@@ -28,14 +28,12 @@
     "5min": 300
   },
   "distance_metrics": [
-    "graph",
     "euclidean"
   ],
   "placement_types": [
-    "exact",
-    "cluster"
+    "exact"
   ],
-  "total_target_buildings": 148,
+  "total_target_buildings": 1672,
   "candidate_generation_by_placement": {
     "exact": {
       "sources": [
@@ -43,62 +41,20 @@
         "network_nodes"
       ],
       "node_proximity_m": 150.0,
-      "total_candidates": 87
-    },
-    "cluster": {
-      "sources": [
-        "cluster_ensemble_kmeans"
-      ],
-      "cluster_ensemble_runs": 150,
-      "total_candidates": 13
+      "total_candidates": 1547
     }
   },
   "results_by_metric_and_placement": {
-    "graph": {
-      "exact": [
-        {
-          "time_bucket": "5min",
-          "time_seconds": 300,
-          "currently_uncovered": 126,
-          "additional_covered_by_proposed": 48,
-          "num_proposed_meguniot": 9,
-          "final_uncovered": 78,
-          "stop_reason": "no_marginal_gain"
-        }
-      ],
-      "cluster": [
-        {
-          "time_bucket": "5min",
-          "time_seconds": 300,
-          "currently_uncovered": 126,
-          "additional_covered_by_proposed": 47,
-          "num_proposed_meguniot": 5,
-          "final_uncovered": 79,
-          "stop_reason": "no_marginal_gain"
-        }
-      ]
-    },
     "euclidean": {
       "exact": [
         {
           "time_bucket": "5min",
           "time_seconds": 300,
-          "currently_uncovered": 126,
-          "additional_covered_by_proposed": 49,
-          "num_proposed_meguniot": 11,
-          "final_uncovered": 77,
-          "stop_reason": "no_marginal_gain"
-        }
-      ],
-      "cluster": [
-        {
-          "time_bucket": "5min",
-          "time_seconds": 300,
-          "currently_uncovered": 126,
-          "additional_covered_by_proposed": 50,
-          "num_proposed_meguniot": 6,
-          "final_uncovered": 76,
-          "stop_reason": "no_marginal_gain"
+          "currently_uncovered": 1484,
+          "additional_covered_by_proposed": 1056,
+          "num_proposed_meguniot": 200,
+          "final_uncovered": 428,
+          "stop_reason": "budget_limit"
         }
       ]
     }

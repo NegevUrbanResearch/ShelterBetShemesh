@@ -60,9 +60,13 @@ DEFAULT_EMERGENCY_CROSSING_RADIUS_M = 22.0
 DEFAULT_DENSIFY_INTERVAL_M = 25.0
 DEFAULT_BUILDING_ACCESS_RADIUS_M = 80.0
 BUILDING_USE_TYPES = {1, 2, 3, 4, 5}
-SELECTABLE_BUILDING_USE_TYPES = {1, 2, 3, 4}
+RESIDENTIAL_CATEGORY = 2
+NON_RESIDENTIAL_CATEGORY = 4
+SELECTABLE_BUILDING_USE_TYPES = {RESIDENTIAL_CATEGORY, NON_RESIDENTIAL_CATEGORY}
 DEFAULT_BUILDING_USE_TYPES = frozenset(SELECTABLE_BUILDING_USE_TYPES)
-DEFAULT_WEIGHTED_BUILDING_USE_TYPES = frozenset({2, 3})
+DEFAULT_WEIGHTED_BUILDING_USE_TYPES = frozenset({RESIDENTIAL_CATEGORY})
+RESIDENTIAL_SOURCE_USE_TYPES = {2, 3}
+NON_RESIDENTIAL_SOURCE_USE_TYPES = {1, 4, 5}
 DEFAULT_BUILDINGS_PATH = DATA_DIR / "updated_all_buildings_data_with_use.geojson"
 
 logger = logging.getLogger("meguniot_backend")
@@ -83,6 +87,10 @@ class PlacementMode(str, Enum):
 class DistanceMetric(str, Enum):
     GRAPH = "graph"
     EUCLIDEAN = "euclidean"
+
+
+ACTIVE_PLACEMENT_MODES: tuple[PlacementMode, ...] = (PlacementMode.EXACT,)
+ACTIVE_DISTANCE_METRICS: tuple[DistanceMetric, ...] = (DistanceMetric.EUCLIDEAN,)
 
 
 @dataclass
@@ -147,8 +155,8 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def _cleanup_stale_bucket_outputs() -> None:
     valid_suffixes = set(TIME_BUCKETS.keys())
-    valid_placement_types = {m.value for m in PlacementMode}
-    valid_distance_metrics = {m.value for m in DistanceMetric}
+    valid_placement_types = {m.value for m in ACTIVE_PLACEMENT_MODES}
+    valid_distance_metrics = {m.value for m in ACTIVE_DISTANCE_METRICS}
     prefixes = ("optimal_meguniot_", "recommended_meguniot_", "shelter_coverages_", "shelter_isochrones_")
     extensions = (".json", ".csv", ".geojson")
     for path in OUTPUT_DIR.glob("*"):
@@ -189,8 +197,8 @@ def _build_output_schema_doc() -> dict[str, Any]:
     return {
         "schema_version": SCHEMA_VERSION,
         "time_buckets": list(TIME_BUCKETS.keys()),
-        "distance_metrics": [m.value for m in DistanceMetric],
-        "placement_types": [m.value for m in PlacementMode],
+        "distance_metrics": [m.value for m in ACTIVE_DISTANCE_METRICS],
+        "placement_types": [m.value for m in ACTIVE_PLACEMENT_MODES],
         "notes": [
             "Optimization uses walk_time (seconds), not flat distance.",
             "elevation_model.mode is dem_tobler when DEM is supplied.",
@@ -199,7 +207,6 @@ def _build_output_schema_doc() -> dict[str, Any]:
             "Buildings/shelters connected via projected access edges, not nearest-node.",
             "Optimizer supports weighted coverage and local-swap improvement.",
             "Exact mode recommends precise graph-linked points.",
-            "Cluster mode recommends area-level cluster centers from a KMeans ensemble.",
             f"Euclidean distance metric uses straight-line accessibility with a fixed {int(EUCLIDEAN_ACCESS_RADIUS_M)}m threshold.",
         ],
     }
@@ -212,9 +219,9 @@ def _validate_outputs() -> None:
         OUTPUT_DIR / "building_shelter_audit.json",
         OUTPUT_DIR / "coverage_diagnostics.json",
     ]
-    for metric in DistanceMetric:
+    for metric in ACTIVE_DISTANCE_METRICS:
         expected.append(OUTPUT_DIR / f"building_coverage_network_{metric.value}.json")
-        for mode in PlacementMode:
+        for mode in ACTIVE_PLACEMENT_MODES:
             for bucket in TIME_BUCKETS:
                 expected.append(OUTPUT_DIR / f"optimal_meguniot_{metric.value}_{mode.value}_{bucket}.json")
                 expected.append(OUTPUT_DIR / f"recommended_meguniot_{metric.value}_{mode.value}_{bucket}.csv")
@@ -293,6 +300,16 @@ def _normalize_selected_building_use_types(values: Iterable[int] | None) -> froz
     return frozenset(normalized)
 
 
+def _expand_selected_building_use_types(selected_types: Iterable[int]) -> set[int]:
+    expanded: set[int] = set()
+    selected = {int(v) for v in selected_types}
+    if RESIDENTIAL_CATEGORY in selected:
+        expanded.update(RESIDENTIAL_SOURCE_USE_TYPES)
+    if NON_RESIDENTIAL_CATEGORY in selected:
+        expanded.update(NON_RESIDENTIAL_SOURCE_USE_TYPES)
+    return expanded
+
+
 def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.GeoDataFrame:
     gdf = _load_geojson_with_real_crs(path).to_crs("EPSG:2039")
     gdf = _ensure_non_empty_points(gdf, "buildings")
@@ -310,12 +327,6 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
     )
     over_3_floors_col = _first_present(
         gdf, ["more_tha_3", "more_than_3_floors", "more_than_3_floors_or_2_apartments"]
-    )
-    single_family_col = _first_present(
-        gdf, ["single_family", "singlefamily", "private_house", "tzmod_krka", "tzamud_karka"]
-    )
-    residential_col = _first_present(
-        gdf, ["residential", "is_residential", "res", "miyuad_mgourim", "megurim"]
     )
     building_use_col = _first_present(gdf, ["שימוש", "use", "USE", "shimush"])
 
@@ -335,19 +346,14 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
     else:
         gdf["building_use_type_norm"] = 5
 
-    residential_mask = pd.Series(True, index=gdf.index)
-    if single_family_col:
-        residential_mask &= gdf[single_family_col].apply(_to_boolish)
-    if residential_col:
-        residential_mask &= gdf[residential_col].apply(_to_boolish)
-
     exempt_mask = pd.Series(False, index=gdf.index)
     if assumptions.post_1992_has_shelter:
         exempt_mask |= ~gdf["before_1992_norm"]
     if assumptions.over_3_floors_has_shelter:
         exempt_mask |= gdf["over_3_floors_norm"]
     selected_types = _normalize_selected_building_use_types(assumptions.selected_building_use_types)
-    target_mask = residential_mask & ~exempt_mask & gdf["building_use_type_norm"].isin(selected_types)
+    selected_source_types = _expand_selected_building_use_types(selected_types)
+    target_mask = ~exempt_mask & gdf["building_use_type_norm"].isin(selected_source_types)
     target = gdf[target_mask].copy().reset_index(drop=True)
     if target.empty:
         raise ValueError("No target buildings found after filtering criteria.")
@@ -1017,17 +1023,11 @@ def _compute_population_weights(
         bidx = int(row.building_idx)
         base_est = float(base_weights.get(bidx, 1.0))
         use_type = int(getattr(row, "building_use_type_norm", 5))
-        if use_type in {1, 4}:
+        if use_type in {1, 4, 5}:
             weights[bidx] = 1.0
             continue
-        if use_type == 2:
-            weights[bidx] = max(base_est * 0.5, 1.0)
-            continue
-        if use_type == 3:
+        if use_type in {2, 3}:
             weights[bidx] = max(base_est, 1.0)
-            continue
-        if use_type == 5 and on_public_land_by_idx.get(bidx, False):
-            weights[bidx] = 1.0
             continue
         weights[bidx] = max(base_est, 1.0)
 
@@ -1545,31 +1545,8 @@ def run_pipeline(
         exact_candidates = _filter_candidates_by_public_land(exact_candidates, designated_land)
 
     building_tree, _ = _build_building_kdtree(buildings)
-    cluster_candidates, cluster_members_by_candidate = _generate_cluster_mode_candidates(
-        buildings=buildings,
-        graph=graph,
-        max_candidates=DEFAULT_CLUSTER_CANDIDATE_POOL,
-        ensemble_runs=cluster_ensemble_runs,
-    )
-
-    if designated_land is not None:
-        old_members = dict(cluster_members_by_candidate)
-        kept = [c for c in cluster_candidates if designated_land.geometry.contains(c.geometry_2039).any()]
-        new_members: dict[int, list[int]] = {}
-        for i, c in enumerate(kept):
-            new_members[i] = old_members.get(c.candidate_id, [])
-            c.candidate_id = i
-        cluster_candidates = kept
-        cluster_members_by_candidate = new_members
-        logger.info("Public land filter (cluster): kept %d candidates", len(kept))
-
     mode_candidates: dict[PlacementMode, list[CandidatePoint]] = {
         PlacementMode.EXACT: exact_candidates,
-        PlacementMode.CLUSTER: cluster_candidates,
-    }
-    mode_cluster_members: dict[PlacementMode, dict[int, list[int]]] = {
-        PlacementMode.EXACT: {},
-        PlacementMode.CLUSTER: cluster_members_by_candidate,
     }
 
     max_cutoff_seconds = max(TIME_BUCKETS.values())
@@ -1592,15 +1569,14 @@ def run_pipeline(
 
     buildings_wgs = buildings.to_crs("EPSG:4326")
     coverage_records_by_metric: dict[DistanceMetric, list[dict[str, Any]]] = {
-        DistanceMetric.GRAPH: [],
-        DistanceMetric.EUCLIDEAN: [],
+        metric: [] for metric in ACTIVE_DISTANCE_METRICS
     }
     for idx, (row, row_wgs) in enumerate(zip(buildings.itertuples(), buildings_wgs.itertuples())):
         walk_sec_network = float(dist_to_any.get(int(row.node_id), math.inf))
         walk_sec_direct = float(direct_to_any[idx])
         walk_sec = min(walk_sec_network, walk_sec_direct)
         nearest_euclidean_m = float(euclidean_nearest_dist_m[idx])
-        for metric in DistanceMetric:
+        for metric in ACTIVE_DISTANCE_METRICS:
             rec = {
                 "id": int(row.id),
                 "building_idx": int(row.building_idx),
@@ -1620,14 +1596,14 @@ def run_pipeline(
                     rec[f"covered_{bucket}"] = bool(nearest_euclidean_m <= EUCLIDEAN_ACCESS_RADIUS_M)
             coverage_records_by_metric[metric].append(rec)
 
-    for metric in DistanceMetric:
+    for metric in ACTIVE_DISTANCE_METRICS:
         _write_json(
             OUTPUT_DIR / f"building_coverage_network_{metric.value}.json",
             {
                 "schema_version": SCHEMA_VERSION,
                 "distance_metric": metric.value,
                 "time_buckets": TIME_BUCKETS,
-                "placement_types": [m.value for m in PlacementMode],
+                "placement_types": [m.value for m in ACTIVE_PLACEMENT_MODES],
                 "euclidean_access_radius_m": EUCLIDEAN_ACCESS_RADIUS_M,
                 "walk_speed_mps_fallback": walk_speed_mps,
                 "emergency_crossing_radius_m": emergency_crossing_radius_m,
@@ -1647,7 +1623,6 @@ def run_pipeline(
                 },
                 "total_candidates_by_placement": {
                     PlacementMode.EXACT.value: len(exact_candidates),
-                    PlacementMode.CLUSTER.value: len(cluster_candidates),
                 },
                 "total_target_buildings": len(coverage_records_by_metric[metric]),
                 "buildings": coverage_records_by_metric[metric],
@@ -1655,17 +1630,17 @@ def run_pipeline(
         )
 
     results_by_metric_mode: dict[DistanceMetric, dict[PlacementMode, list[BucketResult]]] = {
-        metric: {mode: [] for mode in PlacementMode} for metric in DistanceMetric
+        metric: {mode: [] for mode in ACTIVE_PLACEMENT_MODES} for metric in ACTIVE_DISTANCE_METRICS
     }
     candidate_coverages_by_metric_mode_bucket: dict[
         DistanceMetric, dict[PlacementMode, dict[str, dict[int, set[int]]]]
     ] = {
-        metric: {mode: {} for mode in PlacementMode} for metric in DistanceMetric
+        metric: {mode: {} for mode in ACTIVE_PLACEMENT_MODES} for metric in ACTIVE_DISTANCE_METRICS
     }
 
-    for metric in DistanceMetric:
+    for metric in ACTIVE_DISTANCE_METRICS:
         coverage_records = coverage_records_by_metric[metric]
-        for mode in PlacementMode:
+        for mode in ACTIVE_PLACEMENT_MODES:
             candidates = mode_candidates[mode]
             cand_lookup = {c.candidate_id: c for c in candidates}
             cand_points_wgs = gpd.GeoSeries([c.geometry_2039 for c in candidates], crs="EPSG:2039").to_crs("EPSG:4326")
@@ -1679,44 +1654,16 @@ def run_pipeline(
                 initially_uncovered = {
                     int(r["building_idx"]) for r in coverage_records if not r.get(f"covered_{bucket}", False)
                 }
-                if metric == DistanceMetric.GRAPH:
-                    candidate_coverages = _candidate_coverages_for_bucket(
-                        graph=routing_graph,
-                        building_nodes=building_nodes,
-                        candidates=candidates,
-                        cutoff_seconds=float(seconds),
-                    )
-                    existing_coverages = _shelter_coverages_for_bucket(
-                        graph=routing_graph,
-                        building_nodes=building_nodes,
-                        shelter_node_ids=shelter_nodes,
-                        cutoff_seconds=float(seconds),
-                    )
-                    candidate_points_by_id = {int(c.candidate_id): c.geometry_2039 for c in candidates}
-                    shelter_points_by_id = {int(row.shelter_id): row.geometry for row in shelters.itertuples()}
-                    _augment_coverages_with_direct_crossing(
-                        coverages=candidate_coverages,
-                        source_points_by_id=candidate_points_by_id,
-                        building_tree=building_tree,
-                        crossing_radius_m=emergency_crossing_radius_m,
-                    )
-                    _augment_coverages_with_direct_crossing(
-                        coverages=existing_coverages,
-                        source_points_by_id=shelter_points_by_id,
-                        building_tree=building_tree,
-                        crossing_radius_m=emergency_crossing_radius_m,
-                    )
-                else:
-                    candidate_coverages = _candidate_coverages_euclidean_for_bucket(
-                        buildings=buildings,
-                        candidates=candidates,
-                        cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
-                    )
-                    existing_coverages = _shelter_coverages_euclidean_for_bucket(
-                        buildings=buildings,
-                        shelters=shelters,
-                        cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
-                    )
+                candidate_coverages = _candidate_coverages_euclidean_for_bucket(
+                    buildings=buildings,
+                    candidates=candidates,
+                    cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
+                )
+                existing_coverages = _shelter_coverages_euclidean_for_bucket(
+                    buildings=buildings,
+                    shelters=shelters,
+                    cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
+                )
                 candidate_coverages_by_metric_mode_bucket[metric][mode][bucket] = candidate_coverages
 
                 selected_ids, selected_sets, final_uncovered, stop_reason = _greedy_select(
@@ -1757,10 +1704,7 @@ def run_pipeline(
 
                 for cid in selected_ids:
                     candidate = cand_lookup[cid]
-                    if mode == PlacementMode.CLUSTER:
-                        full_covered_set = set(mode_cluster_members[mode].get(cid, []))
-                    else:
-                        full_covered_set = candidate_coverages.get(cid, set())
+                    full_covered_set = candidate_coverages.get(cid, set())
                     covered_indices = sorted(int(x) for x in full_covered_set)
                     coverage_entries.append(
                         {
@@ -1818,20 +1762,14 @@ def run_pipeline(
                 ):
                     candidate = cand_lookup[cid]
                     geom = cand_points_wgs.iloc[cid]
-                    if mode == PlacementMode.CLUSTER:
-                        full_covered_set = set(mode_cluster_members[mode].get(cid, []))
-                        marginal_for_output = set(full_covered_set)
-                    else:
-                        full_covered_set = candidate_coverages_by_metric_mode_bucket[metric][mode][bucket_result.bucket].get(cid, set())
-                        marginal_for_output = set(covered_marginal)
+                    full_covered_set = candidate_coverages_by_metric_mode_bucket[metric][mode][bucket_result.bucket].get(cid, set())
+                    marginal_for_output = set(covered_marginal)
                     proposed.append(
                         {
                             "rank": rank,
                             "distance_metric": metric.value,
                             "placement_mode": mode.value,
-                            "placement_semantics": "exact_point"
-                            if mode == PlacementMode.EXACT
-                            else "area_center",
+                            "placement_semantics": "exact_point",
                             "shelter_id": int(cid),
                             "candidate_id": int(cid),
                             "candidate_source": candidate.source.value,
@@ -1891,8 +1829,8 @@ def run_pipeline(
                         "swap_improvement_enabled": enable_swap_improvement,
                         "candidate_generation": {
                             "sources": mode_sources,
-                            "node_proximity_m": node_proximity_m if mode == PlacementMode.EXACT else None,
-                            "cluster_ensemble_runs": cluster_ensemble_runs if mode == PlacementMode.CLUSTER else None,
+                            "node_proximity_m": node_proximity_m,
+                            "cluster_ensemble_runs": None,
                             "total_candidates": len(candidates),
                         },
                         "assumptions": {
@@ -1962,21 +1900,11 @@ def run_pipeline(
                 )
     # --- Per-building audit: which shelters cover each building ---
     audit_records: list[dict[str, Any]] = []
-    for metric in DistanceMetric:
+    for metric in ACTIVE_DISTANCE_METRICS:
         for bucket, seconds in TIME_BUCKETS.items():
-            if metric == DistanceMetric.GRAPH:
-                existing_coverages_audit = _shelter_coverages_for_bucket(
-                    graph=routing_graph, building_nodes=building_nodes, shelter_node_ids=shelter_nodes, cutoff_seconds=float(seconds),
-                )
-                shelter_points_audit = {int(row.shelter_id): row.geometry for row in shelters.itertuples()}
-                _augment_coverages_with_direct_crossing(
-                    coverages=existing_coverages_audit, source_points_by_id=shelter_points_audit,
-                    building_tree=building_tree, crossing_radius_m=emergency_crossing_radius_m,
-                )
-            else:
-                existing_coverages_audit = _shelter_coverages_euclidean_for_bucket(
-                    buildings=buildings, shelters=shelters, cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
-                )
+            existing_coverages_audit = _shelter_coverages_euclidean_for_bucket(
+                buildings=buildings, shelters=shelters, cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
+            )
             building_to_shelters: dict[int, list[int]] = {}
             for sid, covered in existing_coverages_audit.items():
                 for bidx in covered:
@@ -2021,7 +1949,7 @@ def run_pipeline(
         },
         "per_metric": {},
     }
-    for metric in DistanceMetric:
+    for metric in ACTIVE_DISTANCE_METRICS:
         metric_records = coverage_records_by_metric[metric]
         walk_seconds_list = [
             r["nearest_shelter_walk_seconds"] for r in metric_records
@@ -2030,20 +1958,9 @@ def run_pipeline(
         walk_arr = np.array(walk_seconds_list, dtype=float) if walk_seconds_list else np.array([], dtype=float)
         per_bucket: dict[str, Any] = {}
         for bucket in TIME_BUCKETS:
-            if metric == DistanceMetric.GRAPH:
-                existing_coverages_diag = _shelter_coverages_for_bucket(
-                    graph=routing_graph, building_nodes=building_nodes, shelter_node_ids=shelter_nodes,
-                    cutoff_seconds=float(TIME_BUCKETS[bucket]),
-                )
-                shelter_pts_diag = {int(row.shelter_id): row.geometry for row in shelters.itertuples()}
-                _augment_coverages_with_direct_crossing(
-                    coverages=existing_coverages_diag, source_points_by_id=shelter_pts_diag,
-                    building_tree=building_tree, crossing_radius_m=emergency_crossing_radius_m,
-                )
-            else:
-                existing_coverages_diag = _shelter_coverages_euclidean_for_bucket(
-                    buildings=buildings, shelters=shelters, cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
-                )
+            existing_coverages_diag = _shelter_coverages_euclidean_for_bucket(
+                buildings=buildings, shelters=shelters, cutoff_m=EUCLIDEAN_ACCESS_RADIUS_M,
+            )
             building_coverage_counts: dict[int, int] = {}
             for _sid, covered in existing_coverages_diag.items():
                 for bidx in covered:
@@ -2087,19 +2004,14 @@ def run_pipeline(
         },
         "elevation_model": elevation_model,
         "time_buckets": TIME_BUCKETS,
-        "distance_metrics": [m.value for m in DistanceMetric],
-        "placement_types": [m.value for m in PlacementMode],
+        "distance_metrics": [m.value for m in ACTIVE_DISTANCE_METRICS],
+        "placement_types": [m.value for m in ACTIVE_PLACEMENT_MODES],
         "total_target_buildings": int(len(buildings)),
         "candidate_generation_by_placement": {
             PlacementMode.EXACT.value: {
                 "sources": [s.value for s in sorted(candidate_sources, key=lambda x: x.value)],
                 "node_proximity_m": node_proximity_m,
                 "total_candidates": len(exact_candidates),
-            },
-            PlacementMode.CLUSTER.value: {
-                "sources": ["cluster_ensemble_kmeans"],
-                "cluster_ensemble_runs": cluster_ensemble_runs,
-                "total_candidates": len(cluster_candidates),
             },
         },
         "results_by_metric_and_placement": {
@@ -2116,9 +2028,9 @@ def run_pipeline(
                     }
                     for r in results_by_metric_mode[metric][mode]
                 ]
-                for mode in PlacementMode
+                for mode in ACTIVE_PLACEMENT_MODES
             }
-            for metric in DistanceMetric
+            for metric in ACTIVE_DISTANCE_METRICS
         },
     }
     _write_json(OUTPUT_DIR / "optimization_summary.json", summary)
@@ -2144,7 +2056,7 @@ def main() -> None:
         "--candidate-sources",
         nargs="+",
         default=["buildings", "network_nodes"],
-        choices=["buildings", "network_nodes", "public_parcels", "cluster_candidates"],
+        choices=["buildings", "network_nodes", "public_parcels"],
     )
     parser.add_argument("--node-proximity-m", type=float, default=DEFAULT_NODE_PROXIMITY_M)
     parser.add_argument("--public-parcels", type=Path, default=None)
