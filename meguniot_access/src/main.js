@@ -61,7 +61,7 @@ const I18N = {
     legendTitle: "Map legend",
     legendExisting: "Existing shelters (meguniot + miklatim)",
     legendRecommended: "Recommended shelters",
-    legendPost1992: "Excluded by assumptions",
+    legendPost1992: "Assumed sheltered by rules",
     legendUncovered: "Uncovered buildings (existing conditions)",
     legendCoveredBase: "Buildings covered by existing shelters",
     legendNotRelevant: "Not relevant for selected building-type criteria",
@@ -77,7 +77,7 @@ const I18N = {
     layerMiklatimLabel: "Existing miklatim",
     layerRecommendedLabel: "Recommended meguniot",
     layerTopographyLabel: "Topography (contours)",
-    layerPost1992BuildingsLabel: "Excluded by assumptions",
+    layerPost1992BuildingsLabel: "Assumed sheltered by rules",
     layerNotRelevantBuildingsLabel: "Not relevant by building type",
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
@@ -240,7 +240,7 @@ const I18N = {
     legendTitle: "מקרא מפה",
     legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
     legendRecommended: "מיגוניות מומלצות",
-    legendPost1992: "מבנים שהוחרגו לפי הנחות",
+    legendPost1992: "מבנים שמוגדרים כממוגנים לפי הכללים",
     legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
     legendNotRelevant: "מבנים לא רלוונטיים לקריטריוני סוג המבנה שנבחרו",
@@ -256,7 +256,7 @@ const I18N = {
     layerMiklatimLabel: "מקלטים קיימים",
     layerRecommendedLabel: "מיגוניות מומלצות",
     layerTopographyLabel: "טופוגרפיה (קווי גובה)",
-    layerPost1992BuildingsLabel: "מבנים שהוחרגו לפי הנחות",
+    layerPost1992BuildingsLabel: "מבנים שמוגדרים כממוגנים לפי הכללים",
     layerNotRelevantBuildingsLabel: "מבנים לא רלוונטיים לפי סוג מבנה",
     layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
@@ -905,8 +905,16 @@ function isOver3FloorsOrApartments(feature) {
   if (over3Raw !== null && over3Raw !== undefined && over3Raw !== "") {
     return toBoolish(over3Raw);
   }
-  const floors = getFirstNumericProperty(props, ["Floors", "floors", "komot"]);
-  const apartments = getFirstNumericProperty(props, ["Apartments", "apartments", "units", "diyot", "dirhot", "deyrot"]);
+  const floors = getFirstNumericProperty(props, ["Floors", "floors", "komot", "Floor_Number"]);
+  const apartments = getFirstNumericProperty(props, [
+    "Apartments",
+    "apartments",
+    "units",
+    "diyot",
+    "dirhot",
+    "deyrot",
+    "Apartment_Number",
+  ]);
   return (Number.isFinite(floors) && floors > 3) || (Number.isFinite(apartments) && apartments > 3);
 }
 
@@ -1923,11 +1931,11 @@ function renderExistingCoverageBuildings() {
         continue;
       }
       if (isAssumedShelteredFeature(feature)) {
-        const layer = createBuildingLayer(feature, excludedStyle, 2.3);
+        const layer = createBuildingLayer(feature, coveredStyle, 2.5);
         layer.bindPopup(buildBuildingPopupHtml(feature, idx, "buildingPopupStatusAssumed", coverage), {
           className: "shelter-selection-popup",
         });
-        layer.addTo(layers.post1992Buildings);
+        layer.addTo(layers.coveredBuildingsBase);
         continue;
       }
       const layer = createBuildingLayer(feature, covered ? coveredStyle : uncoveredStyle, 2.5);
@@ -1973,11 +1981,11 @@ function renderExistingCoverageBuildings() {
       continue;
     }
     if (isAssumedShelteredFeature(feature)) {
-      const assumedLayer = createBuildingLayer(featureForRender, excludedStyle, 2.3);
+      const assumedLayer = createBuildingLayer(featureForRender, coveredStyle, 2.5);
       assumedLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusAssumed", null), {
         className: "shelter-selection-popup",
       });
-      assumedLayer.addTo(layers.post1992Buildings);
+      assumedLayer.addTo(layers.coveredBuildingsBase);
       continue;
     }
   }

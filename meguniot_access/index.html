@@ -69,62 +69,66 @@
           </button>
           <div id="step0Content" class="drawer-content is-open">
             <div id="assumptionsGrid" class="assumptions-grid">
-              <section class="assumption-group">
-                <h4 id="assumptionsHasShelterTitle" class="assumption-group-title">Has Shelter</h4>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumePost1992Sheltered" class="checkbox-toggle" checked />
-                  <span id="assumePost1992ShelteredLabel" class="checkbox-label assumption-toggle-label">Built in/after 1992</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeOver3FloorsSheltered" class="checkbox-toggle" />
-                  <span id="assumeOver3FloorsShelteredLabel" class="checkbox-label assumption-toggle-label">Above 3 floors</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-              </section>
-              <section class="assumption-group assumption-group-divider">
-                <h4 id="assumptionsPlacementTitle" class="assumption-group-title">Placement</h4>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeOnlyPublicLand" class="checkbox-toggle" checked />
-                  <span id="assumeOnlyPublicLandLabel" class="checkbox-label assumption-toggle-label">Only place on public land</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-              </section>
-              <section class="assumption-group">
-                <h4 id="assumptionsNeighborsTitle" class="assumption-group-title">Shelter Neighbors</h4>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeEducationShelters" class="checkbox-toggle" />
-                  <span id="assumeEducationSheltersLabel" class="checkbox-label assumption-toggle-label">Educational facilities</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumePublicShelters" class="checkbox-toggle" />
-                  <span id="assumePublicSheltersLabel" class="checkbox-label assumption-toggle-label">Public buildings</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-              </section>
-              <section class="assumption-group assumption-group-divider">
-                <h4 id="assumptionsWeightingTitle" class="assumption-group-title">Weighting</h4>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeWeightByPopulation" class="checkbox-toggle" />
-                  <span id="assumeWeightByPopulationLabel" class="checkbox-label assumption-toggle-label">Weight by population density</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-              </section>
-              <section class="assumption-group assumption-group-full assumption-group-divider">
-                <div id="buildingTypesSelector" class="building-types-selector" role="group" aria-label="Building types">
+              <div class="assumption-column assumption-column-left">
+                <section class="assumption-group">
+                  <h4 id="assumptionsHasShelterTitle" class="assumption-group-title">Has Shelter</h4>
                   <label class="heatmap-toggle-control assumption-toggle">
-                    <input id="buildingFilterResidential" type="checkbox" class="checkbox-toggle" checked />
-                    <span id="assumeBuildingUseType2Label" class="checkbox-label assumption-toggle-label">Residential</span>
+                    <input type="checkbox" id="assumePost1992Sheltered" class="checkbox-toggle" checked />
+                    <span id="assumePost1992ShelteredLabel" class="checkbox-label assumption-toggle-label">Built in/after 1992</span>
                     <span class="checkbox-checkmark">✓</span>
                   </label>
                   <label class="heatmap-toggle-control assumption-toggle">
-                    <input id="buildingFilterNonResidential" type="checkbox" class="checkbox-toggle" checked />
-                    <span id="assumeBuildingUseType4Label" class="checkbox-label assumption-toggle-label">Non-residential</span>
+                    <input type="checkbox" id="assumeOver3FloorsSheltered" class="checkbox-toggle" />
+                    <span id="assumeOver3FloorsShelteredLabel" class="checkbox-label assumption-toggle-label">Above 3 floors</span>
                     <span class="checkbox-checkmark">✓</span>
                   </label>
-                </div>
-              </section>
+                </section>
+                <section class="assumption-group">
+                  <h4 id="assumptionsNeighborsTitle" class="assumption-group-title">Shelter Neighbors</h4>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="checkbox" id="assumeEducationShelters" class="checkbox-toggle" />
+                    <span id="assumeEducationSheltersLabel" class="checkbox-label assumption-toggle-label">Educational facilities</span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="checkbox" id="assumePublicShelters" class="checkbox-toggle" />
+                    <span id="assumePublicSheltersLabel" class="checkbox-label assumption-toggle-label">Public buildings</span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                </section>
+                <section class="assumption-group">
+                  <div id="buildingTypesSelector" class="building-types-selector" role="group" aria-label="Building types">
+                    <label class="heatmap-toggle-control assumption-toggle">
+                      <input id="buildingFilterResidential" type="checkbox" class="checkbox-toggle" checked />
+                      <span id="assumeBuildingUseType2Label" class="checkbox-label assumption-toggle-label">Residential</span>
+                      <span class="checkbox-checkmark">✓</span>
+                    </label>
+                    <label class="heatmap-toggle-control assumption-toggle">
+                      <input id="buildingFilterNonResidential" type="checkbox" class="checkbox-toggle" checked />
+                      <span id="assumeBuildingUseType4Label" class="checkbox-label assumption-toggle-label">Non-residential</span>
+                      <span class="checkbox-checkmark">✓</span>
+                    </label>
+                  </div>
+                </section>
+              </div>
+              <div class="assumption-column assumption-column-right">
+                <section class="assumption-group">
+                  <h4 id="assumptionsPlacementTitle" class="assumption-group-title">Placement</h4>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="checkbox" id="assumeOnlyPublicLand" class="checkbox-toggle" checked />
+                    <span id="assumeOnlyPublicLandLabel" class="checkbox-label assumption-toggle-label">Only place on public land</span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                </section>
+                <section class="assumption-group">
+                  <h4 id="assumptionsWeightingTitle" class="assumption-group-title">Weighting</h4>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="checkbox" id="assumeWeightByPopulation" class="checkbox-toggle" />
+                    <span id="assumeWeightByPopulationLabel" class="checkbox-label assumption-toggle-label">Weight by population density</span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                </section>
+              </div>
             </div>
           </div>
         </section>
