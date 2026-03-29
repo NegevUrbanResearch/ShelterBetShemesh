@@ -134,19 +134,10 @@
           </div>
         </section>
 
-        <section class="control-step-panel glass drawer-panel">
-          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="false" aria-controls="step1Content">
-            <h3 id="step1Title" class="control-step-title"><span class="step-chip">1</span> בדיקת כיסוי</h3>
-            <span class="drawer-chevron" aria-hidden="true">▾</span>
+        <section class="control-step-panel glass heatmap-action-panel">
+          <button id="accessibilityHeatmapToggle" class="btn heatmap-action-btn" type="button" aria-pressed="false">
+            <span id="heatmapToggleLabel">מפת חום</span>
           </button>
-          <div id="step1Content" class="drawer-content">
-            <label class="heatmap-toggle-control">
-              <input type="checkbox" id="accessibilityHeatmapToggle" class="checkbox-toggle" />
-              <span id="heatmapToggleLabel" class="checkbox-label">מפת חום לנגישות (כיסוי נוכחי)</span>
-              <span class="checkbox-checkmark">✓</span>
-            </label>
-            <p id="accessibilityHeatmapHint" class="legend-hint hidden">ירוק = מכוסה | אדום = חסר מענה</p>
-          </div>
         </section>
 
         <section class="control-step-panel glass drawer-panel">
@@ -155,7 +146,7 @@
             <span class="drawer-chevron" aria-hidden="true">▾</span>
           </button>
           <div id="step3Content" class="drawer-content">
-            <label id="countRangeLabel" for="countRange">מיגוניות מומלצות</label>
+            <label id="countRangeLabel" for="countRange">מיגון מוצע</label>
             <input id="countRange" type="range" min="0" max="0" value="0" />
             <div class="count-download-row">
               <div id="countValue" class="count-badge">0</div>
@@ -185,15 +176,11 @@
               </div>
               <div class="legend-row">
                 <img src="./assets/proposed.svg" alt="" class="legend-marker legend-marker-small" />
-                <span id="legendRecommended">מיגוניות מומלצות</span>
+                <span id="legendRecommended">מיגון מוצע</span>
               </div>
               <div class="legend-row">
                 <span class="legend-line legend-line-contour"></span>
                 <span id="legendTopography">קווי גובה טופוגרפיים</span>
-              </div>
-              <div class="legend-row">
-                <span class="legend-swatch legend-swatch-post-1992"></span>
-                <span id="legendPost1992">מבנים שנבנו מ-1992 ואילך</span>
               </div>
               <div class="legend-row">
                 <span class="legend-swatch legend-swatch-covered-base"></span>
@@ -201,14 +188,14 @@
               </div>
               <div class="legend-row">
                 <span class="legend-swatch legend-swatch-not-relevant"></span>
-                <span id="legendNotRelevant">מבנים לא רלוונטיים לקריטריוני סוג המבנה שנבחרו</span>
+                <span id="legendNotRelevant">מבנים שאינם נכללים בבדיקה</span>
               </div>
               <div class="legend-row">
                 <span class="legend-swatch legend-swatch-uncovered"></span>
-                <span id="legendUncovered">מבנים ללא כיסוי (מצב קיים)</span>
+                <span id="legendUncovered">מבנים ללא פתרון מיגון</span>
               </div>
               <div class="legend-row">
-                <span class="legend-dot legend-dot-covered"></span>
+                <span class="legend-swatch legend-swatch-covered-selected"></span>
                 <span id="legendCoveredSelected">מכוסים על ידי מיגונית שנבחרה</span>
               </div>
             </div>
@@ -233,11 +220,11 @@
               </div>
               <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
               <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
-              <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
+              <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגון מוצע</span></label>
               <label><input type="checkbox" id="layerTopography" checked /> <span id="layerTopographyLabel">טופוגרפיה (קווי גובה)</span></label>
               <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
-              <label><input type="checkbox" id="layerNotRelevantBuildings" checked /> <span id="layerNotRelevantBuildingsLabel">מבנים לא רלוונטיים לפי סוג</span></label>
-              <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
+              <label><input type="checkbox" id="layerNotRelevantBuildings" checked /> <span id="layerNotRelevantBuildingsLabel">מבנים שאינם נכללים בבדיקה</span></label>
+              <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא פתרון מיגון</span></label>
               <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>
               <label><input type="checkbox" id="layerCovered" checked /> <span id="layerCoveredLabel">מכוסים על ידי מיגונית שנבחרה</span></label>
             </div>

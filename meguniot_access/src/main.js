@@ -50,7 +50,7 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">Add shelters</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">Local impact</span>',
-    heatmapToggleLabel: "Accessibility heatmap (distance-weighted)",
+    heatmapToggleLabel: "Heatmap",
     accessibilityHeatmapHint: "Green = closer/covered | Red = farther/uncovered",
     distanceMetricLabel: "Distance",
     placementModeLabel: "Placement",
@@ -229,7 +229,7 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">השפעה מקומית</span>',
-    heatmapToggleLabel: "מפת חום לנגישות (שקלול מרחק)",
+    heatmapToggleLabel: "מפת חום",
     accessibilityHeatmapHint: "ירוק = קרוב/מכוסה | אדום = רחוק/ללא כיסוי",
     distanceMetricLabel: "מרחק",
     placementModeLabel: "מיקום",
@@ -239,11 +239,11 @@ const I18N = {
     coverageInspectHint: "לחצו על מיגונית במפה כדי לראות השפעה מקומית.",
     legendTitle: "מקרא מפה",
     legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
-    legendRecommended: "מיגוניות מומלצות",
+    legendRecommended: "מיגון מוצע",
     legendPost1992: "מבנים שמוגדרים כממוגנים לפי הכללים",
-    legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
+    legendUncovered: "מבנים ללא פתרון מיגון",
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
-    legendNotRelevant: "מבנים לא רלוונטיים לקריטריוני סוג המבנה שנבחרו",
+    legendNotRelevant: "מבנים שאינם נכללים בבדיקה",
     legendCoveredSelected: "מכוסים על ידי מיגונית שנבחרה",
     legendTopography: "קווי גובה טופוגרפיים",
     legendTopographyScaleTitle: "",
@@ -254,18 +254,18 @@ const I18N = {
     baseMapLabel: "מפת בסיס",
     layerMeguniotLabel: "מיגוניות קיימות",
     layerMiklatimLabel: "מקלטים קיימים",
-    layerRecommendedLabel: "מיגוניות מומלצות",
+    layerRecommendedLabel: "מיגון מוצע",
     layerTopographyLabel: "טופוגרפיה (קווי גובה)",
     layerPost1992BuildingsLabel: "מבנים שמוגדרים כממוגנים לפי הכללים",
-    layerNotRelevantBuildingsLabel: "מבנים לא רלוונטיים לפי סוג מבנה",
-    layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
+    layerNotRelevantBuildingsLabel: "מבנים שאינם נכללים בבדיקה",
+    layerUncoveredBuildingsLabel: "מבנים ללא פתרון מיגון",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
     layerCoveredLabel: "מכוסים על ידי מיגונית שנבחרה",
     metricGraphBtn: "מרחק הליכה",
     metricEuclideanBtn: "אוקלידי",
     modeExactBtn: "מדויק",
     modeClusterBtn: "אשכול",
-    countRangeLabel: "מיגוניות מומלצות",
+    countRangeLabel: "מיגון מוצע",
     assumptionsHasShelterTitle: "מבנים שכוללים מיגון",
     assumptionsNeighborsTitle: "מיגון שכנים",
     assumePost1992ShelteredLabel: "נבנה מ-1992 ואילך",
@@ -289,7 +289,7 @@ const I18N = {
     weightingBuildingTypeRestrictionDisabledHint: "לא ניתן לשימוש עם שקלול לפי תושבים",
     assumeBuildingUseType2Label: "מגורים (כולל שימוש מעורב)",
     assumeBuildingUseType4Label: "לא למגורים (ציבורי + מסחרי)",
-    countRangeLabelDynamic: (modeLabel, maxRecommendations) => `${modeLabel} מומלצות (מקסימום ${maxRecommendations})`,
+    countRangeLabelDynamic: (modeLabel, maxRecommendations) => `מיגון מוצע (${modeLabel}, מקסימום ${maxRecommendations})`,
     clusterAreas: "אזורי אשכול",
     shelters: "מיגוניות",
     bucketLabel_5min: "5 דקות",
@@ -431,6 +431,15 @@ const UNIFIED_COVERED_PALETTE = {
   buildingFill: "#74c989",
   areaStroke: "#28843a",
   areaFill: "#8fd8a1",
+};
+
+const SELECTED_HIGHLIGHT_PALETTE = {
+  markerStroke: "#1d4ed8",
+  markerFill: "#3b82f6",
+  buildingStroke: "#2563eb",
+  buildingFill: "#60a5fa",
+  areaStroke: "#3b82f6",
+  areaFill: "#93c5fd",
 };
 
 proj4.defs(
@@ -1782,7 +1791,10 @@ function resetAddedSheltersToZero() {
 function setAccessibilityHeatmap(enabled) {
   accessibilityHeatmapEnabled = enabled;
   layerVisibility.accessibilityHeatmap = enabled;
-  if (accessibilityHeatmapToggle) accessibilityHeatmapToggle.checked = enabled;
+  if (accessibilityHeatmapToggle) {
+    accessibilityHeatmapToggle.setAttribute("aria-pressed", String(enabled));
+    accessibilityHeatmapToggle.classList.toggle("is-active", enabled);
+  }
   accessibilityHeatmapHint?.classList.toggle("hidden", !enabled);
 }
 
@@ -2202,7 +2214,7 @@ function getSelectedCoverageMatches() {
 }
 
 function getSelectionPalette(shelter) {
-  return UNIFIED_COVERED_PALETTE;
+  return SELECTED_HIGHLIGHT_PALETTE;
 }
 
 function convexHull(points) {
@@ -3019,13 +3031,10 @@ function wireEvents() {
       applyLayerVisibility();
     });
   }
-  if (accessibilityHeatmapToggle) {
-    accessibilityHeatmapToggle.checked = accessibilityHeatmapEnabled;
-  }
   setAccessibilityHeatmap(accessibilityHeatmapEnabled);
 
-  accessibilityHeatmapToggle?.addEventListener("change", () => {
-    const enabled = accessibilityHeatmapToggle.checked;
+  accessibilityHeatmapToggle?.addEventListener("click", () => {
+    const enabled = !accessibilityHeatmapEnabled;
     setAccessibilityHeatmap(enabled);
     if (enabled) resetAddedSheltersToZero();
     clearSelection();
