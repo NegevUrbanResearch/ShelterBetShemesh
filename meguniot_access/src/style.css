@@ -948,18 +948,20 @@ select {
 
 .assumptions-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
-  gap: 6px;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  gap: 10px;
 }
 
 .assumption-column {
   display: grid;
-  gap: 6px;
+  align-content: start;
+  gap: 8px;
 }
 
 .assumption-column-right {
-  border-inline-start: 1px solid rgba(255, 255, 255, 0.2);
-  padding-inline-start: 8px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.18);
+  padding-inline-start: 10px;
+  padding-top: 4px;
 }
 
 .assumption-group {
@@ -983,11 +985,12 @@ select {
 
 .assumption-group-title {
   margin: 0;
-  font-size: 11.5px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
   color: #c8dbff;
   text-align: start;
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: 0.015em;
 }
 
 .assumption-toggle {
@@ -996,14 +999,14 @@ select {
 
 .assumption-toggle-label {
   flex: 1;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.2;
   color: var(--ink-dim);
 }
 
 .building-types-selector {
   display: grid;
-  gap: 4px;
+  gap: 3px;
 }
 
 #buildingTypesSelector .assumption-toggle {
@@ -1012,7 +1015,7 @@ select {
 }
 
 #buildingTypesSelector .assumption-toggle-label {
-  font-size: 11px;
+  font-size: 12.5px;
   line-height: 1.1;
 }
 

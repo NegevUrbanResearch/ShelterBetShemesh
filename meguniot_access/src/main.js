@@ -283,7 +283,7 @@ const I18N = {
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     buildingFilterAllLabel: "הכל",
     assumeOnlyPublicLandLabel: "מיקום פתרונות מיגון רק בשטחים ציבוריים",
-    assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד מוערך",
+    assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד ",
     weightingBuildingTypeRestrictionNotice:
       "שקלול לפי תושבים פעיל. קטגוריית לא-למגורים כבויה אוטומטית.",
     weightingBuildingTypeRestrictionDisabledHint: "לא ניתן לשימוש עם שקלול לפי תושבים",
