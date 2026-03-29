@@ -1727,6 +1727,17 @@ function recommendationsForCurrentView() {
   }));
 }
 
+function getAddedCoverageBuildingIndexes() {
+  const coveredIndexes = new Set();
+  for (const rec of recommendationsForCurrentView()) {
+    const indices = Array.isArray(rec?.covered_building_indices) ? rec.covered_building_indices : [];
+    for (const idx of indices) {
+      coveredIndexes.add(Number(idx));
+    }
+  }
+  return coveredIndexes;
+}
+
 function updateSliderBounds() {
   const bucketData = getCurrentBucketData();
   if (!bucketData) return;
@@ -1882,6 +1893,7 @@ function renderExistingCoverageBuildings() {
   layers.uncoveredBuildings.clearLayers();
   layers.coveredBuildingsBase.clearLayers();
   const bucket = getActiveBucketKey();
+  const addedCoverageBuildingIndexes = getAddedCoverageBuildingIndexes();
   const uncoveredStyle = {
     color: "#e53935",
     weight: 1.4,
@@ -1924,7 +1936,7 @@ function renderExistingCoverageBuildings() {
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
     const feature = buildingFeatureByIndex.get(Number(idx));
-    const covered = Boolean(coverage?.[`covered_${bucket}`]);
+    const covered = Boolean(coverage?.[`covered_${bucket}`]) || addedCoverageBuildingIndexes.has(Number(idx));
     if (feature) {
       if (!isRelevantBySelectedBuildingTypes(feature)) {
         addNotRelevantBuilding(feature, idx);
