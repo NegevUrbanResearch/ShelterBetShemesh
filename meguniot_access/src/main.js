@@ -87,7 +87,7 @@ const I18N = {
     countRangeLabel: "Recommended shelters",
     assumptionsHasShelterTitle: "Has Shelter",
     assumptionsNeighborsTitle: "Shelter Neighbors",
-    assumePost1992ShelteredLabel: "Built in/after 1992",
+    assumePost1992ShelteredLabel: "Built in/after 1995",
     assumeOver3FloorsShelteredLabel: "Above 3 floors",
     assumeEducationSheltersLabel: "Educational facilities",
     assumePublicSheltersLabel: "Public buildings",
@@ -142,7 +142,7 @@ const I18N = {
     buildingAssumedShelteredPopup:
       "<strong>Building assumed as already sheltered</strong><br>Shown as not requiring new shelter coverage in this analysis",
     buildingPost1992Popup:
-      "<strong>Building built in/after 1992</strong><br>Shown as not requiring new shelter coverage in this analysis",
+      "<strong>Building built in/after 1995</strong><br>Shown as not requiring new shelter coverage in this analysis",
     existingMegunitPopup: "<strong>Existing megunit</strong>",
     existingMegunitLabel: "Existing megunit",
     existingMiklatPopup: "<strong>Existing miklat</strong>",
@@ -164,7 +164,7 @@ const I18N = {
     buildingPopupBuildYear: "Build year",
     buildingPopupFloors: "Floors",
     buildingPopupApartments: "Apartments",
-    buildingAssumptionPost1992: "Excluded by post-1992 sheltered assumption",
+    buildingAssumptionPost1992: "Excluded by post-1995 sheltered assumption",
     buildingAssumptionOver3Floors: "Excluded by over-3-floors sheltered assumption",
     buildingAssumptionTypeFiltered: "Excluded by selected building types",
     buildingAssumptionNoTypes: "No building types are selected",
@@ -267,8 +267,8 @@ const I18N = {
     modeClusterBtn: "אשכול",
     countRangeLabel: "מיגון מוצע",
     assumptionsHasShelterTitle: "מבנים שכוללים מיגון",
-    assumptionsNeighborsTitle: "מיגון שכנים",
-    assumePost1992ShelteredLabel: "נבנה מ-1992 ואילך",
+    assumptionsNeighborsTitle: "מקלטים ציבוריים נגישים",
+    assumePost1992ShelteredLabel: "נבנה מ-1995 ואילך",
     assumeOver3FloorsShelteredLabel: "מעל 3 קומות",
     assumeEducationSheltersLabel: "מוסדות חינוך",
     assumePublicSheltersLabel: "מבני ציבור",
@@ -322,7 +322,7 @@ const I18N = {
     buildingAssumedShelteredPopup:
       "<strong>מבנה שהוגדר כממוגן לפי הנחות</strong><br>מוצג כלא נדרש לכיסוי מיגון חדש בניתוח זה",
     buildingPost1992Popup:
-      "<strong>מבנה שנבנה מ-1992 ואילך</strong><br>מוצג כלא נדרש לכיסוי מיגון חדש בניתוח זה",
+      "<strong>מבנה שנבנה מ-1995 ואילך</strong><br>מוצג כלא נדרש לכיסוי מיגון חדש בניתוח זה",
     existingMegunitPopup: "<strong>מיגונית קיימת</strong>",
     existingMegunitLabel: "מיגונית קיימת",
     existingMiklatPopup: "<strong>מקלט קיים</strong>",
@@ -346,7 +346,7 @@ const I18N = {
     buildingPopupBuildYear: "שנת בנייה",
     buildingPopupFloors: "קומות",
     buildingPopupApartments: "דירות",
-    buildingAssumptionPost1992: "הוחרג לפי הנחת מבנים ממוגנים מ-1992 ואילך",
+    buildingAssumptionPost1992: "הוחרג לפי הנחת מבנים ממוגנים מ-1995 ואילך",
     buildingAssumptionOver3Floors: "הוחרג לפי הנחת מבנים ממוגנים מעל 3 קומות",
     buildingAssumptionTypeFiltered: "הוחרג לפי סינון סוגי המבנים שנבחרו",
     buildingAssumptionNoTypes: "לא נבחרו סוגי מבנים",
@@ -882,8 +882,16 @@ function toBoolish(value) {
   return ["1", "true", "t", "yes", "y", "ken", "כן"].includes(normalized);
 }
 
-function isBuiltAfter1992(feature) {
+function isBuiltInOrAfter1995(feature) {
   const props = feature?.properties || {};
+  const before1995Raw =
+    props.Before_1995 ??
+    props.before_1995 ??
+    props.before1995 ??
+    props.lifney_1995;
+  if (before1995Raw !== null && before1995Raw !== undefined && before1995Raw !== "") {
+    return !toBoolish(before1995Raw);
+  }
   const before1992Raw =
     props.Before_199 ??
     props.Before_1992 ??
@@ -891,7 +899,7 @@ function isBuiltAfter1992(feature) {
     props.before1992 ??
     props.lifney_1992;
   if (before1992Raw !== null && before1992Raw !== undefined && before1992Raw !== "") {
-    return !toBoolish(before1992Raw);
+    if (toBoolish(before1992Raw)) return false;
   }
   const year = getFirstNumericProperty(props, [
     "BuildYear",
@@ -901,7 +909,7 @@ function isBuiltAfter1992(feature) {
     "shnat_bnia",
     "shnat_bnaya",
   ]);
-  return Number.isFinite(year) ? year >= 1992 : false;
+  return Number.isFinite(year) ? year >= 1995 : false;
 }
 
 function isOver3FloorsOrApartments(feature) {
@@ -976,7 +984,7 @@ function isRelevantBySelectedBuildingTypes(feature) {
 
 function isTargetBuildingFeature(feature) {
   let exempt = false;
-  if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltAfter1992(feature);
+  if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltInOrAfter1995(feature);
   if (currentAssumptions.over3FloorsSheltered) exempt = exempt || isOver3FloorsOrApartments(feature);
   return !exempt;
 }
@@ -996,7 +1004,7 @@ function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
 
   const selectedTypes = normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes);
   const assumptionEffects = [];
-  if (currentAssumptions.post1992Sheltered && isBuiltAfter1992(feature)) {
+  if (currentAssumptions.post1992Sheltered && isBuiltInOrAfter1995(feature)) {
     assumptionEffects.push(t("buildingAssumptionPost1992"));
   }
   if (currentAssumptions.over3FloorsSheltered && isOver3FloorsOrApartments(feature)) {
@@ -1058,7 +1066,7 @@ function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
 }
 
 function isAssumedShelteredFeature(feature) {
-  if (currentAssumptions.post1992Sheltered && isBuiltAfter1992(feature)) return true;
+  if (currentAssumptions.post1992Sheltered && isBuiltInOrAfter1995(feature)) return true;
   if (currentAssumptions.over3FloorsSheltered && isOver3FloorsOrApartments(feature)) return true;
   return false;
 }
