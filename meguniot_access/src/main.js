@@ -50,8 +50,8 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">Add shelters</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">Local impact</span>',
-    heatmapToggleLabel: "Accessibility heatmap (current coverage)",
-    accessibilityHeatmapHint: "Green = covered | Red = uncovered",
+    heatmapToggleLabel: "Accessibility heatmap (distance-weighted)",
+    accessibilityHeatmapHint: "Green = closer/covered | Red = farther/uncovered",
     distanceMetricLabel: "Distance",
     placementModeLabel: "Placement",
     timeBucketLabel: "Time bucket",
@@ -125,7 +125,7 @@ const I18N = {
     loadingStageCoverage: "Calculating coverage indexes...",
     loadingStageFinalizing: "Finalizing map view...",
     accessibilityStats:
-      "Accessibility heatmap mode is active. <strong>Green</strong> areas are covered by existing shelter access, while <strong>red</strong> areas are currently uncovered.",
+      "Accessibility heatmap mode is active. <strong>Green</strong> areas are closer and covered, while <strong>red</strong> areas are farther and/or uncovered.",
     metricLabelEuclidean: "default method",
     metricLabelGraph: "graph walking",
     clusterStats: (shownLength, _metricLabel) =>
@@ -229,8 +229,8 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">השפעה מקומית</span>',
-    heatmapToggleLabel: "מפת חום לנגישות (כיסוי נוכחי)",
-    accessibilityHeatmapHint: "ירוק = מכוסה | אדום = ללא כיסוי",
+    heatmapToggleLabel: "מפת חום לנגישות (שקלול מרחק)",
+    accessibilityHeatmapHint: "ירוק = קרוב/מכוסה | אדום = רחוק/ללא כיסוי",
     distanceMetricLabel: "מרחק",
     placementModeLabel: "מיקום",
     timeBucketLabel: "חלון זמן",
@@ -305,7 +305,7 @@ const I18N = {
     loadingStageCoverage: "מחשב אינדקסי כיסוי...",
     loadingStageFinalizing: "מסיים את תצוגת המפה...",
     accessibilityStats:
-      "מצב מפת חום לנגישות פעיל. אזורים <strong>ירוקים</strong> מכוסים על ידי נגישות למיגון קיים, ואזורים <strong>אדומים</strong> הם ללא כיסוי במצב הנוכחי.",
+      "מצב מפת חום לנגישות פעיל. אזורים <strong>ירוקים</strong> קרובים ומכוסים, ואזורים <strong>אדומים</strong> רחוקים יותר ו/או ללא כיסוי.",
     metricLabelEuclidean: "שיטת ברירת המחדל",
     metricLabelGraph: "מרחק הליכה ברשת הדרכים",
     clusterStats: (shownLength, _metricLabel) =>
@@ -1454,6 +1454,20 @@ function getDistanceNormalizationMaxMeters() {
   return Number.isFinite(p90) && p90 > 0 ? p90 : distances[distances.length - 1] || 1;
 }
 
+function getAccessibilityDistanceScore(distanceMeters, normalizationMaxMeters) {
+  if (!Number.isFinite(distanceMeters) || distanceMeters < 0) return null;
+  const softYellowDistance = 100;
+  const normalizedMax = Number.isFinite(normalizationMaxMeters) && normalizationMaxMeters > 0 ? normalizationMaxMeters : 1;
+  const redDistance = Math.max(softYellowDistance + 1, Math.min(260, normalizedMax));
+  if (distanceMeters <= softYellowDistance) {
+    const progress = distanceMeters / softYellowDistance;
+    return 1 - 0.5 * progress;
+  }
+  if (distanceMeters >= redDistance) return 0;
+  const progress = (distanceMeters - softYellowDistance) / (redDistance - softYellowDistance);
+  return 0.5 * (1 - progress);
+}
+
 function csvCell(value) {
   const raw = value === null || value === undefined ? "" : String(value);
   return `"${raw.replace(/"/g, '""')}"`;
@@ -2014,6 +2028,7 @@ function renderAccessibilityHeatmap() {
   const cellSize = ACCESSIBILITY_GRID_CELL_SIZE_PX;
   const buckets = new Map();
   const bucket = getActiveBucketKey();
+  const distanceMaxMeters = getDistanceNormalizationMaxMeters();
   const addScoreToBuckets = (point, score) => {
     if (!point || !Number.isFinite(score)) return;
     const clampedScore = Math.max(0, Math.min(1, score));
@@ -2027,8 +2042,11 @@ function renderAccessibilityHeatmap() {
   };
 
   for (const [idx, coverage] of coverageByIndex.entries()) {
+    const distanceMeters = Number(coverage?.nearest_shelter_distance_m);
+    const distanceScore = getAccessibilityDistanceScore(distanceMeters, distanceMaxMeters);
+    if (!Number.isFinite(distanceScore)) continue;
     const covered = Boolean(coverage?.[`covered_${bucket}`]);
-    const score = covered ? 1 : 0;
+    const score = covered ? Math.max(0.5, distanceScore) : Math.min(0.5, distanceScore);
     const point = getCoveragePointLatLng(coverage, idx);
     addScoreToBuckets(point, score);
   }
