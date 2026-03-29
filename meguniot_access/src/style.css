@@ -770,7 +770,7 @@ select {
 
 .legend-title {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--panel-title-size);
   letter-spacing: 0.03em;
   text-transform: uppercase;
   color: #d5e5ff;
@@ -785,7 +785,7 @@ select {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--panel-label-size);
   line-height: 1.4;
 }
 
@@ -1615,11 +1615,11 @@ select {
   }
   .legend-row,
   .layer-controls-list label {
-    font-size: 10.5px;
+    font-size: var(--panel-label-size);
     line-height: 1.25;
   }
   .legend-title {
-    font-size: 11px;
+    font-size: var(--panel-title-size);
     text-transform: none;
   }
   .coverage-inspect-hint,

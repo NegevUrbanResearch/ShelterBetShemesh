@@ -279,7 +279,7 @@ const I18N = {
     modeExactBtn: "מדויק",
     modeClusterBtn: "אשכול",
     countRangeLabel: "מיגוניות מומלצות",
-    assumptionsHasShelterTitle: "כוללים מיגון",
+    assumptionsHasShelterTitle: "מבנים שכוללים מיגון",
     assumptionsNeighborsTitle: "מיגון שכנים",
     assumePost1992ShelteredLabel: "נבנה מ-1992 ואילך",
     assumeOver3FloorsShelteredLabel: "מעל 3 קומות",
@@ -294,8 +294,8 @@ const I18N = {
     buildingTypesMoreSelectedLabel: (extraCount) => `+${extraCount} נוספים`,
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
-    assumeOnlyPublicLandLabel: "מיקום רק בקרקע ציבורית",
-    assumeWeightByPopulationLabel: "שקלול לפי # תושבים",
+    assumeOnlyPublicLandLabel: "מיקום פתרונות מיגון רק בשטחים ציבוריים",
+    assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד מוערך",
     weightingBuildingTypeRestrictionNotice:
       "שקלול לפי תושבים פעיל. סוגי המבנים ציבורי ומסחרי כבויים אוטומטית.",
     weightingBuildingTypeRestrictionDisabledHint: "לא ניתן לשימוש עם שקלול לפי תושבים",
@@ -423,7 +423,7 @@ const DEFAULT_ASSUMPTIONS = {
   over3FloorsSheltered: false,
   educationShelters: false,
   publicShelters: false,
-  onlyPublicLand: false,
+  onlyPublicLand: true,
   weightByPopulation: false,
   buildingUseTypes: [1, 2, 3, 4],
 };
