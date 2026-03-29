@@ -50,8 +50,8 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">Add shelters</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">Local impact</span>',
-    heatmapToggleLabel: "Accessibility heatmap (distance to nearest shelter)",
-    accessibilityHeatmapHint: "Green = closer | Red = farther",
+    heatmapToggleLabel: "Accessibility heatmap (current coverage)",
+    accessibilityHeatmapHint: "Green = covered | Red = uncovered",
     distanceMetricLabel: "Distance",
     placementModeLabel: "Placement",
     timeBucketLabel: "Time bucket",
@@ -125,7 +125,7 @@ const I18N = {
     loadingStageCoverage: "Calculating coverage indexes...",
     loadingStageFinalizing: "Finalizing map view...",
     accessibilityStats:
-      "Accessibility screen-grid mode is active. <strong>Green</strong> areas are closer to an existing shelter, while <strong>red</strong> areas are farther away.",
+      "Accessibility heatmap mode is active. <strong>Green</strong> areas are covered by existing shelter access, while <strong>red</strong> areas are currently uncovered.",
     metricLabelEuclidean: "default method",
     metricLabelGraph: "graph walking",
     clusterStats: (shownLength, _metricLabel) =>
@@ -229,8 +229,8 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">השפעה מקומית</span>',
-    heatmapToggleLabel: "מפת חום לנגישות (מרחק למיגון הקרוב ביותר)",
-    accessibilityHeatmapHint: "ירוק = קרוב יותר | אדום = רחוק יותר",
+    heatmapToggleLabel: "מפת חום לנגישות (כיסוי נוכחי)",
+    accessibilityHeatmapHint: "ירוק = מכוסה | אדום = ללא כיסוי",
     distanceMetricLabel: "מרחק",
     placementModeLabel: "מיקום",
     timeBucketLabel: "חלון זמן",
@@ -305,7 +305,7 @@ const I18N = {
     loadingStageCoverage: "מחשב אינדקסי כיסוי...",
     loadingStageFinalizing: "מסיים את תצוגת המפה...",
     accessibilityStats:
-      "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> קרובים יותר למיגון קיים, ואזורים <strong>אדומים</strong> רחוקים יותר.",
+      "מצב מפת חום לנגישות פעיל. אזורים <strong>ירוקים</strong> מכוסים על ידי נגישות למיגון קיים, ואזורים <strong>אדומים</strong> הם ללא כיסוי במצב הנוכחי.",
     metricLabelEuclidean: "שיטת ברירת המחדל",
     metricLabelGraph: "מרחק הליכה ברשת הדרכים",
     clusterStats: (shownLength, _metricLabel) =>
@@ -1407,8 +1407,12 @@ function getCoveragePointLatLng(coverage, idx) {
     return L.latLng(coverage.lat, coverage.lon);
   }
   const buildingFeature = buildingFeatureByIndex.get(Number(idx));
-  if (!buildingFeature) return null;
-  const bounds = L.geoJSON(buildingFeature).getBounds();
+  return getFeatureCenterLatLng(buildingFeature);
+}
+
+function getFeatureCenterLatLng(feature) {
+  if (!feature) return null;
+  const bounds = L.geoJSON(feature).getBounds();
   return bounds.isValid() ? bounds.getCenter() : null;
 }
 
@@ -2009,27 +2013,45 @@ function renderAccessibilityHeatmap() {
   const zoom = map.getZoom();
   const cellSize = ACCESSIBILITY_GRID_CELL_SIZE_PX;
   const buckets = new Map();
-  const distanceMaxMeters = getDistanceNormalizationMaxMeters();
-
-  for (const [idx, coverage] of coverageByIndex.entries()) {
-    const distanceMeters = Number(coverage?.nearest_shelter_distance_m);
-    if (!Number.isFinite(distanceMeters) || distanceMeters < 0) continue;
-    const normalizedDistance = Math.max(0, Math.min(1, distanceMeters / distanceMaxMeters));
-    const score = 1 - normalizedDistance; // 1 = close (green), 0 = far (red)
-    const point = getCoveragePointLatLng(coverage, idx);
-    if (!point) continue;
+  const bucket = getActiveBucketKey();
+  const addScoreToBuckets = (point, score) => {
+    if (!point || !Number.isFinite(score)) return;
+    const clampedScore = Math.max(0, Math.min(1, score));
     const projected = map.project(point, zoom);
     const cellX = Math.floor(projected.x / cellSize);
     const cellY = Math.floor(projected.y / cellSize);
     const key = `${cellX}:${cellY}`;
-    const existing = buckets.get(key) || { cellX, cellY, scoreSum: 0, count: 0 };
-    existing.scoreSum += score;
-    existing.count += 1;
+    const existing = buckets.get(key) || { cellX, cellY, minScore: 1 };
+    existing.minScore = Math.min(existing.minScore, clampedScore);
     buckets.set(key, existing);
+  };
+
+  for (const [idx, coverage] of coverageByIndex.entries()) {
+    const covered = Boolean(coverage?.[`covered_${bucket}`]);
+    const score = covered ? 1 : 0;
+    const point = getCoveragePointLatLng(coverage, idx);
+    addScoreToBuckets(point, score);
+  }
+
+  const sourceFeatures = Array.isArray(dataStore.buildings?.features) ? dataStore.buildings.features : [];
+  for (let sourceIdx = 0; sourceIdx < sourceFeatures.length; sourceIdx += 1) {
+    if (matchedSourceBuildingFeatureIndexes.has(sourceIdx)) continue;
+    const sourceFeature = sourceFeatures[sourceIdx];
+    if (!isRelevantBySelectedBuildingTypes(sourceFeature)) continue;
+    if (!isAssumedShelteredFeature(sourceFeature)) continue;
+    const geometry = geometryToWgs(sourceFeature?.geometry, dataStore.buildingsSourceCrs);
+    if (!geometry) continue;
+    const featureForRender = {
+      type: "Feature",
+      geometry,
+      properties: sourceFeature?.properties || {},
+    };
+    const point = getFeatureCenterLatLng(featureForRender);
+    addScoreToBuckets(point, 1);
   }
 
   for (const cell of buckets.values()) {
-    const score = cell.count ? cell.scoreSum / cell.count : 0;
+    const score = Number.isFinite(cell.minScore) ? cell.minScore : 0;
     const [r, g, b] = getAccessibilityGridColor(score);
     const northWest = map.unproject(L.point(cell.cellX * cellSize, cell.cellY * cellSize), zoom);
     const southEast = map.unproject(
