@@ -83,6 +83,14 @@
                 </label>
               </section>
               <section class="assumption-group assumption-group-divider">
+                <h4 id="assumptionsPlacementTitle" class="assumption-group-title">Placement</h4>
+                <label class="heatmap-toggle-control assumption-toggle">
+                  <input type="checkbox" id="assumeOnlyPublicLand" class="checkbox-toggle" checked />
+                  <span id="assumeOnlyPublicLandLabel" class="checkbox-label assumption-toggle-label">Only place on public land</span>
+                  <span class="checkbox-checkmark">✓</span>
+                </label>
+              </section>
+              <section class="assumption-group">
                 <h4 id="assumptionsNeighborsTitle" class="assumption-group-title">Shelter Neighbors</h4>
                 <label class="heatmap-toggle-control assumption-toggle">
                   <input type="checkbox" id="assumeEducationShelters" class="checkbox-toggle" />
@@ -92,14 +100,6 @@
                 <label class="heatmap-toggle-control assumption-toggle">
                   <input type="checkbox" id="assumePublicShelters" class="checkbox-toggle" />
                   <span id="assumePublicSheltersLabel" class="checkbox-label assumption-toggle-label">Public buildings</span>
-                  <span class="checkbox-checkmark">✓</span>
-                </label>
-              </section>
-              <section class="assumption-group">
-                <h4 id="assumptionsPlacementTitle" class="assumption-group-title">Placement</h4>
-                <label class="heatmap-toggle-control assumption-toggle">
-                  <input type="checkbox" id="assumeOnlyPublicLand" class="checkbox-toggle" checked />
-                  <span id="assumeOnlyPublicLandLabel" class="checkbox-label assumption-toggle-label">Only place on public land</span>
                   <span class="checkbox-checkmark">✓</span>
                 </label>
               </section>
@@ -162,17 +162,9 @@
           </div>
         </section>
 
-        <section id="coverageDisplayControls" class="control-step-panel glass drawer-panel">
-          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="false" aria-controls="step4Content">
-            <h3 id="step4Title" class="control-step-title"><span class="step-chip">3</span> בדיקת שינוי</h3>
-            <span class="drawer-chevron" aria-hidden="true">▾</span>
-          </button>
-          <div id="step4Content" class="drawer-content">
-            <p id="coverageInspectHint" class="coverage-inspect-hint">
-              לחצו על סמני מיגוניות במפה כדי לבדוק כיסוי מקומי.
-            </p>
-            <section id="stats" class="stats"></section>
-          </div>
+        <section id="coverageDisplayControls" class="control-step-panel glass coverage-panel">
+          <h3 id="step4Title" class="control-step-title control-step-static-title"><span class="step-chip">3</span> בדיקת שינוי</h3>
+          <section id="stats" class="stats"></section>
         </section>
 
         <section id="mapLegend" class="legend-drawer glass drawer-panel is-open">
@@ -215,32 +207,38 @@
                 <span id="legendCoveredSelected">מכוסים על ידי מיגונית שנבחרה</span>
               </div>
             </div>
-            <section id="layerControlsPanel" class="legend-manage-layers drawer-panel">
-              <button id="layerControlsToggle" class="drawer-toggle legend-manage-layers-toggle btn btn-ghost" type="button" aria-expanded="false" aria-controls="layerControlsContent">
-                <span id="layersSummary">ניהול שכבות</span>
-                <span class="drawer-chevron" aria-hidden="true">▾</span>
-              </button>
-              <div id="layerControlsContent" class="drawer-content legend-layer-controls-content">
-                <div class="layer-controls-list">
-                  <div class="legend-basemap-control">
-                    <label id="baseMapLabel" for="baseMapSelect">מפת בסיס</label>
-                    <select id="baseMapSelect"></select>
-                  </div>
-                  <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
-                  <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
-                  <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
-                  <label><input type="checkbox" id="layerTopography" checked /> <span id="layerTopographyLabel">טופוגרפיה (קווי גובה)</span></label>
-                  <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
-                  <label><input type="checkbox" id="layerNotRelevantBuildings" checked /> <span id="layerNotRelevantBuildingsLabel">מבנים לא רלוונטיים לפי סוג</span></label>
-                  <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
-                  <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>
-                  <label><input type="checkbox" id="layerCovered" checked /> <span id="layerCoveredLabel">מכוסים על ידי מיגונית שנבחרה</span></label>
-                </div>
-              </div>
-            </section>
+            <button id="openLayersModalBtn" class="legend-manage-layers-toggle btn btn-ghost" type="button">
+              <span id="layersSummary">ניהול שכבות</span>
+            </button>
           </div>
         </section>
       </aside>
+
+      <div id="layersModal" class="modal hidden">
+        <div class="modal-card layers-modal-card glass">
+          <div class="modal-head">
+            <h2 id="layersModalTitle">ניהול שכבות</h2>
+            <button id="closeLayersModalBtn" class="btn btn-close" aria-label="סגירה">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="layer-controls-list">
+              <div class="legend-basemap-control">
+                <label id="baseMapLabel" for="baseMapSelect">מפת בסיס</label>
+                <select id="baseMapSelect"></select>
+              </div>
+              <label><input type="checkbox" id="layerMeguniot" checked /> <span id="layerMeguniotLabel">מיגוניות קיימות</span></label>
+              <label><input type="checkbox" id="layerMiklatim" checked /> <span id="layerMiklatimLabel">מקלטים קיימים</span></label>
+              <label><input type="checkbox" id="layerRecommended" checked /> <span id="layerRecommendedLabel">מיגוניות מומלצות</span></label>
+              <label><input type="checkbox" id="layerTopography" checked /> <span id="layerTopographyLabel">טופוגרפיה (קווי גובה)</span></label>
+              <label><input type="checkbox" id="layerPost1992Buildings" checked /> <span id="layerPost1992BuildingsLabel">מבנים שנבנו מ-1992 ואילך</span></label>
+              <label><input type="checkbox" id="layerNotRelevantBuildings" checked /> <span id="layerNotRelevantBuildingsLabel">מבנים לא רלוונטיים לפי סוג</span></label>
+              <label><input type="checkbox" id="layerUncoveredBuildings" checked /> <span id="layerUncoveredBuildingsLabel">מבנים ללא כיסוי</span></label>
+              <label><input type="checkbox" id="layerCoveredBuildingsBase" checked /> <span id="layerCoveredBuildingsBaseLabel">מבנים מכוסים</span></label>
+              <label><input type="checkbox" id="layerCovered" checked /> <span id="layerCoveredLabel">מכוסים על ידי מיגונית שנבחרה</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div id="guideModal" class="modal">
         <div class="modal-card guide-card glass">

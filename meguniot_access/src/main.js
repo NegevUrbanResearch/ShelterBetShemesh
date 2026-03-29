@@ -61,7 +61,7 @@ const I18N = {
     legendTitle: "Map legend",
     legendExisting: "Existing shelters (meguniot + miklatim)",
     legendRecommended: "Recommended shelters",
-    legendPost1992: "Buildings assumed sheltered",
+    legendPost1992: "Excluded by assumptions",
     legendUncovered: "Uncovered buildings (existing conditions)",
     legendCoveredBase: "Buildings covered by existing shelters",
     legendNotRelevant: "Not relevant for selected building-type criteria",
@@ -71,12 +71,13 @@ const I18N = {
     legendTopographyScaleLow: "Low",
     legendTopographyScaleHigh: "High",
     layersSummary: "Manage layers",
+    layersModalTitle: "Manage layers",
     baseMapLabel: "Base map",
     layerMeguniotLabel: "Existing meguniot",
     layerMiklatimLabel: "Existing miklatim",
     layerRecommendedLabel: "Recommended meguniot",
     layerTopographyLabel: "Topography (contours)",
-    layerPost1992BuildingsLabel: "Buildings assumed sheltered",
+    layerPost1992BuildingsLabel: "Excluded by assumptions",
     layerNotRelevantBuildingsLabel: "Not relevant by building type",
     layerUncoveredBuildingsLabel: "Uncovered buildings",
     layerCoveredBuildingsBaseLabel: "Covered buildings",
@@ -125,15 +126,15 @@ const I18N = {
     loadingStageFinalizing: "Finalizing map view...",
     accessibilityStats:
       "Accessibility screen-grid mode is active. <strong>Green</strong> areas are closer to an existing shelter, while <strong>red</strong> areas are farther away.",
-    metricLabelEuclidean: "straight-line 100m",
+    metricLabelEuclidean: "default method",
     metricLabelGraph: "graph walking",
-    clusterStats: (shownLength, metricLabel) =>
-      `Cluster placement mode is showing <strong>${shownLength}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. Distance metric: <strong>${metricLabel}</strong>. These markers represent general recommended areas for shelter placement, not exact accessibility-distance coverage.`,
-    exactModeLabel: (metricLabel) => `exact placement mode - ${metricLabel}`,
+    clusterStats: (shownLength, _metricLabel) =>
+      `Cluster placement mode is showing <strong>${shownLength}</strong> recommended cluster centers from the top <strong>150 KMeans fits</strong>. These markers represent general recommended areas for shelter placement.`,
+    exactModeLabel: (_metricLabel) => "current analysis mode",
     coveragePhraseEuclidean: "within 100m straight-line distance",
     coveragePhraseGraph: (minuteLabel) => `within ${minuteLabel} walking distance`,
-    exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
-      `In <strong>${modeLabel}</strong>, there are <strong>${uncoveredNow}</strong> residential buildings without any shelter <strong>${coveragePhrase}</strong>. You have added <strong>${shownLength}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings <strong>${coveragePhrase}</strong>. There remain <strong>${remainingUncovered}</strong> uncovered buildings.`,
+    exactStats: (_modeLabel, uncoveredNow, _coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
+      `There are <strong>${uncoveredNow}</strong> residential buildings currently without shelter coverage. You have added <strong>${shownLength}</strong> shelters that would <strong>newly cover</strong> about <strong>${marginalCoverage}</strong> additional buildings. There remain <strong>${remainingUncovered}</strong> uncovered buildings.`,
     statsNoBuildingTypes:
       "No building types are selected, so no target buildings are included in this analysis and no new shelters are suggested.",
     buildingPopupCovered: (idx) => `<strong>Building #${idx}</strong><br>Covered by existing shelters`,
@@ -202,10 +203,10 @@ const I18N = {
     <div class="guide-block">
       <h3>Methodology</h3>
       <ul>
-        <li><strong>0.</strong> Assumption toggles define what is treated as already sheltered and which additional facilities are counted as shelter supply.</li>
+        <li><strong>0.</strong> The process applies the configured shelter and exclusion rules to define target buildings.</li>
         <li><strong>1.</strong> Building and shelter layers are harmonized to a shared map coordinate system.</li>
-        <li><strong>2.</strong> Existing accessibility is computed per building using euclidean distance logic.</li>
-        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and exposed as exact points.</li>
+        <li><strong>2.</strong> Existing accessibility is computed for each building using the project's fixed distance method.</li>
+        <li><strong>3.</strong> Candidate shelters are ranked by additional coverage and published as recommended locations.</li>
         <li><strong>4.</strong> Statistics and map layers update interactively as you change shelter count.</li>
       </ul>
     </div>
@@ -239,7 +240,7 @@ const I18N = {
     legendTitle: "מקרא מפה",
     legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
     legendRecommended: "מיגוניות מומלצות",
-    legendPost1992: "מבנים שמוגדרים כממוגנים לפי הנחות",
+    legendPost1992: "מבנים שהוחרגו לפי הנחות",
     legendUncovered: "מבנים ללא כיסוי (מצב קיים)",
     legendCoveredBase: "מבנים מכוסים על ידי מיגון קיים",
     legendNotRelevant: "מבנים לא רלוונטיים לקריטריוני סוג המבנה שנבחרו",
@@ -249,12 +250,13 @@ const I18N = {
     legendTopographyScaleLow: "נמוך",
     legendTopographyScaleHigh: "גבוה",
     layersSummary: "ניהול שכבות",
+    layersModalTitle: "ניהול שכבות",
     baseMapLabel: "מפת בסיס",
     layerMeguniotLabel: "מיגוניות קיימות",
     layerMiklatimLabel: "מקלטים קיימים",
     layerRecommendedLabel: "מיגוניות מומלצות",
     layerTopographyLabel: "טופוגרפיה (קווי גובה)",
-    layerPost1992BuildingsLabel: "מבנים שמוגדרים כממוגנים לפי הנחות",
+    layerPost1992BuildingsLabel: "מבנים שהוחרגו לפי הנחות",
     layerNotRelevantBuildingsLabel: "מבנים לא רלוונטיים לפי סוג מבנה",
     layerUncoveredBuildingsLabel: "מבנים ללא כיסוי",
     layerCoveredBuildingsBaseLabel: "מבנים מכוסים",
@@ -304,15 +306,15 @@ const I18N = {
     loadingStageFinalizing: "מסיים את תצוגת המפה...",
     accessibilityStats:
       "מצב מפת חום לרשת הנגישות פעיל. אזורים <strong>ירוקים</strong> קרובים יותר למיגון קיים, ואזורים <strong>אדומים</strong> רחוקים יותר.",
-    metricLabelEuclidean: "קו אווירי 100 מ'",
+    metricLabelEuclidean: "שיטת ברירת המחדל",
     metricLabelGraph: "מרחק הליכה ברשת הדרכים",
-    clusterStats: (shownLength, metricLabel) =>
-      `מצב מיקום באשכולות מציג <strong>${shownLength}</strong> מרכזי אשכול מומלצים מתוך <strong>150 התאמות KMeans מובילות</strong>. מדד מרחק: <strong>${metricLabel}</strong>. הסמנים מייצגים אזורים כלליים מומלצים למיקום מיגוניות, ולא כיסוי מדויק לפי מרחק נגישות.`,
-    exactModeLabel: (metricLabel) => `מצב מיקום מדויק - ${metricLabel}`,
+    clusterStats: (shownLength, _metricLabel) =>
+      `מצב מיקום באשכולות מציג <strong>${shownLength}</strong> מרכזי אשכול מומלצים מתוך <strong>150 התאמות KMeans מובילות</strong>. הסמנים מייצגים אזורים כלליים מומלצים למיקום מיגוניות.`,
+    exactModeLabel: (_metricLabel) => "מצב הניתוח הנוכחי",
     coveragePhraseEuclidean: "בטווח של 100 מ' בקו אווירי",
     coveragePhraseGraph: (minuteLabel) => `בטווח הליכה של ${minuteLabel}`,
-    exactStats: (modeLabel, uncoveredNow, coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
-      `ב<strong>${modeLabel}</strong> יש <strong>${uncoveredNow}</strong> מבני מגורים ללא מיגון <strong>${coveragePhrase}</strong>. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים <strong>${coveragePhrase}</strong>. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
+    exactStats: (_modeLabel, uncoveredNow, _coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
+      `יש <strong>${uncoveredNow}</strong> מבני מגורים ללא כיסוי מיגון במצב הנוכחי. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
     statsNoBuildingTypes:
       "לא נבחרו סוגי מבנים, לכן אין מבני יעד בניתוח זה ולא מוצעות מיגוניות חדשות.",
     buildingPopupCovered: (idx) => `<strong>מבנה #${idx}</strong><br>מכוסה על ידי מיגון קיים`,
@@ -373,11 +375,10 @@ const I18N = {
     <div class="guide-block" dir="rtl">
       <h3>איך משתמשים</h3>
       <ul>
-        <li><strong>1.</strong> בוחרים <strong>אוקלידי</strong> או <strong>מרחק גרפי</strong> כדי לקבוע איך מודדים נגישות.</li>
-        <li><strong>2.</strong> בוחרים <strong>מיקום מדויק</strong> או <strong>מיקום באשכולות</strong> לפי סוג ההמלצה הרצוי.</li>
-        <li><strong>3.</strong> מוסיפים מיגוניות מומלצות באמצעות הסליידר כדי לבדוק תרחישי התערבות שונים.</li>
-        <li><strong>4.</strong> בודקים את הסטטיסטיקה המתעדכנת, ואז לוחצים על מיגוניות במפה כדי לחקור שינויי כיסוי מקומיים.</li>
-        <li><strong>5.</strong> משתמשים באזור <strong>שכבות</strong> שבמקרא כדי לשלוט בתצוגה ובמפת הבסיס.</li>
+        <li><strong>1.</strong> מגדירים הנחות ובוחרים את סוגי המבנים לניתוח.</li>
+        <li><strong>2.</strong> מוסיפים מיגוניות מומלצות באמצעות הסליידר כדי לבדוק תרחישי התערבות שונים.</li>
+        <li><strong>3.</strong> בודקים את הסטטיסטיקה המתעדכנת כדי להבין את השפעת ההוספה על הכיסוי.</li>
+        <li><strong>4.</strong> משתמשים באזור <strong>שכבות</strong> שבמקרא כדי לשלוט בתצוגה ובמפת הבסיס.</li>
       </ul>
     </div>
   `,
@@ -385,11 +386,11 @@ const I18N = {
     <div class="guide-block" dir="rtl">
       <h3>מתודולוגיה</h3>
       <ul>
-        <li><strong>0.</strong> מתגי ההנחות קובעים מה נחשב כממוגן מראש ואילו מתקנים נוספים נספרים כהיצע מיגון.</li>
+        <li><strong>0.</strong> התהליך מיישם את כללי המיגון וההחרגה שהוגדרו כדי לקבוע את מבני היעד.</li>
         <li><strong>1.</strong> שכבות המבנים והמיגון מיושרות למערכת קואורדינטות משותפת במפה.</li>
-        <li><strong>2.</strong> הנגישות הקיימת מחושבת לכל בניין לפי לוגיקת מרחק גרפי או אוקלידי.</li>
-        <li><strong>3.</strong> מועמדים למיגון מדורגים לפי תוספת כיסוי ומוצגים כמיקומים מדויקים או כהנחיית אשכולות.</li>
-        <li><strong>4.</strong> הסטטיסטיקה והשכבות מתעדכנות אינטראקטיבית כאשר משנים מצב ניתוח וכמות מיגוניות.</li>
+        <li><strong>2.</strong> הנגישות הקיימת מחושבת לכל בניין לפי שיטת המרחק הקבועה של המערכת.</li>
+        <li><strong>3.</strong> מועמדים למיגון מדורגים לפי תוספת כיסוי ומוצגים כמיקומים מומלצים.</li>
+        <li><strong>4.</strong> הסטטיסטיקה והשכבות מתעדכנות אינטראקטיבית כאשר משנים את כמות המיגוניות.</li>
       </ul>
     </div>
   `,
@@ -423,35 +424,7 @@ const LAYER_DEFAULTS = {
   covered: true,
   accessibilityHeatmap: false,
 };
-const EXISTING_SHELTER_BLUE = {
-  buildingStroke: "#0b4f8f",
-  buildingFill: "#4f9bdc",
-  areaStroke: "#0a4a86",
-  areaFill: "#5ea9e6",
-};
-const RECOMMENDED_SHELTER_BLUE = {
-  buildingStroke: "#1f74bf",
-  buildingFill: "#9ed2ff",
-  areaStroke: "#2c7ec7",
-  areaFill: "#b6deff",
-};
-const EDUCATION_SHELTER_PURPLE = {
-  markerStroke: "#4e2a84",
-  markerFill: "#9b6cff",
-  buildingStroke: "#5a3291",
-  buildingFill: "#b996ff",
-  areaStroke: "#5e3993",
-  areaFill: "#c4a7ff",
-};
-const PUBLIC_SHELTER_BROWN = {
-  markerStroke: "#6e4219",
-  markerFill: "#b8793b",
-  buildingStroke: "#7c4f22",
-  buildingFill: "#cf9a62",
-  areaStroke: "#805126",
-  areaFill: "#dbb183",
-};
-const EXISTING_MIKLAT_GREEN = {
+const UNIFIED_COVERED_PALETTE = {
   markerStroke: "#1f6f2f",
   markerFill: "#52b36a",
   buildingStroke: "#237b35",
@@ -499,9 +472,11 @@ const layerNotRelevantBuildings = document.getElementById("layerNotRelevantBuild
 const layerUncoveredBuildings = document.getElementById("layerUncoveredBuildings");
 const layerCoveredBuildingsBase = document.getElementById("layerCoveredBuildingsBase");
 const layerCovered = document.getElementById("layerCovered");
+const openLayersModalBtn = document.getElementById("openLayersModalBtn");
+const layersModal = document.getElementById("layersModal");
+const closeLayersModalBtn = document.getElementById("closeLayersModalBtn");
 const accessibilityHeatmapToggle = document.getElementById("accessibilityHeatmapToggle");
 const accessibilityHeatmapHint = document.getElementById("accessibilityHeatmapHint");
-const coverageInspectHint = document.getElementById("coverageInspectHint");
 const legendTopographyScaleLowEl = document.getElementById("legendTopographyScaleLow");
 const legendTopographyScaleHighEl = document.getElementById("legendTopographyScaleHigh");
 const legendTopographyScaleBarEl = document.getElementById("legendTopographyScaleBar");
@@ -657,6 +632,7 @@ function applyStaticTranslations() {
     legendTopographyScaleLow: "legendTopographyScaleLow",
     legendTopographyScaleHigh: "legendTopographyScaleHigh",
     layersSummary: "layersSummary",
+    layersModalTitle: "layersModalTitle",
     baseMapLabel: "baseMapLabel",
     layerMeguniotLabel: "layerMeguniotLabel",
     layerMiklatimLabel: "layerMiklatimLabel",
@@ -1771,7 +1747,6 @@ function setAccessibilityHeatmap(enabled) {
   layerVisibility.accessibilityHeatmap = enabled;
   if (accessibilityHeatmapToggle) accessibilityHeatmapToggle.checked = enabled;
   accessibilityHeatmapHint?.classList.toggle("hidden", !enabled);
-  coverageInspectHint?.classList.toggle("hidden", enabled);
 }
 
 function setDrawerOpen(panel, open) {
@@ -1899,13 +1874,6 @@ function renderExistingCoverageBuildings() {
   layers.uncoveredBuildings.clearLayers();
   layers.coveredBuildingsBase.clearLayers();
   const bucket = getActiveBucketKey();
-  const post1992Style = {
-    color: "#1b5e20",
-    weight: 1.2,
-    fillColor: "#2e7d32",
-    fillOpacity: 0.26,
-    opacity: 0.94,
-  };
   const uncoveredStyle = {
     color: "#e53935",
     weight: 1.4,
@@ -1914,21 +1882,21 @@ function renderExistingCoverageBuildings() {
     opacity: 0.95,
   };
   const coveredStyle = {
-    color: "#00c853",
+    color: "#237b35",
     weight: 1.5,
-    fillColor: "#76ff7a",
-    fillOpacity: 0.56,
+    fillColor: "#74c989",
+    fillOpacity: 0.5,
     opacity: 0.98,
   };
-  const notRelevantStyle = {
+  const excludedStyle = {
     color: "#6f7882",
     weight: 1.15,
     fillColor: "#98a1ab",
-    fillOpacity: 0.3,
+    fillOpacity: 0.34,
     opacity: 0.92,
   };
   const addNotRelevantBuilding = (featureForRender, renderIdx) => {
-    const notRelevantLayer = createBuildingLayer(featureForRender, notRelevantStyle, 2.2);
+    const notRelevantLayer = createBuildingLayer(featureForRender, excludedStyle, 2.2);
     notRelevantLayer.bindPopup(
       buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusNotRelevant", null),
       {
@@ -1955,7 +1923,7 @@ function renderExistingCoverageBuildings() {
         continue;
       }
       if (isAssumedShelteredFeature(feature)) {
-        const layer = createBuildingLayer(feature, post1992Style, 2.3);
+        const layer = createBuildingLayer(feature, excludedStyle, 2.3);
         layer.bindPopup(buildBuildingPopupHtml(feature, idx, "buildingPopupStatusAssumed", coverage), {
           className: "shelter-selection-popup",
         });
@@ -2005,7 +1973,7 @@ function renderExistingCoverageBuildings() {
       continue;
     }
     if (isAssumedShelteredFeature(feature)) {
-      const assumedLayer = createBuildingLayer(featureForRender, post1992Style, 2.3);
+      const assumedLayer = createBuildingLayer(featureForRender, excludedStyle, 2.3);
       assumedLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusAssumed", null), {
         className: "shelter-selection-popup",
       });
@@ -2174,10 +2142,7 @@ function getSelectedCoverageMatches() {
 }
 
 function getSelectionPalette(shelter) {
-  if (shelter?.sourceKind === "education") return EDUCATION_SHELTER_PURPLE;
-  if (shelter?.sourceKind === "public") return PUBLIC_SHELTER_BROWN;
-  if (shelter?.sourceKind === "miklat") return EXISTING_MIKLAT_GREEN;
-  return shelter?.kind === "recommended" ? RECOMMENDED_SHELTER_BLUE : EXISTING_SHELTER_BLUE;
+  return UNIFIED_COVERED_PALETTE;
 }
 
 function convexHull(points) {
@@ -2435,7 +2400,7 @@ function renderExistingShelters() {
       const latLng = featureToLatLng(feature, dataStore.educationFacilitiesSourceCrs);
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
-      addShelterSourceBuildingLayer(layers.existingMiklatim, feature, dataStore.educationFacilitiesSourceCrs, EDUCATION_SHELTER_PURPLE);
+      addShelterSourceBuildingLayer(layers.existingMiklatim, feature, dataStore.educationFacilitiesSourceCrs, UNIFIED_COVERED_PALETTE);
       const marker = createShelterMarkerWithPalette(latLng, existingEducationIcon);
       marker.bindPopup(
         () => {
@@ -2467,7 +2432,7 @@ function renderExistingShelters() {
       const latLng = featureToLatLng(feature, dataStore.publicBuildingsSourceCrs);
       if (!latLng) continue;
       const shelterId = shelterIdCounter++;
-      addShelterSourceBuildingLayer(layers.existingMiklatim, feature, dataStore.publicBuildingsSourceCrs, PUBLIC_SHELTER_BROWN);
+      addShelterSourceBuildingLayer(layers.existingMiklatim, feature, dataStore.publicBuildingsSourceCrs, UNIFIED_COVERED_PALETTE);
       const marker = createShelterMarkerWithPalette(latLng, existingPublicIcon);
       marker.bindPopup(
         () => {
@@ -2712,19 +2677,16 @@ function renderStats() {
   }
   const stats = bucketData.statistics;
   const shown = recommendationsForCurrentView();
-  const metricLabel = t("metricLabelEuclidean");
 
   const marginalCoverage = shown.reduce((sum, row) => sum + row.newly_covered_buildings, 0);
   const uncoveredNow = Number(stats.currently_uncovered) || 0;
   const remainingUncovered = Math.max(0, uncoveredNow - marginalCoverage);
-  const modeLabel = t("exactModeLabel", metricLabel);
-  const coveragePhrase = t("coveragePhraseEuclidean");
 
   statsEl.innerHTML = t(
     "exactStats",
-    modeLabel,
+    "",
     uncoveredNow,
-    coveragePhrase,
+    "",
     shown.length,
     marginalCoverage,
     remainingUncovered,
@@ -3048,6 +3010,11 @@ function wireEvents() {
   guideModal.addEventListener("click", (e) => {
     if (e.target === guideModal) guideModal.classList.add("hidden");
   });
+  openLayersModalBtn?.addEventListener("click", () => layersModal?.classList.remove("hidden"));
+  closeLayersModalBtn?.addEventListener("click", () => layersModal?.classList.add("hidden"));
+  layersModal?.addEventListener("click", (e) => {
+    if (e.target === layersModal) layersModal.classList.add("hidden");
+  });
   for (const toggle of languageToggles) {
     toggle.addEventListener("change", () => {
       setGuideLanguage(toggle.checked ? "he" : "en");
@@ -3065,6 +3032,9 @@ function wireEvents() {
   mobilePanelCloseBtn?.addEventListener("click", () => setMobileControlPanelOpen(false));
   mobilePanelBackdrop?.addEventListener("click", () => setMobileControlPanelOpen(false));
   document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      layersModal?.classList.add("hidden");
+    }
     if (event.key === "Escape" && isMobileViewport()) {
       setMobileControlPanelOpen(false);
     }

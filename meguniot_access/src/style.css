@@ -526,6 +526,25 @@ select {
   font-weight: 430;
 }
 
+.coverage-panel {
+  gap: 4px;
+}
+
+.control-step-static-title {
+  width: 100%;
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(167, 205, 255, 0.32);
+  background: rgba(80, 129, 255, 0.26);
+  padding: 6px 8px;
+}
+
+.coverage-panel .stats {
+  margin-top: 0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .coverage-inspect-hint {
   margin: 1px 0 0;
   font-size: 12px;
@@ -815,8 +834,8 @@ select {
 }
 
 .legend-swatch-post-1992 {
-  background: rgba(46, 125, 50, 0.32);
-  border-color: #1b5e20;
+  background: rgba(152, 161, 171, 0.46);
+  border-color: #6f7882;
 }
 
 .legend-swatch-covered-base {
@@ -839,8 +858,8 @@ select {
 }
 
 .legend-dot-covered {
-  background: #9ed2ff;
-  border-color: #1f74bf;
+  background: #74c989;
+  border-color: #237b35;
 }
 
 .legend-line {
@@ -907,13 +926,19 @@ select {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   text-align: inherit;
-  font-size: 12px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 700;
   color: #e2eeff;
   border-color: rgba(160, 198, 255, 0.36);
   background: rgba(77, 130, 222, 0.2);
+}
+
+.layers-modal-card {
+  width: min(460px, 92vw);
+  max-height: 82vh;
+  overflow: hidden;
 }
 
 .legend-layer-controls-content {
@@ -923,7 +948,7 @@ select {
 
 .assumptions-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   gap: 6px;
 }
 
