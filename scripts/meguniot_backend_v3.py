@@ -336,7 +336,8 @@ def load_target_buildings(path: Path, assumptions: ScenarioAssumptions) -> gpd.G
     if before_1992_col:
         gdf["before_1992_norm"] = gdf[before_1992_col].apply(_to_boolish)
     else:
-        gdf["before_1992_norm"] = gdf["build_year_norm"].between(1, 1991)
+        # Missing/unknown build year defaults to pre-1992.
+        gdf["before_1992_norm"] = gdf["build_year_norm"] <= 1991
     if over_3_floors_col:
         gdf["over_3_floors_norm"] = gdf[over_3_floors_col].apply(_to_boolish)
     else:

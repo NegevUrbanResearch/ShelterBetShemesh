@@ -170,31 +170,39 @@
           </button>
           <div id="legendDrawerContent" class="drawer-content legend-drawer-content is-open">
             <div class="legend-items">
-              <div class="legend-row">
+              <div id="legendRowMeguniot" class="legend-row">
                 <img src="./assets/existing.svg" alt="" class="legend-marker" />
-                <span id="legendExisting">מיגון קיים (מיגוניות + מקלטים)</span>
+                <span id="legendMeguniot">מיגוניות קיימות</span>
               </div>
-              <div class="legend-row">
+              <div id="legendRowMiklatim" class="legend-row">
+                <img src="./assets/existing-green.svg" alt="" class="legend-marker" />
+                <span id="legendMiklatim">מקלטים קיימים</span>
+              </div>
+              <div id="legendRowEducationShelters" class="legend-row hidden">
+                <img src="./assets/existing-purple.svg" alt="" class="legend-marker" />
+                <span id="legendEducationShelters">מוסדות חינוך</span>
+              </div>
+              <div id="legendRowPublicShelters" class="legend-row hidden">
+                <img src="./assets/existing-brown.svg" alt="" class="legend-marker" />
+                <span id="legendPublicShelters">מבני ציבור</span>
+              </div>
+              <div id="legendRowRecommended" class="legend-row">
                 <img src="./assets/proposed.svg" alt="" class="legend-marker legend-marker-small" />
                 <span id="legendRecommended">מיגון מוצע</span>
               </div>
-              <div class="legend-row">
-                <span class="legend-line legend-line-contour"></span>
-                <span id="legendTopography">קווי גובה טופוגרפיים</span>
-              </div>
-              <div class="legend-row">
+              <div id="legendRowCoveredBase" class="legend-row">
                 <span class="legend-swatch legend-swatch-covered-base"></span>
                 <span id="legendCoveredBase">מבנים מכוסים על ידי מיגון קיים</span>
               </div>
-              <div class="legend-row">
+              <div id="legendRowNotRelevant" class="legend-row">
                 <span class="legend-swatch legend-swatch-not-relevant"></span>
                 <span id="legendNotRelevant">מבנים שאינם נכללים בבדיקה</span>
               </div>
-              <div class="legend-row">
+              <div id="legendRowUncovered" class="legend-row">
                 <span class="legend-swatch legend-swatch-uncovered"></span>
                 <span id="legendUncovered">מבנים ללא פתרון מיגון</span>
               </div>
-              <div class="legend-row">
+              <div id="legendRowCoveredSelected" class="legend-row">
                 <span class="legend-swatch legend-swatch-covered-selected"></span>
                 <span id="legendCoveredSelected">מכוסים על ידי מיגונית שנבחרה</span>
               </div>

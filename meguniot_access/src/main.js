@@ -60,6 +60,10 @@ const I18N = {
     coverageInspectHint: "Click a shelter marker to see local impact.",
     legendTitle: "Map legend",
     legendExisting: "Existing shelters (meguniot + miklatim)",
+    legendMeguniot: "Existing meguniot",
+    legendMiklatim: "Existing miklatim",
+    legendEducationShelters: "Educational facilities",
+    legendPublicShelters: "Public buildings",
     legendRecommended: "Recommended shelters",
     legendPost1992: "Assumed sheltered by rules",
     legendUncovered: "Uncovered buildings (existing conditions)",
@@ -239,6 +243,10 @@ const I18N = {
     coverageInspectHint: "לחצו על מיגונית במפה כדי לראות השפעה מקומית.",
     legendTitle: "מקרא מפה",
     legendExisting: "מיגון קיים (מיגוניות + מקלטים)",
+    legendMeguniot: "מיגוניות קיימות",
+    legendMiklatim: "מקלטים קיימים",
+    legendEducationShelters: "מוסדות חינוך",
+    legendPublicShelters: "מבני ציבור",
     legendRecommended: "מיגון מוצע",
     legendPost1992: "מבנים שמוגדרים כממוגנים לפי הכללים",
     legendUncovered: "מבנים ללא פתרון מיגון",
@@ -489,6 +497,16 @@ const accessibilityHeatmapHint = document.getElementById("accessibilityHeatmapHi
 const legendTopographyScaleLowEl = document.getElementById("legendTopographyScaleLow");
 const legendTopographyScaleHighEl = document.getElementById("legendTopographyScaleHigh");
 const legendTopographyScaleBarEl = document.getElementById("legendTopographyScaleBar");
+const legendRowMeguniot = document.getElementById("legendRowMeguniot");
+const legendRowMiklatim = document.getElementById("legendRowMiklatim");
+const legendRowEducationShelters = document.getElementById("legendRowEducationShelters");
+const legendRowPublicShelters = document.getElementById("legendRowPublicShelters");
+const legendRowRecommended = document.getElementById("legendRowRecommended");
+const legendRowTopography = document.getElementById("legendRowTopography");
+const legendRowCoveredBase = document.getElementById("legendRowCoveredBase");
+const legendRowNotRelevant = document.getElementById("legendRowNotRelevant");
+const legendRowUncovered = document.getElementById("legendRowUncovered");
+const legendRowCoveredSelected = document.getElementById("legendRowCoveredSelected");
 
 const openGuideBtn = document.getElementById("openGuideBtn");
 const closeGuideBtn = document.getElementById("closeGuideBtn");
@@ -630,6 +648,10 @@ function applyStaticTranslations() {
     coverageInspectHint: "coverageInspectHint",
     legendTitle: "legendTitle",
     legendExisting: "legendExisting",
+    legendMeguniot: "legendMeguniot",
+    legendMiklatim: "legendMiklatim",
+    legendEducationShelters: "legendEducationShelters",
+    legendPublicShelters: "legendPublicShelters",
     legendRecommended: "legendRecommended",
     legendPost1992: "legendPost1992",
     legendUncovered: "legendUncovered",
@@ -902,9 +924,8 @@ function isBuiltInOrAfter1992(feature) {
     "shnat_bnia",
     "shnat_bnaya",
   ]);
-  // Match backend assumption logic exactly:
-  // before_1992_norm = year in [1..1991], so unknown/0 years are treated as not-before-1992.
-  const isBefore1992 = Number.isFinite(year) && year >= 1 && year <= 1991;
+  // Missing/unknown years are treated as pre-1992 for assumption filtering.
+  const isBefore1992 = !Number.isFinite(year) || year <= 1991;
   return !isBefore1992;
 }
 
@@ -2707,6 +2728,35 @@ function selectShelter(shelter) {
   renderStats();
 }
 
+function setLegendRowVisibility(rowEl, isVisible) {
+  if (!rowEl) return;
+  rowEl.classList.toggle("hidden", !isVisible);
+}
+
+function updateLegendVisibility() {
+  const showMeguniot = !accessibilityHeatmapEnabled && Boolean(layerVisibility.meguniot);
+  const showMiklatim = !accessibilityHeatmapEnabled && Boolean(layerVisibility.miklatim);
+  const showEducationShelters = showMiklatim && Boolean(currentAssumptions.educationShelters);
+  const showPublicShelters = showMiklatim && Boolean(currentAssumptions.publicShelters);
+  const showRecommended = !accessibilityHeatmapEnabled && Boolean(layerVisibility.recommended);
+  const showTopography = !accessibilityHeatmapEnabled && Boolean(layerVisibility.topography);
+  const showCoveredBase = !accessibilityHeatmapEnabled && Boolean(layerVisibility.coveredBuildingsBase);
+  const showNotRelevant = !accessibilityHeatmapEnabled && Boolean(layerVisibility.notRelevantBuildings);
+  const showUncovered = !accessibilityHeatmapEnabled && Boolean(layerVisibility.uncoveredBuildings);
+  const showCoveredSelected = !accessibilityHeatmapEnabled && Boolean(layerVisibility.covered);
+
+  setLegendRowVisibility(legendRowMeguniot, showMeguniot);
+  setLegendRowVisibility(legendRowMiklatim, showMiklatim);
+  setLegendRowVisibility(legendRowEducationShelters, showEducationShelters);
+  setLegendRowVisibility(legendRowPublicShelters, showPublicShelters);
+  setLegendRowVisibility(legendRowRecommended, showRecommended);
+  setLegendRowVisibility(legendRowTopography, showTopography);
+  setLegendRowVisibility(legendRowCoveredBase, showCoveredBase);
+  setLegendRowVisibility(legendRowNotRelevant, showNotRelevant);
+  setLegendRowVisibility(legendRowUncovered, showUncovered);
+  setLegendRowVisibility(legendRowCoveredSelected, showCoveredSelected);
+}
+
 function applyLayerVisibility() {
   if (accessibilityHeatmapEnabled) {
     const standardLayers = [
@@ -2727,6 +2777,7 @@ function applyLayerVisibility() {
     if (!map.hasLayer(layers.accessibilityHeatmap)) {
       map.addLayer(layers.accessibilityHeatmap);
     }
+    updateLegendVisibility();
     return;
   }
 
@@ -2755,6 +2806,7 @@ function applyLayerVisibility() {
   if (!isTopographyVisibleForInteraction()) {
     closeElevationLabelPopup();
   }
+  updateLegendVisibility();
 }
 
 function renderStats() {
