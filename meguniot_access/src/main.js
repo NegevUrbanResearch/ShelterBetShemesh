@@ -902,8 +902,10 @@ function isBuiltInOrAfter1992(feature) {
     "shnat_bnia",
     "shnat_bnaya",
   ]);
-  // Match backend assumption logic: buildings from 1992 and later are exempt when enabled.
-  return Number.isFinite(year) ? year >= 1992 : false;
+  // Match backend assumption logic exactly:
+  // before_1992_norm = year in [1..1991], so unknown/0 years are treated as not-before-1992.
+  const isBefore1992 = Number.isFinite(year) && year >= 1 && year <= 1991;
+  return !isBefore1992;
 }
 
 function isOver3FloorsOrApartments(feature) {
@@ -1894,6 +1896,7 @@ function buildBuildingFeatureIndex() {
 
   for (let sourceIdx = 0; sourceIdx < features.length; sourceIdx += 1) {
     const feature = features[sourceIdx];
+    if (!isCoverageTargetBuildingFeature(feature)) continue;
     const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
     if (!geometry) continue;
     const featureId = getFeatureNumericId(feature, idKeys);
@@ -2430,7 +2433,7 @@ function renderExistingShelters() {
 
   let shelterIdCounter = 0;
   for (const feature of migFeatures) {
-    const latLng = geometryToLatLng(feature, dataStore.miguniotSourceCrs);
+    const latLng = featureToLatLng(feature, dataStore.miguniotSourceCrs);
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = L.marker(latLng, { icon: existingIcon });
@@ -2458,7 +2461,7 @@ function renderExistingShelters() {
   }
 
   for (const feature of mikFeatures) {
-    const latLng = geometryToLatLng(feature, dataStore.miklatimSourceCrs);
+    const latLng = featureToLatLng(feature, dataStore.miklatimSourceCrs);
     if (!latLng) continue;
     const shelterId = shelterIdCounter++;
     const marker = createShelterMarkerWithPalette(latLng, existingMiklatIcon);
