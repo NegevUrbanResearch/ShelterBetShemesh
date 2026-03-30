@@ -134,18 +134,18 @@
           </div>
         </section>
 
-        <section class="control-step-panel glass heatmap-action-panel">
+        <section class="control-step-panel heatmap-action-panel">
           <button id="accessibilityHeatmapToggle" class="btn heatmap-action-btn" type="button" aria-pressed="false">
             <span id="heatmapToggleLabel">מפת חום</span>
           </button>
         </section>
 
-        <section class="control-step-panel glass drawer-panel">
-          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="false" aria-controls="step3Content">
+        <section class="control-step-panel glass drawer-panel is-open">
+          <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step3Content">
             <h3 id="step3Title" class="control-step-title"><span class="step-chip">2</span> הוספת מיגוניות</h3>
             <span class="drawer-chevron" aria-hidden="true">▾</span>
           </button>
-          <div id="step3Content" class="drawer-content">
+          <div id="step3Content" class="drawer-content is-open">
             <label id="countRangeLabel" for="countRange">מיגון מוצע</label>
             <input id="countRange" type="range" min="0" max="0" value="0" />
             <div class="count-download-row">
@@ -159,7 +159,7 @@
         </section>
 
         <section id="coverageDisplayControls" class="control-step-panel glass coverage-panel">
-          <h3 id="step4Title" class="control-step-title control-step-static-title"><span class="step-chip">3</span> בדיקת שינוי</h3>
+          <h3 id="step4Title" class="control-step-title"><span class="step-chip">3</span> בדיקת שינוי</h3>
           <section id="stats" class="stats"></section>
         </section>
 

@@ -229,7 +229,7 @@ const I18N = {
     step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">השפעה מקומית</span>',
-    heatmapToggleLabel: "מפת חום",
+    heatmapToggleLabel: "בדיקת כיסוי (מפת חום)",
     accessibilityHeatmapHint: "ירוק = קרוב/מכוסה | אדום = רחוק/ללא כיסוי",
     distanceMetricLabel: "מרחק",
     placementModeLabel: "מיקום",
@@ -282,7 +282,7 @@ const I18N = {
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     buildingFilterAllLabel: "הכל",
-    assumeOnlyPublicLandLabel: "מיקום פתרונות מיגון רק בשטחים ציבוריים",
+    assumeOnlyPublicLandLabel: "פתרונות מיגון חדש רק בשטחים ציבוריים",
     assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד ",
     weightingBuildingTypeRestrictionNotice:
       "שקלול לפי תושבים פעיל. קטגוריית לא-למגורים כבויה אוטומטית.",
@@ -313,8 +313,8 @@ const I18N = {
     exactModeLabel: (_metricLabel) => "מצב הניתוח הנוכחי",
     coveragePhraseEuclidean: "בטווח של 100 מ' בקו אווירי",
     coveragePhraseGraph: (minuteLabel) => `בטווח הליכה של ${minuteLabel}`,
-    exactStats: (_modeLabel, uncoveredNow, _coveragePhrase, shownLength, marginalCoverage, remainingUncovered) =>
-      `יש <strong>${uncoveredNow}</strong> מבני מגורים ללא כיסוי מיגון במצב הנוכחי. הוספתם <strong>${shownLength}</strong> מיגוניות שעשויות <strong>לכסות מחדש</strong> כ-<strong>${marginalCoverage}</strong> מבנים נוספים. נותרו <strong>${remainingUncovered}</strong> מבנים ללא כיסוי.`,
+    exactStats: (_modeLabel, uncoveredNow, _coveragePhrase, shownLength, marginalCoverage, _remainingUncovered) =>
+      `כימים <strong>${uncoveredNow}</strong> מבני מגורים ללא פתרונות מיגון נגישים<br>נוספו <strong>${shownLength}</strong> פתרונות מיגון שעשויות לתת מענה ל<strong>${marginalCoverage}</strong> מבנים נוספים`,
     statsNoBuildingTypes:
       "לא נבחרו סוגי מבנים, לכן אין מבני יעד בניתוח זה ולא מוצעות מיגוניות חדשות.",
     buildingPopupCovered: (idx) => `<strong>מבנה #${idx}</strong><br>מכוסה על ידי מיגון קיים`,
