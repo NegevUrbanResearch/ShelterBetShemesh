@@ -779,6 +779,7 @@ const coverageByIndex = new Map();
 const coverageById = new Map();
 const buildingFeatureByIndex = new Map();
 const matchedSourceBuildingFeatureIndexes = new Set();
+const targetBuildingOrderIndexBySourceIdx = new Map();
 
 const existingIcon = L.icon({
   iconUrl: "assets/existing.svg",
@@ -882,16 +883,8 @@ function toBoolish(value) {
   return ["1", "true", "t", "yes", "y", "ken", "כן"].includes(normalized);
 }
 
-function isBuiltInOrAfter1995(feature) {
+function isBuiltInOrAfter1992(feature) {
   const props = feature?.properties || {};
-  const before1995Raw =
-    props.Before_1995 ??
-    props.before_1995 ??
-    props.before1995 ??
-    props.lifney_1995;
-  if (before1995Raw !== null && before1995Raw !== undefined && before1995Raw !== "") {
-    return !toBoolish(before1995Raw);
-  }
   const before1992Raw =
     props.Before_199 ??
     props.Before_1992 ??
@@ -899,7 +892,7 @@ function isBuiltInOrAfter1995(feature) {
     props.before1992 ??
     props.lifney_1992;
   if (before1992Raw !== null && before1992Raw !== undefined && before1992Raw !== "") {
-    if (toBoolish(before1992Raw)) return false;
+    return !toBoolish(before1992Raw);
   }
   const year = getFirstNumericProperty(props, [
     "BuildYear",
@@ -909,7 +902,8 @@ function isBuiltInOrAfter1995(feature) {
     "shnat_bnia",
     "shnat_bnaya",
   ]);
-  return Number.isFinite(year) ? year >= 1995 : false;
+  // Match backend assumption logic: buildings from 1992 and later are exempt when enabled.
+  return Number.isFinite(year) ? year >= 1992 : false;
 }
 
 function isOver3FloorsOrApartments(feature) {
@@ -984,9 +978,13 @@ function isRelevantBySelectedBuildingTypes(feature) {
 
 function isTargetBuildingFeature(feature) {
   let exempt = false;
-  if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltInOrAfter1995(feature);
+  if (currentAssumptions.post1992Sheltered) exempt = exempt || isBuiltInOrAfter1992(feature);
   if (currentAssumptions.over3FloorsSheltered) exempt = exempt || isOver3FloorsOrApartments(feature);
   return !exempt;
+}
+
+function isCoverageTargetBuildingFeature(feature) {
+  return isRelevantBySelectedBuildingTypes(feature) && isTargetBuildingFeature(feature);
 }
 
 function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
@@ -1004,7 +1002,7 @@ function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
 
   const selectedTypes = normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes);
   const assumptionEffects = [];
-  if (currentAssumptions.post1992Sheltered && isBuiltInOrAfter1995(feature)) {
+  if (currentAssumptions.post1992Sheltered && isBuiltInOrAfter1992(feature)) {
     assumptionEffects.push(t("buildingAssumptionPost1992"));
   }
   if (currentAssumptions.over3FloorsSheltered && isOver3FloorsOrApartments(feature)) {
@@ -1066,7 +1064,7 @@ function buildBuildingPopupHtml(feature, idx, statusKey, coverage) {
 }
 
 function isAssumedShelteredFeature(feature) {
-  if (currentAssumptions.post1992Sheltered && isBuiltInOrAfter1995(feature)) return true;
+  if (currentAssumptions.post1992Sheltered && isBuiltInOrAfter1992(feature)) return true;
   if (currentAssumptions.over3FloorsSheltered && isOver3FloorsOrApartments(feature)) return true;
   return false;
 }
@@ -1873,8 +1871,27 @@ function wireDrawerToggles() {
 function buildBuildingFeatureIndex() {
   buildingFeatureByIndex.clear();
   matchedSourceBuildingFeatureIndexes.clear();
+  targetBuildingOrderIndexBySourceIdx.clear();
   const features = Array.isArray(dataStore.buildings?.features) ? dataStore.buildings.features : [];
   const idKeys = ["building_idx", "OBJECTID", "objectid", "id", "ID"];
+  const orderedTargetFeatures = [];
+  for (let sourceIdx = 0; sourceIdx < features.length; sourceIdx += 1) {
+    const feature = features[sourceIdx];
+    if (!isCoverageTargetBuildingFeature(feature)) continue;
+    const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
+    if (!geometry) continue;
+    const targetOrderIdx = orderedTargetFeatures.length;
+    targetBuildingOrderIndexBySourceIdx.set(sourceIdx, targetOrderIdx);
+    orderedTargetFeatures.push({
+      sourceIdx,
+      feature: {
+        type: "Feature",
+        geometry,
+        properties: { ...(feature.properties || {}) },
+      },
+    });
+  }
+
   for (let sourceIdx = 0; sourceIdx < features.length; sourceIdx += 1) {
     const feature = features[sourceIdx];
     const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
@@ -1895,22 +1912,6 @@ function buildBuildingFeatureIndex() {
   // Fallback for datasets without a stable shared ID:
   // reproduce backend target filtering and map by ordered row index.
   if (buildingFeatureByIndex.size < coverageByIndex.size) {
-    const orderedTargetFeatures = [];
-    for (let sourceIdx = 0; sourceIdx < features.length; sourceIdx += 1) {
-      const feature = features[sourceIdx];
-      if (!isTargetBuildingFeature(feature)) continue;
-      const geometry = geometryToWgs(feature?.geometry, dataStore.buildingsSourceCrs);
-      if (!geometry) continue;
-      orderedTargetFeatures.push({
-        sourceIdx,
-        feature: {
-          type: "Feature",
-          geometry,
-          properties: { ...(feature.properties || {}) },
-        },
-      });
-    }
-
     for (const idx of coverageByIndex.keys()) {
       const numericIdx = Number(idx);
       if (buildingFeatureByIndex.has(numericIdx)) continue;
@@ -2038,11 +2039,18 @@ function renderExistingCoverageBuildings() {
       assumedLayer.addTo(layers.coveredBuildingsBase);
       continue;
     }
-    const uncoveredLayer = createBuildingLayer(featureForRender, uncoveredStyle, 2.5);
-    uncoveredLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusUncovered", null), {
+    const targetOrderIdx = targetBuildingOrderIndexBySourceIdx.get(sourceIdx);
+    const coveredByAddedShelters =
+      Number.isFinite(targetOrderIdx) && addedCoverageBuildingIndexes.has(Number(targetOrderIdx));
+    const fallbackStyle = coveredByAddedShelters ? coveredStyle : uncoveredStyle;
+    const fallbackStatusKey = coveredByAddedShelters
+      ? "buildingPopupStatusCovered"
+      : "buildingPopupStatusUncovered";
+    const fallbackLayer = createBuildingLayer(featureForRender, fallbackStyle, 2.5);
+    fallbackLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, fallbackStatusKey, null), {
       className: "shelter-selection-popup",
     });
-    uncoveredLayer.addTo(layers.uncoveredBuildings);
+    fallbackLayer.addTo(coveredByAddedShelters ? layers.coveredBuildingsBase : layers.uncoveredBuildings);
   }
 }
 
