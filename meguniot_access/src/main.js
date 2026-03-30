@@ -2038,6 +2038,11 @@ function renderExistingCoverageBuildings() {
       assumedLayer.addTo(layers.coveredBuildingsBase);
       continue;
     }
+    const uncoveredLayer = createBuildingLayer(featureForRender, uncoveredStyle, 2.5);
+    uncoveredLayer.bindPopup(buildBuildingPopupHtml(featureForRender, renderIdx, "buildingPopupStatusUncovered", null), {
+      className: "shelter-selection-popup",
+    });
+    uncoveredLayer.addTo(layers.uncoveredBuildings);
   }
 }
 
