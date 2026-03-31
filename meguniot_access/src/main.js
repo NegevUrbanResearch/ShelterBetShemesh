@@ -47,7 +47,7 @@ const I18N = {
     mobilePanelTitle: "Map controls",
     mobileCloseAriaLabel: "Close controls",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
-    step0Title: '<span class="step-chip">0</span><span class="step-title-text">Assumptions</span>',
+    step0Title: '<span class="step-chip">1</span><span class="step-title-text">Assumptions</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">Add shelters</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">Local impact</span>',
     heatmapToggleLabel: "Heatmap",
@@ -106,6 +106,8 @@ const I18N = {
     buildingTypesNoneSelectedLabel: "No building types selected",
     buildingFilterAllLabel: "All",
     assumeOnlyPublicLandLabel: "Only place on public land",
+    assumeWholeSettlementLabel: "Place shelters in whole settlement",
+    assumeWeightByBuildingsLabel: "Select shelters by number of buildings",
     assumeWeightByPopulationLabel: "Weight by # residents",
     weightingBuildingTypeRestrictionNotice:
       "Resident weighting is on. Non-residential building category is turned off automatically.",
@@ -230,7 +232,7 @@ const I18N = {
     mobilePanelTitle: "פקדי מפה",
     mobileCloseAriaLabel: "סגירת פקדים",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
-    step0Title: '<span class="step-chip">0</span><span class="step-title-text">הנחות</span>',
+    step0Title: '<span class="step-chip">1</span><span class="step-title-text">הנחות</span>',
     step3Title: '<span class="step-chip">2</span><span class="step-title-text">הוספת מיגוניות</span>',
     step4Title: '<span class="step-chip">3</span><span class="step-title-text">השפעה מקומית</span>',
     heatmapToggleLabel: "בדיקת כיסוי (מפת חום)",
@@ -291,6 +293,8 @@ const I18N = {
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     buildingFilterAllLabel: "הכל",
     assumeOnlyPublicLandLabel: "פתרונות מיגון חדש רק בשטחים ציבוריים",
+    assumeWholeSettlementLabel: "מיקום מיגוניות בכל היישוב",
+    assumeWeightByBuildingsLabel: "בחירת מיגוניות לפי מספר מבנים",
     assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד ",
     weightingBuildingTypeRestrictionNotice:
       "שקלול לפי תושבים פעיל. קטגוריית לא-למגורים כבויה אוטומטית.",
@@ -322,7 +326,7 @@ const I18N = {
     coveragePhraseEuclidean: "בטווח של 100 מ' בקו אווירי",
     coveragePhraseGraph: (minuteLabel) => `בטווח הליכה של ${minuteLabel}`,
     exactStats: (_modeLabel, uncoveredNow, _coveragePhrase, shownLength, marginalCoverage, _remainingUncovered) =>
-      `כימים <strong>${uncoveredNow}</strong> מבני מגורים ללא פתרונות מיגון נגישים<br>נוספו <strong>${shownLength}</strong> פתרונות מיגון שעשויות לתת מענה ל<strong>${marginalCoverage}</strong> מבנים נוספים`,
+      `קיימים <strong>${uncoveredNow}</strong> מבני מגורים ללא פתרונות מיגון נגישים<br>נוספו <strong>${shownLength}</strong> פתרונות מיגון שעשויות לתת מענה ל<strong>${marginalCoverage}</strong> מבנים נוספים`,
     statsNoBuildingTypes:
       "לא נבחרו סוגי מבנים, לכן אין מבני יעד בניתוח זה ולא מוצעות מיגוניות חדשות.",
     buildingPopupCovered: (idx) => `<strong>מבנה #${idx}</strong><br>מכוסה על ידי מיגון קיים`,
@@ -476,9 +480,12 @@ const assumeOver3FloorsSheltered = document.getElementById("assumeOver3FloorsShe
 const assumeEducationShelters = document.getElementById("assumeEducationShelters");
 const assumePublicShelters = document.getElementById("assumePublicShelters");
 const assumeOnlyPublicLand = document.getElementById("assumeOnlyPublicLand");
+const assumeWholeSettlement = document.getElementById("assumeWholeSettlement");
+const assumeWeightByBuildings = document.getElementById("assumeWeightByBuildings");
 const assumeWeightByPopulation = document.getElementById("assumeWeightByPopulation");
 const buildingFilterResidential = document.getElementById("buildingFilterResidential");
 const buildingFilterNonResidential = document.getElementById("buildingFilterNonResidential");
+const buildingFilterNonResidentialControl = document.getElementById("buildingFilterNonResidentialControl");
 
 const layerMeguniot = document.getElementById("layerMeguniot");
 const layerMiklatim = document.getElementById("layerMiklatim");
@@ -561,7 +568,7 @@ function setLoadingStatus(messageKeyOrText) {
   loadingMessageEl.textContent = knownI18nKey ? t(messageKeyOrText) : String(messageKeyOrText ?? "");
 }
 
-function showWeightingRestrictionNotice(message) {
+function showWeightingRestrictionNotice(message, options = {}) {
   let noticeEl = document.getElementById("weightingRestrictionNotice");
   if (!noticeEl) {
     noticeEl = document.createElement("div");
@@ -569,7 +576,9 @@ function showWeightingRestrictionNotice(message) {
     noticeEl.className = "weighting-restriction-notice hidden";
     document.body.appendChild(noticeEl);
   }
-  noticeEl.textContent = String(message || "");
+  const isBlocking = Boolean(options?.isBlocking);
+  const prefix = isBlocking ? "⛔ " : "";
+  noticeEl.textContent = `${prefix}${String(message || "")}`;
   noticeEl.classList.remove("hidden");
   noticeEl.classList.add("is-visible");
   if (weightingRestrictionNoticeTimer) window.clearTimeout(weightingRestrictionNoticeTimer);
@@ -680,6 +689,8 @@ function applyStaticTranslations() {
     assumeEducationSheltersLabel: "assumeEducationSheltersLabel",
     assumePublicSheltersLabel: "assumePublicSheltersLabel",
     assumeOnlyPublicLandLabel: "assumeOnlyPublicLandLabel",
+    assumeWholeSettlementLabel: "assumeWholeSettlementLabel",
+    assumeWeightByBuildingsLabel: "assumeWeightByBuildingsLabel",
     assumeWeightByPopulationLabel: "assumeWeightByPopulationLabel",
     assumptionsBuildingTypesTitle: "assumptionsBuildingTypesTitle",
     buildingFilterAllLabel: "buildingFilterAllLabel",
@@ -1576,6 +1587,8 @@ function syncAssumptionInputs() {
   if (assumeEducationShelters) assumeEducationShelters.checked = Boolean(currentAssumptions.educationShelters);
   if (assumePublicShelters) assumePublicShelters.checked = Boolean(currentAssumptions.publicShelters);
   if (assumeOnlyPublicLand) assumeOnlyPublicLand.checked = Boolean(currentAssumptions.onlyPublicLand);
+  if (assumeWholeSettlement) assumeWholeSettlement.checked = !Boolean(currentAssumptions.onlyPublicLand);
+  if (assumeWeightByBuildings) assumeWeightByBuildings.checked = !Boolean(currentAssumptions.weightByPopulation);
   if (assumeWeightByPopulation) assumeWeightByPopulation.checked = Boolean(currentAssumptions.weightByPopulation);
   setSelectedBuildingUseTypesInUi(normalizeBuildingUseTypes(currentAssumptions.buildingUseTypes));
   updateBuildingTypeWeightingState();
@@ -1583,13 +1596,19 @@ function syncAssumptionInputs() {
 
 function readAssumptionsFromInputs() {
   const selectedTypes = getSelectedBuildingUseTypesFromUi();
+  const onlyPublicLand = assumeOnlyPublicLand
+    ? Boolean(assumeOnlyPublicLand.checked)
+    : !Boolean(assumeWholeSettlement?.checked);
+  const weightByPopulation = assumeWeightByPopulation
+    ? Boolean(assumeWeightByPopulation.checked)
+    : !Boolean(assumeWeightByBuildings?.checked);
   return {
     post1992Sheltered: Boolean(assumePost1992Sheltered?.checked),
     over3FloorsSheltered: Boolean(assumeOver3FloorsSheltered?.checked),
     educationShelters: Boolean(assumeEducationShelters?.checked),
     publicShelters: Boolean(assumePublicShelters?.checked),
-    onlyPublicLand: Boolean(assumeOnlyPublicLand?.checked),
-    weightByPopulation: Boolean(assumeWeightByPopulation?.checked),
+    onlyPublicLand,
+    weightByPopulation,
     buildingUseTypes: selectedTypes,
   };
 }
@@ -3128,6 +3147,8 @@ function wireEvents() {
     assumeEducationShelters,
     assumePublicShelters,
     assumeOnlyPublicLand,
+    assumeWholeSettlement,
+    assumeWeightByBuildings,
     assumeWeightByPopulation,
   ].filter(Boolean);
   for (const input of assumptionInputs) {
@@ -3141,9 +3162,14 @@ function wireEvents() {
   buildingFilterNonResidential?.addEventListener("change", () => {
     if (buildingFilterNonResidential.disabled) {
       buildingFilterNonResidential.checked = false;
-      showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionDisabledHint"));
+      showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionDisabledHint"), { isBlocking: true });
     }
     void applyAssumptions(readAssumptionsFromInputs());
+  });
+  buildingFilterNonResidentialControl?.addEventListener("click", (event) => {
+    if (!buildingFilterNonResidential?.disabled) return;
+    event.preventDefault();
+    showWeightingRestrictionNotice(t("weightingBuildingTypeRestrictionDisabledHint"), { isBlocking: true });
   });
   assumeWeightByPopulation?.addEventListener("change", () => {
     if (!assumeWeightByPopulation.checked) return;

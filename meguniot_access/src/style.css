@@ -400,25 +400,23 @@ body,
 
 .heatmap-action-btn {
   width: 100%;
-  min-height: 46px;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 800;
+  min-height: 40px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
   letter-spacing: 0.01em;
-  border: 1.5px solid rgba(185, 214, 255, 0.64);
-  background: linear-gradient(145deg, rgba(44, 131, 255, 0.9), rgba(34, 192, 166, 0.88));
-  box-shadow:
-    0 12px 24px rgba(7, 29, 62, 0.34),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(168, 202, 255, 0.42);
+  background: rgba(56, 111, 201, 0.26);
+  box-shadow: 0 4px 12px rgba(8, 22, 52, 0.28);
 }
 
 .heatmap-action-btn:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.04);
 }
 
 .heatmap-action-btn.is-active {
-  border-color: rgba(164, 245, 205, 0.95);
-  background: linear-gradient(145deg, rgba(29, 153, 85, 0.93), rgba(29, 186, 116, 0.9));
+  border-color: rgba(164, 245, 205, 0.68);
+  background: rgba(29, 153, 85, 0.34);
 }
 
 .inline-control {
@@ -976,19 +974,32 @@ select {
 
 .assumptions-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
 }
 
 .assumption-column {
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
 .assumption-column-right {
   border-inline-start: 1px solid rgba(255, 255, 255, 0.18);
   padding-inline-start: 10px;
+}
+
+.assumption-group-building-types {
+  margin-top: auto;
+}
+
+.assumption-group-heatmap {
+  margin-top: auto;
+}
+
+.assumption-group-heatmap .heatmap-action-btn {
+  min-height: 38px;
+  box-shadow: 0 4px 12px rgba(8, 22, 52, 0.24);
 }
 
 .assumption-group {
@@ -1030,6 +1041,7 @@ select {
   line-height: 1.2;
   color: var(--ink-dim);
 }
+
 
 .building-types-selector {
   display: grid;

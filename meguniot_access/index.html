@@ -64,7 +64,7 @@
         </div>
         <section class="control-step-panel glass drawer-panel is-open">
           <button class="drawer-toggle control-step-toggle" type="button" aria-expanded="true" aria-controls="step0Content">
-            <h3 id="step0Title" class="control-step-title"><span class="step-chip">0</span> הנחות</h3>
+            <h3 id="step0Title" class="control-step-title"><span class="step-chip">1</span> הנחות</h3>
             <span class="drawer-chevron" aria-hidden="true">▾</span>
           </button>
           <div id="step0Content" class="drawer-content is-open">
@@ -96,25 +96,7 @@
                     <span class="checkbox-checkmark">✓</span>
                   </label>
                 </section>
-              </div>
-              <div class="assumption-column assumption-column-right">
-                <section class="assumption-group">
-                  <h4 id="assumptionsPlacementTitle" class="assumption-group-title">Placement</h4>
-                  <label class="heatmap-toggle-control assumption-toggle">
-                    <input type="checkbox" id="assumeOnlyPublicLand" class="checkbox-toggle" checked />
-                    <span id="assumeOnlyPublicLandLabel" class="checkbox-label assumption-toggle-label">Only place on public land</span>
-                    <span class="checkbox-checkmark">✓</span>
-                  </label>
-                </section>
-                <section class="assumption-group">
-                  <h4 id="assumptionsWeightingTitle" class="assumption-group-title">Weighting</h4>
-                  <label class="heatmap-toggle-control assumption-toggle">
-                    <input type="checkbox" id="assumeWeightByPopulation" class="checkbox-toggle" />
-                    <span id="assumeWeightByPopulationLabel" class="checkbox-label assumption-toggle-label">Weight by population density</span>
-                    <span class="checkbox-checkmark">✓</span>
-                  </label>
-                </section>
-                <section class="assumption-group">
+                <section class="assumption-group assumption-group-building-types">
                   <h4 id="assumptionsBuildingTypesTitle" class="assumption-group-title">Building types</h4>
                   <div id="buildingTypesSelector" class="building-types-selector" role="group" aria-label="Building types">
                     <label class="heatmap-toggle-control assumption-toggle">
@@ -122,7 +104,7 @@
                       <span id="assumeBuildingUseType2Label" class="checkbox-label assumption-toggle-label">Residential</span>
                       <span class="checkbox-checkmark">✓</span>
                     </label>
-                    <label class="heatmap-toggle-control assumption-toggle">
+                    <label id="buildingFilterNonResidentialControl" class="heatmap-toggle-control assumption-toggle">
                       <input id="buildingFilterNonResidential" type="checkbox" class="checkbox-toggle" checked />
                       <span id="assumeBuildingUseType4Label" class="checkbox-label assumption-toggle-label">Non-residential</span>
                       <span class="checkbox-checkmark">✓</span>
@@ -130,14 +112,45 @@
                   </div>
                 </section>
               </div>
+              <div class="assumption-column assumption-column-right">
+                <section class="assumption-group">
+                  <h4 id="assumptionsPlacementTitle" class="assumption-group-title">Placement</h4>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="radio" id="assumeOnlyPublicLand" name="placementMode" class="checkbox-toggle" checked />
+                    <span id="assumeOnlyPublicLandLabel" class="checkbox-label assumption-toggle-label">Only place on public land</span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="radio" id="assumeWholeSettlement" name="placementMode" class="checkbox-toggle" />
+                    <span id="assumeWholeSettlementLabel" class="checkbox-label assumption-toggle-label">
+                      Place shelters in whole settlement
+                    </span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                </section>
+                <section class="assumption-group">
+                  <h4 id="assumptionsWeightingTitle" class="assumption-group-title">Weighting</h4>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="radio" id="assumeWeightByBuildings" name="weightingMode" class="checkbox-toggle" checked />
+                    <span id="assumeWeightByBuildingsLabel" class="checkbox-label assumption-toggle-label">
+                      Select shelters by number of buildings
+                    </span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                  <label class="heatmap-toggle-control assumption-toggle">
+                    <input type="radio" id="assumeWeightByPopulation" name="weightingMode" class="checkbox-toggle" />
+                    <span id="assumeWeightByPopulationLabel" class="checkbox-label assumption-toggle-label">Weight by population density</span>
+                    <span class="checkbox-checkmark">✓</span>
+                  </label>
+                </section>
+                <section class="assumption-group assumption-group-heatmap">
+                  <button id="accessibilityHeatmapToggle" class="btn heatmap-action-btn" type="button" aria-pressed="false">
+                    <span id="heatmapToggleLabel">מפת חום</span>
+                  </button>
+                </section>
+              </div>
             </div>
           </div>
-        </section>
-
-        <section class="control-step-panel glass heatmap-action-panel">
-          <button id="accessibilityHeatmapToggle" class="btn heatmap-action-btn" type="button" aria-pressed="false">
-            <span id="heatmapToggleLabel">מפת חום</span>
-          </button>
         </section>
 
         <section class="control-step-panel glass drawer-panel is-open">
