@@ -292,10 +292,10 @@ const I18N = {
     buildingTypesCountLabel: (selectedCount, totalCount) => `${selectedCount}/${totalCount}`,
     buildingTypesNoneSelectedLabel: "לא נבחרו סוגי מבנים",
     buildingFilterAllLabel: "הכל",
-    assumeOnlyPublicLandLabel: "פתרונות מיגון חדש רק בשטחים ציבוריים",
-    assumeWholeSettlementLabel: "מיקום מיגוניות בכל היישוב",
-    assumeWeightByBuildingsLabel: "בחירת מיגוניות לפי מספר מבנים",
-    assumeWeightByPopulationLabel: "שקלול תוצאות לפי מספר יח״ד ",
+    assumeOnlyPublicLandLabel: "פתרונות מיגון חדש בשטחים ציבוריים בלבד",
+    assumeWholeSettlementLabel: "פתרונות מיגון חדש בכל רחבי העיר",
+    assumeWeightByBuildingsLabel: "שקלול מיקום לפי מספר מבנים",
+    assumeWeightByPopulationLabel: "שקלול מיקום לפי מספר יח״ד",
     weightingBuildingTypeRestrictionNotice:
       "שקלול לפי תושבים פעיל. קטגוריית לא-למגורים כבויה אוטומטית.",
     weightingBuildingTypeRestrictionDisabledHint: "לא ניתן לשימוש עם שקלול לפי תושבים",
@@ -595,6 +595,10 @@ function updateBuildingTypeWeightingState() {
     buildingFilterNonResidential.disabled = weightingEnabled;
     buildingFilterNonResidential.title = weightingEnabled ? disabledHint : "";
     if (weightingEnabled) buildingFilterNonResidential.checked = false;
+  }
+  if (buildingFilterNonResidentialControl) {
+    buildingFilterNonResidentialControl.classList.toggle("is-weighting-blocked", weightingEnabled);
+    buildingFilterNonResidentialControl.title = weightingEnabled ? disabledHint : "";
   }
 }
 
