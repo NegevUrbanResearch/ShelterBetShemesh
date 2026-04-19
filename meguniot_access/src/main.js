@@ -812,6 +812,7 @@ const dataStore = {
 };
 
 let selectedShelters = [];
+let popupClosedByCloseButton = false;
 const coverageByIndex = new Map();
 const coverageById = new Map();
 const buildingFeatureByIndex = new Map();
@@ -3067,6 +3068,25 @@ function wireEvents() {
   });
   baseMapSelect?.addEventListener("change", () => setBaseMap(baseMapSelect.value));
   map.on("click", handleMapClickForElevation);
+  map.on("popupopen", (event) => {
+    const closeButton = event?.popup?.getElement?.()?.querySelector(".leaflet-popup-close-button");
+    if (!closeButton) return;
+    closeButton.addEventListener(
+      "click",
+      () => {
+        popupClosedByCloseButton = true;
+      },
+      { once: true },
+    );
+  });
+  map.on("popupclose", () => {
+    if (!popupClosedByCloseButton) return;
+    popupClosedByCloseButton = false;
+    if (!selectedShelters.length) return;
+    clearSelection();
+    renderStats();
+    applyLayerVisibility();
+  });
   map.on("zoomend moveend", () => {
     if (!accessibilityHeatmapEnabled) return;
     renderAccessibilityHeatmap();
