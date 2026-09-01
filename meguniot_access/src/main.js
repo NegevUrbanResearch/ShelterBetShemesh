@@ -43,7 +43,6 @@ const I18N = {
     closeHelpAriaLabel: "Close help",
     guideTabsAriaLabel: "Guide sections",
     mobileControlsBtn: "Controls",
-    prototypeBanner: "Prototype",
     mobilePanelTitle: "Map controls",
     mobileCloseAriaLabel: "Close controls",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">Inspect coverage</span>',
@@ -228,7 +227,6 @@ const I18N = {
     closeHelpAriaLabel: "סגירת עזרה",
     guideTabsAriaLabel: "לשוניות מדריך",
     mobileControlsBtn: "פקדים",
-    prototypeBanner: "טיוטה",
     mobilePanelTitle: "פקדי מפה",
     mobileCloseAriaLabel: "סגירת פקדים",
     step1Title: '<span class="step-chip">1</span><span class="step-title-text">בדיקת כיסוי</span>',
@@ -704,7 +702,6 @@ function applyStaticTranslations() {
     assumptionsNeighborsTitle: "assumptionsNeighborsTitle",
     assumptionsPlacementTitle: "assumptionsPlacementTitle",
     assumptionsWeightingTitle: "assumptionsWeightingTitle",
-    prototypeBanner: "prototypeBanner",
     mobilePanelTitle: "mobilePanelTitle",
   };
   for (const [id, key] of Object.entries(textMap)) {
